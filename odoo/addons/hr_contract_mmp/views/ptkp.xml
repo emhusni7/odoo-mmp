@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+     <record id="ptkp_form_view" model="ir.ui.view">
+        <field name="name">ptkp.view.form</field>
+        <field name="model">ptkp</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="gol" />
+                        <field name="tarif_ptkp" />
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                </div>
+            </form>
+        </field>
+     </record>
+
+    <record id="ptkp_tree_view" model="ir.ui.view">
+        <field name="name">ptkp.tree</field>
+        <field name="model">ptkp</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="gol"/>
+                <field name="tarif_ptkp"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="ptkp_action" model="ir.actions.act_window">
+        <field name="name">PTKP</field>
+        <field name="res_model">ptkp</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="ptkp_tree_view"/>
+    </record>
+
+    <menuitem
+        id="ptkp_menu"
+        name="PTKP"
+        sequence="1"
+        parent="hr.menu_human_resources_configuration"
+        action="ptkp_action"
+    />
+
+</odoo>

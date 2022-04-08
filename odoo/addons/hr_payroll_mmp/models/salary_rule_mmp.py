@@ -1,4 +1,10 @@
-from odoo import api, fields, models
+from odoo import fields, models, api
+
+class HRSalaryRule(models.Model):
+    _inherit = "hr.salary.rule"
+    h_insurance = fields.Boolean("Healt Insurance", default=False)
+    w_insurance = fields.Boolean("Work Insurance", default=False)
+HRSalaryRule
 
 class SalaryRuleMMP(models.Model):
     _name = "hr.salary.rule.mmp"
@@ -30,6 +36,8 @@ class HRPayrollStructure(models.Model):
             'name': x.code,
             'amount_type': x.amount_select,
             'amount_python_compute': x.amount_python_compute,
+            'h_insurance': x.h_insurance,
+            'w_insurance': x.w_insurance,
             'amount': x.amount_fix,
             'qty': x.quantity
         }), self.rule_ids)
@@ -41,6 +49,18 @@ HRPayrollStructure
 class HRContract(models.Model):
     _inherit = "hr.contract"
     contract_rule_ids = fields.One2many("hr.salary.rule.mmp","contract_id","Rule")
+    wage = fields.Monetary('Total Salary', compute='compute_wage', default=0 ,help="Employee's Net Salary.", readonly=True, store=True)
+
+    @api.depends('contract_rule_ids')
+    def compute_wage(self):
+        amount = 0
+        for trx in self.contract_rule_ids:
+            if trx.rule_id.category_id.code != 'DED':
+                amount += trx.amount
+            else:
+                amount -=trx.amount
+        self.wage = amount
+
 
     def action_generate_rule(self):
         data = map(lambda x: (0, 0,{
@@ -50,9 +70,39 @@ class HRContract(models.Model):
             'amount_type': x.amount_type,
             'amount_python_compute': x.amount_python_compute,
             'amount': x.amount,
+            'h_insurance': x.h_insurance,
+            'w_insurance': x.w_insurance,
             'qty': x.qty
         }), self.struct_id.rule_mmp_ids)
         self.contract_rule_ids.unlink()
         self.contract_rule_ids = list(data)
 
 HRContract
+
+class BPJSKesContractMMp(models.Model):
+    _inherit = "bpjs.kes.contract.mmp"
+
+    @api.onchange('bpjs_kes_id')
+    def onchange_bpjs_kes(self):
+        super(BPJSKesContractMMp, self).onchange_bpjs_kes()
+        for kes in self:
+            self.grand_total = sum([x.amount for x in kes.contract_id.contract_rule_ids if x.h_insurance])
+            self.amount_company = round(self.rate_company/100 * min(self.grand_total,self.max_wages),2)
+            self.amount_employee = round(self.rate_employee/100 * min(self.grand_total,self.max_wages),2)
+
+BPJSKesContractMMp
+
+class BPJSKetContractMMp(models.Model):
+    _inherit = "bpjs.ket.contract.mmp"
+
+    @api.onchange('bpjs_ket_id')
+    def onchange_bpjs_ket(self):
+        super(BPJSKetContractMMp, self).onchange_bpjs_ket()
+        self.grand_total = sum([x.amount for x in self.contract_id.contract_rule_ids if x.w_insurance])
+        self.amount_jht = round(self.rate_jht / 100 * min(self.grand_total, self.max_wages), 2)
+        self.amount_jht_emp = round(self.rate_jht_emp / 100 * min(self.grand_total, self.max_wages), 2)
+        self.amount_jp = round(self.rate_jp / 100 * min(self.grand_total, self.max_wages), 2)
+        self.amount_jp_emp = round(self.rate_jp_emp / 100 * min(self.grand_total, self.max_wages), 2)
+        self.amount_jkk = round(self.rate_jkk / 100 * min(self.grand_total, self.max_wages), 2)
+        self.amount_jkm = round(self.rate_jkm / 100 * min(self.grand_total, self.max_wages), 2)
+

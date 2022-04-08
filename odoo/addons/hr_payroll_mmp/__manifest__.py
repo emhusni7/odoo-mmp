@@ -11,6 +11,7 @@
     'description': "Odoo 15 Payroll, Payroll, Odoo 15,Odoo Payroll, Odoo Community Payroll",
     'depends': [
         'hr_payroll_community',
+        'hr_contract_mmp',
     ],
     'data': [
         'security/ir.model.access.csv',

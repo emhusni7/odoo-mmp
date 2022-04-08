@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_bpjs_kesehatan_form_view" model="ir.ui.view">
+        <field name="name">bpjs.kesehatan.view.form.inherit</field>
+        <field name="model">bpjs.kesehatan.mmp</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                <group>
+                    <field name="name"/>
+                    <field name="company_rate" />
+                </group>
+                <group>
+                    <field name="employee_rate" />
+                    <field name="max_salary" />
+                </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_bpjs_kesehatan_tree_view" model="ir.ui.view">
+        <field name="name">bpjs.kesehatan.tree</field>
+        <field name="model">bpjs.kesehatan.mmp</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="company_rate" />
+                <field name="max_salary" />
+                <field name="employee_rate" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr_bpjs_ketenagakerjaan_form_view" model="ir.ui.view">
+        <field name="name">bpjs.ketenagakerjaan.view.form.inherit</field>
+        <field name="model">bpjs.ketenagakerjaan.mmp</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                            <label for="name"/>
+                            <h1><field name="name" placeholder="BPJS Ketenaga Kerjaan"/></h1>
+                        </div>
+
+                        <group col="4">
+                            <field name="rate_jht" />
+                            <field name="rate_jht_emp"/>
+                            <field name="rate_jp" />
+                            <field name="rate_jp_emp"/>
+                            <field name="rate_jkk" />
+                            <field name="rate_jkm" />
+                            <field name="max_tot_tunjangan" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_bpjs_ketenagakerjaan_tree_view" model="ir.ui.view">
+        <field name="name">bpjs.ketenagakerjaan.mmp.tree</field>
+        <field name="model">bpjs.ketenagakerjaan.mmp</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr_bpjs_kesehatan_action" model="ir.actions.act_window">
+        <field name="name">BPJS</field>
+        <field name="res_model">bpjs.kesehatan.mmp</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="hr_bpjs_kesehatan_tree_view"/>
+    </record>
+
+    <record id="menu_bpjs_ketenagakerjaan_action" model="ir.actions.act_window">
+        <field name="name">BPJS Ketenaga Kerjaan</field>
+        <field name="res_model">bpjs.ketenagakerjaan.mmp</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="hr_bpjs_ketenagakerjaan_tree_view"/>
+    </record>
+
+    <menuitem
+            id="bpjs_menu"
+            name="BPJS"
+            sequence="2"
+            parent="hr.menu_human_resources_configuration"
+    />
+
+    <menuitem
+        id="bpjs_kesehatan_menu"
+        name="BPJS Kesehatan"
+        parent="bpjs_menu"
+        action="hr_bpjs_kesehatan_action"
+        sequence="25"/>
+
+    <menuitem
+        id="bpjs_ketenagakerjaan_menu"
+        name="BPJS Ketenaga Kerjaan"
+        parent="bpjs_menu"
+        action="menu_bpjs_ketenagakerjaan_action"
+        sequence="35"/>
+
+</odoo>

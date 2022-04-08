@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+    <record id="hr_salary_rule_form_inherit" model="ir.ui.view">
+        <field name="name">hr.salary.rule.form</field>
+        <field name="model">hr.salary.rule</field>
+        <field name="inherit_id" ref="hr_payroll_community.hr_salary_rule_form"/>
+        <field name="arch" type="xml">
+            <field name="active" position="before">
+                <field name="h_insurance"/>
+                <field name="w_insurance"/>
+            </field>
+        </field>
+    </record>
+
     <record id="hr_salary_rule_mmp" model="ir.ui.view">
         <field name="name">hr.payroll.structure.mmp.view.form</field>
         <field name="model">hr.payroll.structure</field>
@@ -30,9 +43,15 @@
         <field name="model">hr.contract</field>
         <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
         <field name="arch" type="xml">
-
+            <field name="contract_type_id" position="before">
+                <label for="wage" string="Total Net Salary"></label>
+                <div>
+                    <field name="wage"/>
+                    <button type="object" string="Compute" name="compute_wage" class="oe_highlight"/>
+                </div>
+            </field>
              <xpath expr="//group[@name='salary_info']" position="replace">
-                <button name="action_generate_rule" type="object" string="Generate Salary" class="oe_highlight" />
+                <button name="action_generate_rule" confirm="Warning !,Generate Ulang akan menghapus record lama dan mengganti dg baru" type="object" string="Generate Salary" class="oe_highlight" />
                 <group name="salary_rule">
                     <field name="contract_rule_ids" nolabel="1">
                         <tree editable="bottom">
