@@ -14,6 +14,7 @@
         'views/bpjs.xml',
         'views/contract.xml',
         'views/ptkp.xml',
+        'views/employee.xml',
     ],
     'installable': True,
     'auto_install': False,

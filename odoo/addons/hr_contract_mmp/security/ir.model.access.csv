@@ -4,3 +4,4 @@ access_bpjs_ketenagakerjaan_mmp,bpjs.ketenagakerjaan.mmp,model_bpjs_ketenagakerj
 access_bpjs_kesehatan_trx_mmp,bpjs.kes.contract.mmp,model_bpjs_kes_contract_mmp,hr_payroll_community.group_hr_payroll_community_user,1,1,1,1
 access_bpjs_ketenagakerjaan_trx_mmp,bpjs.ket.contract.mmp,model_bpjs_ket_contract_mmp,hr_payroll_community.group_hr_payroll_community_user,1,1,1,1
 access_ptkp,ptkp,model_ptkp,hr_payroll_community.group_hr_payroll_community_user,1,1,1,1
+access_famiy_mmp,family.mpmp,model_family_mmp,hr_payroll_community.group_hr_payroll_community_user,1,1,1,1
