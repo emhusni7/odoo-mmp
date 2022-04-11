@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="employee_form_mmp" model="ir.ui.view">
+        <field name="name">hr.employee.view.form</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"></field>
+        <field name="arch" type="xml">
+            <field name="coach_id" position="replace"/>
+            <field name="passport_id" position="replace"/>
+            <field name="identification_id" position="attributes">
+                <attribute name="string">No. KTP</attribute>
+            </field>
+
+            <field name="identification_id" position="after">
+                <field name="bpjs" options="{'zoom': true, 'size': [64, 64]}" />
+                <field name="npwp" options="{'zoom': true, 'size': [64, 64]}"/>
+            </field>
+            <field name="address_home_id" position="after">
+                <field name="address"/>
+            </field>
+
+            <xpath expr="//field[@name='lang']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='address_home_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <field name="mobile_phone" position="before">
+                <field name="ptkp_id" />
+            </field>
+
+            <xpath expr="//page[@name='personal_information']" position="after">
+                <page string="Family Data">
+                    <group>
+                        <field name="fam_ids" nolabel="1">
+                            <tree>
+                                <field name="name"/>
+                                <field name="status"/>
+                                <field name="ttl"/>
+                            </tree>
+                            <form>
+                                <group col="4">
+                                    <field name="name"/>
+                                    <field name="ttl"/>
+                                    <field name="gender"/>
+                                    <field name="status"/>
+                                </group>
+                            </form>
+                        </field>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
