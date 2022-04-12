@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+
     <record id="employee_form_mmp" model="ir.ui.view">
         <field name="name">hr.employee.view.form</field>
         <field name="model">hr.employee</field>
@@ -18,6 +19,8 @@
             <field name="address_home_id" position="after">
                 <field name="address"/>
             </field>
+            <xpath expr="//field[@name='employee_type']" position="replace">
+            </xpath>
 
             <xpath expr="//field[@name='lang']" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -26,6 +29,9 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <field name="mobile_phone" position="before">
+                <field name="employee_type"/>
+                <field name="jenis_kerja" />
+                <field name="first_contract_date" />
                 <field name="ptkp_id" />
             </field>
 
@@ -49,8 +55,112 @@
                         </field>
                     </group>
                 </page>
+                <page string="Pendidikan">
+                    <group>
+                        <field name="education" nolabel="1">
+                            <tree>
+                                <field name="jenjang"/>
+                                <field name="name"/>
+                                <field name="masuk"/>
+                                <field name="keluar"/>
+                            </tree>
+                            <form>
+                                <group col="4">
+                                    <field name="jenjang"/>
+                                    <field name="name"/>
+                                    <field name="masuk"/>
+                                    <field name="keluar"/>
+                                </group>
+                            </form>
+                        </field>
+                    </group>
+
+                </page>
+                <page string="BPJS Kesehatan">
+                    <group>
+                        <field name="trans_bpjs" nolabel="1" >
+                            <tree>
+                                <field name="contract_id"/>
+                                <field name="bpjs_kes_id"/>
+                                <field name="amount_company"/>
+                                <field name="amount_employee"/>
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <div class="oe_title">
+                                        <label for="bpjs_kes_id"/>
+                                        <h1><field name="bpjs_kes_id" placeholder="BPJS Kesehatan"/></h1>
+                                    </div>
+                                    <group col="4">
+                                        <field name="valid_from"/>
+                                        <field name="valid_to"/>
+                                        <field name="rate_company"/>
+                                        <field name="amount_company" readonly="1" force_save="1"/>
+                                        <field name="rate_employee"/>
+                                        <field name="amount_employee" readonly="1" force_save="1"/>
+                                        <field name="max_wages" readonly="1" force_save="1"/>
+                                        <field name="grand_total" readonly="1" force_save="1"/>
+                                        <field name="contract_id"/>
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </group>
+                </page>
+                <page string="BPJS KetenagaKerjaan">
+                    <group>
+                        <field name="trans_bpjs_k" nolabel="1" >
+                            <tree>
+                                <field name="contract_id"/>
+                                <field name="bpjs_ket_id"/>
+                                <field name="grand_total"/>
+                                <field name="max_wages"/>
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <div class="oe_title">
+                                        <label for="bpjs_ket_id"/>
+                                        <h1><field name="bpjs_ket_id" placeholder="BPJS Ketenaga Kerjaan"/></h1>
+                                    </div>
+                                    <group col="4">
+                                        <field name="valid_from"/>
+                                        <field name="valid_to"/>
+                                        <field name="rate_jht"/>
+                                        <field name="amount_jht" readonly="1" force_save="1"/>
+                                        <field name="rate_jht_emp"/>
+                                        <field name="amount_jht_emp" readonly="1" force_save="1"/>
+                                        <field name="rate_jp"/>
+                                        <field name="amount_jp" readonly="1" force_save="1"/>
+                                        <field name="rate_jp_emp"/>
+                                        <field name="amount_jp_emp" readonly="1" force_save="1"/>
+                                        <field name="rate_jkk"/>
+                                        <field name="amount_jkk" readonly="1" force_save="1"/>
+                                        <field name="rate_jkm"/>
+                                        <field name="amount_jkm" readonly="1" force_save="1"/>
+                                        <field name="contract_id" />
+                                        <field name="grand_total" readonly="1" force_save="1" />
+                                        <field name="max_wages" readonly="1" force_save="1"/>
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </group>
+                </page>
+                <page string="Keahlian">
+                    <group col="4">
+                        <field name="keahlian" colspan="4" nolabel="1" />
+                    </group>
+                </page>
             </xpath>
 
+            <field name="phone" position="after">
+                <field name="marital" />
+            </field>
+            <xpath expr="//field[@name='job_id']" position="replace" >
+            </xpath>
+            <xpath expr="//field[@name='department_id']" position="after">
+                <field name="job_id"/>
+            </xpath>
         </field>
     </record>
 </odoo>

@@ -3,23 +3,32 @@ from odoo import models, fields, tools, api
 class Family(models.Model):
     _name = "family.mmp"
     name = fields.Char("Nama", required=1)
-    gender = fields.Selection([("Laki-laki",'L'),("Perempuan",'P')], required=1)
+    gender = fields.Selection(selection=[("L","Laki-laki"),('P',"Perempuan")], required=1)
     ttl = fields.Date("Tgl Lahir", required=1)
-    status = fields.Selection([("ayah","Ayah"),
-                               ("ibu","Ibu"),
-                               ("Suami","suami"),
-                               ("Istri","istri"),
-                               ("Anak","anak")
-                               ],"Status", required=1)
+    status = fields.Selection(selection=[("ayah","Ayah"),("ibu","Ibu"),("suami","Suami"),("istri","Istri"),("anak","Anak")],
+                              required=1)
     employee_id = fields.Many2one("hr.employee","Employee", invisible=1, default=lambda self: self.env.context.get('active_id'))
 
 Family
 
-# class Education(models.Model):
-#     _name = "education.mmp"
-#     name = fields.Char("Nama Sekolah/Perguruan Tinggi", required=1)
-#     jenjang = fields.
-# Education
+class Education(models.Model):
+    _name = "education.mmp"
+
+    def _check_type(self, cr, uid, ids, context=None):
+        record = self.browse(cr, uid, ids, context=context)
+        for data in record:
+            if not (len(str(data.masuk)) != 4 or len(str(data.keluar))) != 4:
+                return False
+        return True
+
+    _constraints = [(_check_type, 'Error: Field Tahun masuk/keluar harus 4 digit dan numeric', ['masuk','keluar'])]
+
+    name = fields.Char("Nama Sekolah/Perguruan Tinggi", required=1)
+    jenjang = fields.Selection(selection=[('sd','SD'),('smp','SMP'),('sma','SMA'),('d3','D3'),('s1','S1'),('s2','S2'),('s3','S3')],required=1)
+    masuk = fields.Integer("Tahun Masuk")
+    keluar = fields.Integer("Tahun Keluar")
+    employee_id = fields.Many2one("hr.employee","Empoyee",invisible=1,default=lambda self: self.env.context.get('active_id'))
+Education
 
 class Employee(models.Model):
     _inherit = "hr.employee"
@@ -30,5 +39,28 @@ class Employee(models.Model):
     private_email = fields.Char(string="Private Email", groups="hr.group_hr_user")
     ptkp_id = fields.Many2one("ptkp", "PTKP", required=1)
     fam_ids = fields.One2many("family.mmp","employee_id","Family Data")
+    employee_type = fields.Selection(selection=[
+        ('employee','Karyawan Tetap'),
+        ('trainee', 'Karyawan Percobaan'),
+        ('student', 'Karyawan Pelayanan'),
+    ], string='Employee Type', default='employee', required=True,
+        help="The employee type. Although the primary purpose may seem to categorize employees, this field has also an impact in the Contract History. Only Employee type is supposed to be under contract and will have a Contract History.")
+    jenis_kerja = fields.Selection(selection=[('contr','Kontrak'),('bln','Bulanan'),('ming','Mingguan'),('bor','Borongan')])
+    keahlian = fields.Text("Keahlian")
+    marital = fields.Selection([
+        ('single', 'Single'),
+        ('married', 'Menikah'),
+        ('divorce', 'Cerai'),
+    ], string='Marital Status', groups="hr.group_hr_user", default='single', tracking=True)
+    education = fields.One2many("education.mmp","employee_id","Education")
+    trans_bpjs = fields.One2many("bpjs.kes.contract.mmp",compute="_compute_emp_bpjs",string="BPJS Kesehatan")
+    trans_bpjs_k = fields.One2many("bpjs.ket.contract.mmp",compute="_compute_emp_bpjs_k",string="BPJS Ketenaga Kerjaan")
+
+    def _compute_emp_bpjs(self):
+        self.trans_bpjs = self.contract_id.bpjs_kes_tran_ids.ids
+
+    def _compute_emp_bpjs_k(self):
+        self.trans_bpjs_k = self.contract_id.bpjs_ket_tran_ids.ids
+
 
 Employee
