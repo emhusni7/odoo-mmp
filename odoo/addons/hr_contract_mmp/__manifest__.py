@@ -15,7 +15,6 @@
         'views/contract.xml',
         'views/ptkp.xml',
         'views/employee.xml',
-        'views/job.xml',
     ],
     'installable': True,
     'auto_install': False,

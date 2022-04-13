@@ -1,8 +1,8 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_bpjs_kesehatan_mmp,bpjs.kesehatan.mmp,model_bpjs_kesehatan_mmp,hr_payroll_community.group_hr_payroll_community_user,1,1,1,1
-access_bpjs_ketenagakerjaan_mmp,bpjs.ketenagakerjaan.mmp,model_bpjs_ketenagakerjaan_mmp,hr_payroll_community.group_hr_payroll_community_user,1,1,1,1
-access_bpjs_kesehatan_trx_mmp,bpjs.kes.contract.mmp,model_bpjs_kes_contract_mmp,hr_payroll_community.group_hr_payroll_community_user,1,1,1,1
-access_bpjs_ketenagakerjaan_trx_mmp,bpjs.ket.contract.mmp,model_bpjs_ket_contract_mmp,hr_payroll_community.group_hr_payroll_community_user,1,1,1,1
-access_ptkp,ptkp,model_ptkp,hr_payroll_community.group_hr_payroll_community_user,1,1,1,1
-access_famiy_mmp,family.mpmp,model_family_mmp,hr_payroll_community.group_hr_payroll_community_user,1,1,1,1
-access_edu_mmp,education.mmp,model_education_mmp,hr_payroll_community.group_hr_payroll_community_user,1,1,1,1
+access_bpjs_kesehatan_mmp,bpjs.kesehatan.mmp,model_bpjs_kesehatan_mmp,hr.group_hr_user,1,1,1,1
+access_bpjs_ketenagakerjaan_mmp,bpjs.ketenagakerjaan.mmp,model_bpjs_ketenagakerjaan_mmp,hr.group_hr_user,1,1,1,1
+access_bpjs_kesehatan_trx_mmp,bpjs.kes.contract.mmp,model_bpjs_kes_contract_mmp,hr.group_hr_user,1,1,1,1
+access_bpjs_ketenagakerjaan_trx_mmp,bpjs.ket.contract.mmp,model_bpjs_ket_contract_mmp,hr.group_hr_user,1,1,1,1
+access_ptkp,ptkp,model_ptkp,hr.group_hr_user,1,1,1,1
+access_famiy_mmp,family.mpmp,model_family_mmp,hr.group_hr_user,1,1,1,1
+access_edu_mmp,education.mmp,model_education_mmp,hr.group_hr_user,1,1,1,1

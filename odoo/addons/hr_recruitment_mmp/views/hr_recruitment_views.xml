@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- Tag Form View -->
+    <record id="hr_recruitment.hr_applicant_category_view_form" model="ir.ui.view">
+        <field name="name">hr.applicant.category.form</field>
+        <field name="model">hr.applicant.category</field>
+        <field name="arch" type="xml">
+            <form string="Comp. Recruit">
+            <sheet>
+                <group>
+                    <field name="code"/>
+                    <field name="name"/>
+                </group>
+            </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_recruitment.hr_applicant_category_view_tree" model="ir.ui.view">
+        <field name="name">hr.applicant.category.tree</field>
+        <field name="model">hr.applicant.category</field>
+        <field name="arch" type="xml">
+            <tree string="Comp. Recruit" editable="bottom">
+                <field name="code" />
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Tag Action -->
+    <record id="hr_recruitment.hr_applicant_category_action" model="ir.actions.act_window">
+        <field name="name">Comp. Recruit</field>
+        <field name="res_model">hr.applicant.category</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add a new Comp. Recruit
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="hr_recruitment.hr_applicant_category_menu"
+        parent="hr_recruitment.menu_hr_recruitment_configuration"
+        action="hr_recruitment.hr_applicant_category_action"
+        sequence="2"/>
+
+    <menuitem id="hr_recruitment.menu_hr_department" name="Departments"
+            parent="hr_recruitment.menu_hr_recruitment_configuration" action="hr_recruitment.action_hr_department" sequence="2"/>
+</odoo>

@@ -32,7 +32,7 @@
                 <field name="employee_type"/>
                 <field name="jenis_kerja" />
                 <field name="first_contract_date" />
-                <field name="ptkp_id" />
+                <field name="ptkp_id" widget="selection" />
             </field>
 
             <xpath expr="//page[@name='personal_information']" position="after">

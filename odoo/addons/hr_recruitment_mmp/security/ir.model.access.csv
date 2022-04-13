@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_divisi_mmp,hr.divisi.mmp,model_hr_divisi_mmp,hr.group_hr_user,1,1,1,1
+access_team_mmp,team.mmp,model_team_mmp,hr.group_hr_user,1,1,1,1
+access_unit_mmp,unit.mmp,model_unit_mmp,hr.group_hr_user,1,1,1,1
