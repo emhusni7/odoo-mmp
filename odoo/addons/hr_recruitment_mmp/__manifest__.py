@@ -8,16 +8,18 @@
     'company': 'Mega Marine Pride',
     'maintainer': 'Mega Marine Pride',
     'summary': 'Manage your employsee payroll records',
-    'description': "Odoo 15 Payroll, Payroll, Odoo 15,Odoo Payroll, Odoo Community Payroll",
+    'description': "Odoo Req",
     'depends': [
         'hr',
         'hr_recruitment'
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/security.xml',
         'views/hr_divisi_views.xml',
         'views/hr_recruitment_views.xml',
         'views/job.xml',
+        'views/ptk.xml',
     ],
     'license': 'AGPL-3',
     'installable': True,

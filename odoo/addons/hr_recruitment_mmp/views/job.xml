@@ -249,9 +249,72 @@
             action="hr_fasilitas_action"
             sequence="10" />
 
-    <delete model="ir.ui.menu" id="hr_recruitment.menu_hr_recruitment_global_settings" />
-    <delete model="ir.ui.menu" id="hr_recruitment.menu_hr_recruitment_stage" />
-    <delete model="ir.ui.menu" id="hr_recruitment.menu_hr_recruitment_source" />
-    <delete model="ir.ui.menu" id="hr_recruitment.hr_recruitment_menu_config_activity_type" />
+        <record model="ir.ui.view" id="view_refuse_reason_tree">
+            <field name="name">hr.applicant.refuse.reason.tree</field>
+            <field name="model">hr.applicant.refuse.reason</field>
+            <field name="arch" type="xml">
+                <tree string="Reason" editable="bottom">
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="hr_reason_ptk_action" model="ir.actions.act_window">
+            <field name="name">Type PTK</field>
+            <field name="res_model">hr.applicant.refuse.reason</field>
+            <field name="view_id" ref="view_refuse_reason_tree"/>
+            <field name="domain">[('template_id','=',False)]</field>
+        </record>
+
+         <menuitem
+                id="menu_type_ptk"
+                name="Type PTK"
+                parent="hr_recruitment.menu_hr_recruitment_configuration"
+                action="hr_reason_ptk_action"
+                sequence="12" />
+
+    <record model="ir.ui.view" id="view_work_lokasi_tree">
+        <field name="name">work.lokasi.tree</field>
+        <field name="model">hr.work.location</field>
+        <field name="arch" type="xml">
+            <tree string="Work Location" editable="bottom">
+                <field name="name" />
+                <field name="category" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr.hr_work_location_tree_view" model="ir.ui.view">
+            <field name="name">hr.work.location.view.tree</field>
+            <field name="model">hr.work.location</field>
+            <field name="arch" type="xml">
+                <tree string="Work Location">
+                    <field name="name" />
+                    <field name="category" />
+                    <field name="company_id" groups="base.group_multi_company" />
+                </tree>
+            </field>
+        </record>
+
+    <record id="hr_wl_action" model="ir.actions.act_window">
+        <field name="name">Work Lokasi</field>
+        <field name="res_model">hr.work.location</field>
+        <field name="view_id" ref="view_work_lokasi_tree"/>
+    </record>
+
+     <menuitem
+            id="menu_work_lokasi"
+            name="Work Location"
+            parent="hr_recruitment.menu_hr_recruitment_configuration"
+            action="hr_wl_action"
+            sequence="13" />
+
+    <menuitem id="hr_recruitment.menu_hr_recruitment_global_settings" groups="hr_recruitment_mmp.group_hidden_menu_user" />
+    <menuitem id="hr_recruitment.menu_hr_recruitment_stage" groups="hr_recruitment_mmp.group_hidden_menu_user" />
+    <menuitem id="hr_recruitment.menu_hr_recruitment_source" groups="hr_recruitment_mmp.group_hidden_menu_user" />
+    <menuitem id="hr_recruitment.hr_recruitment_menu_config_activity_type" groups="hr_recruitment_mmp.group_hidden_menu_user" />
+    <menuitem id="hr_recruitment.menu_hr_applicant_refuse_reason" groups="hr_recruitment_mmp.group_hidden_menu_user" />v
+    <menuitem id="hr_recruitment.menu_hr_job_position" groups="hr_recruitment_mmp.group_hidden_menu_user" />
+    <menuitem id="hr_recruitment.menu_crm_case_categ_all_app" groups="hr_recruitment_mmp.group_hidden_menu_user" />
 
 </odoo>

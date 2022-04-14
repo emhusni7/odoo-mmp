@@ -4,3 +4,4 @@ access_team_mmp,team.mmp,model_team_mmp,hr_recruitment.group_hr_recruitment_user
 access_unit_mmp,unit.mmp,model_unit_mmp,hr_recruitment.group_hr_recruitment_user,1,1,1,1
 access_level_mmp,hr.level,model_hr_level,hr_recruitment.group_hr_recruitment_user,1,1,1,1
 access_fasilitas_it_mmp,fasilitas.it.mmp,model_fasilitas_it_mmp,hr_recruitment.group_hr_recruitment_user,1,1,1,1
+access_ptk_mmp,ptk.mmp,model_ptk_mmp,hr_recruitment.group_hr_recruitment_user,1,1,1,1
