@@ -53,3 +53,5 @@ class Unit(models.Model):
         return {
             'domain':
                 {'team_id': [('sub_section_id', '=', self.sub_section_id.id)]}}
+
+

@@ -79,7 +79,12 @@
                 </tree>
             </field>
         </record>
-    <delete model="ir.ui.menu" id="hr_recruitment.menu_hr_recruitment_degree" />
+    <menuitem
+            id="hr_recruitment.menu_hr_recruitment_degree"
+            name="Grade"
+            parent="hr_recruitment.menu_hr_recruitment_configuration"
+            action="hr_recruitment.hr_recruitment_degree_action"
+            sequence="8" />
 
 <!--     Team Tree View -->
     <record model="ir.ui.view" id="hr_team_mmp_tree">
@@ -184,5 +189,69 @@
             action="hr_unit_mmp_action"
             sequence="7"/>
 
+    <record model="ir.ui.view" id="hr_recruitment.hr_recruitment_degree_tree">
+        <field name="name">hr.recruitment.degree.tree</field>
+        <field name="model">hr.recruitment.degree</field>
+        <field name="arch" type="xml">
+            <tree string="Grade" editable="bottom">
+                <field name="name" string="Grade Code"/>
+                <field name="sequence" string="Grade Name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_level_tree">
+        <field name="name">hr.level.tree</field>
+        <field name="model">hr.level</field>
+        <field name="arch" type="xml">
+            <tree string="Level" editable="bottom">
+                <field name="code" string="Level Code"/>
+                <field name="name" string="Level Name"/>
+                <field name="grade_categ" string="Grade Category" options="{'no_create':True, 'no_edit':True}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr_level_action" model="ir.actions.act_window">
+        <field name="name">Level</field>
+        <field name="res_model">hr.level</field>
+        <field name="view_id" ref="view_level_tree"/>
+    </record>
+
+     <menuitem
+            id="menu_hr_level"
+            name="Level"
+            parent="hr_recruitment.menu_hr_recruitment_configuration"
+            action="hr_level_action"
+            sequence="9" />
+
+    <record model="ir.ui.view" id="view_fasilitas_it_tree">
+        <field name="name">hr.fasilitas.tree</field>
+        <field name="model">fasilitas.it.mmp</field>
+        <field name="arch" type="xml">
+            <tree string="Fasilitas IT" editable="bottom">
+                <field name="name" />
+                <field name="category" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr_fasilitas_action" model="ir.actions.act_window">
+        <field name="name">Fasilitas IT</field>
+        <field name="res_model">fasilitas.it.mmp</field>
+        <field name="view_id" ref="view_fasilitas_it_tree"/>
+    </record>
+
+     <menuitem
+            id="menu_fasilitas_it"
+            name="Fasilitas IT"
+            parent="hr_recruitment.menu_hr_recruitment_configuration"
+            action="hr_fasilitas_action"
+            sequence="10" />
+
+    <delete model="ir.ui.menu" id="hr_recruitment.menu_hr_recruitment_global_settings" />
+    <delete model="ir.ui.menu" id="hr_recruitment.menu_hr_recruitment_stage" />
+    <delete model="ir.ui.menu" id="hr_recruitment.menu_hr_recruitment_source" />
+    <delete model="ir.ui.menu" id="hr_recruitment.hr_recruitment_menu_config_activity_type" />
 
 </odoo>
