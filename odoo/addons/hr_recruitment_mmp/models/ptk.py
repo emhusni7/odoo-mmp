@@ -4,7 +4,7 @@ from odoo.exceptions import UserError
 class PTK(models.Model):
     _name = "ptk.mmp"
 
-    name = fields.Char("Name", readonly=1, default=lambda self: self.env['ir.sequence'].next_by_code('ptk.mmp.sec'))
+    name = fields.Char("Name", readonly=1, default='/')
     employee_id = fields.Many2one("hr.employee", "Employee", required=1, default= lambda self: self.get_employee())
     department_id = fields.Many2one("hr.department","Department", required=1)
     divisi_id = fields.Many2one("hr.divisi.mmp","Divisi", required=1, domain="[('department_id','=',department_id)]")
@@ -41,6 +41,11 @@ class PTK(models.Model):
     kriteria = fields.Text("Kriteria", required=1)
     job_desc = fields.Text("Job Desc", required=1)
 
+    @api.model
+    def create(self, vals):
+        vals['name'] = self.env['ir.sequence'].next_by_code('ptk.mmp.sec')
+        return super(PTK, self).create(vals)
+
     @api.depends('type_pekerja')
     def _compute_apd(self):
         for x in self:
@@ -57,7 +62,7 @@ class PTK(models.Model):
                     {'team_id': [('sect_id', '=', self.sect_id.id)]}}
         return {
             'domain':
-                {'team_id': [('sub_sect_id', '=', self.sub_sect_id.id)]}}
+                {'team_id': [('sub_section_id', '=', self.sub_sect_id.id)]}}
 
     def get_employee(self):
         emp = self.sudo().env['hr.employee'].search([('user_id','=',self.env.uid),('active','=',True)],limit=1).ids

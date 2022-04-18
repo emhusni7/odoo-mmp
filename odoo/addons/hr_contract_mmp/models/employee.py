@@ -57,10 +57,15 @@ class Employee(models.Model):
     trans_bpjs_k = fields.One2many("bpjs.ket.contract.mmp",compute="_compute_emp_bpjs_k",string="BPJS Ketenaga Kerjaan")
 
     def _compute_emp_bpjs(self):
-        self.trans_bpjs = self.contract_id.bpjs_kes_tran_ids.ids
+        if self.contract_id.bpjs_kes_tran_ids:
+            self.trans_bpjs = self.contract_id.bpjs_kes_tran_ids.ids
+        else:
+            self.trans_bpjs = False
 
     def _compute_emp_bpjs_k(self):
-        self.trans_bpjs_k = self.contract_id.bpjs_ket_tran_ids.ids
-
+        if self.contract_id.bpjs_ket_tran_ids:
+            self.trans_bpjs_k = self.contract_id.bpjs_ket_tran_ids.ids
+        else:
+            self.trans_bpjs_k = False
 
 Employee

@@ -1,5 +1,10 @@
 from odoo import models, fields, api, _
 
+class Deparment(models.Model):
+    _inherit = "hr.department"
+    code = fields.Char("Code", size=2, required=1)
+
+Deparment
 class Grade(models.Model):
     _inherit = "hr.recruitment.degree"
     _rec_name = "sequence"

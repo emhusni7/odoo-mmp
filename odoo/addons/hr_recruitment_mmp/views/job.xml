@@ -32,6 +32,28 @@
             </field>
         </record>
 
+
+
+    <record id="hr.view_job_filter" model="ir.ui.view">
+            <field name="name">hr.job.search</field>
+            <field name="model">hr.job</field>
+            <field name="arch" type="xml">
+                <search string="Jobs">
+                    <field name="name" filter_domain="['|',('name','ilike', self),('code','ilike', self)]" string="Job Position"/>
+                    <field name="department_id" operator="child_of"/>
+                    <field name="is_sub"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Department" name="department" domain="[]" context="{'group_by': 'department_id'}"/>
+                        <filter string="Sub Section" name="is_sube" domain="[]" context="{'group_by': 'is_sub'}"/>
+                        <filter string="Section" name="department" domain="[]" context="{'group_by': 'parent_sec_id'}"/>
+                        <filter string="Company" name="company" domain="[]" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+
     <record model="ir.actions.act_window" id="hr_recruitment.action_hr_job_config">
             <field name="name">Job Positions</field>
             <field name="res_model">hr.job</field>
@@ -39,29 +61,12 @@
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('hr.view_hr_job_tree')}),
                (0, 0, {'view_mode': 'form', 'view_id': ref('hr.view_hr_job_form')})]"/>
+        <field name="context">{'group_by': 'is_sub'}</field>
             <field name="help" type="html">
               <p class="o_view_nocontent_smiling_face">
               </p><p>
                 Let's create a section.
               </p>
-            </field>
-        </record>
-
-    <record id="hr.view_job_filter" model="ir.ui.view">
-            <field name="name">hr.job.search</field>
-            <field name="model">hr.job</field>
-            <field name="arch" type="xml">
-                <search string="Jobs">
-                    <field name="name" string="Job Position"/>
-                    <field name="department_id" operator="child_of"/>
-                    <field name="is_sub"/>
-                    <separator/>
-                    <group expand="0" string="Group By">
-                        <filter string="Department" name="department" domain="[]" context="{'group_by': 'department_id'}"/>
-                        <filter string="Section" name="department" domain="[]" context="{'group_by': 'parent_sec_id'}"/>
-                        <filter string="Company" name="company" domain="[]" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
-                    </group>
-                </search>
             </field>
         </record>
 
@@ -71,8 +76,7 @@
             <field name="model">hr.job</field>
             <field name="arch" type="xml">
                 <tree string="Job" sample="1">
-                    <field name="sequence" widget="handle"/>
-                    <field name="name"/>
+                    <field name="complete_name"/>
                     <field name="department_id"/>
                     <field name="divisi_id"/>
                     <field name="parent_sec_id" />
@@ -122,11 +126,29 @@
         </field>
     </record>
 
+    <record id="view_team_filter" model="ir.ui.view">
+            <field name="name">team.search</field>
+            <field name="model">team.mmp</field>
+            <field name="arch" type="xml">
+                <search string="team">
+                    <field name="name" filter_domain="['|',('name','ilike', self),('code','ilike', self)]" string="Job Position"/>
+                    <field name="department_id" operator="child_of"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Department" name="department" domain="[]" context="{'group_by': 'department_id'}"/>
+
+                    </group>
+                </search>
+            </field>
+        </record>
+
+
     <!-- Degree Action -->
     <record id="hr_team_mmp_action" model="ir.actions.act_window">
         <field name="name">Team</field>
         <field name="res_model">team.mmp</field>
         <field name="view_id" ref="hr_team_mmp_tree"/>
+        <field name="search_view_id" ref="view_team_filter"/>
     </record>
 
      <menuitem
@@ -317,4 +339,42 @@
     <menuitem id="hr_recruitment.menu_hr_job_position" groups="hr_recruitment_mmp.group_hidden_menu_user" />
     <menuitem id="hr_recruitment.menu_crm_case_categ_all_app" groups="hr_recruitment_mmp.group_hidden_menu_user" />
 
+    <!-- Department -->
+    <record id="hr.view_department_tree" model="ir.ui.view">
+            <field name="name">hr.department.tree</field>
+            <field name="model">hr.department</field>
+            <field name="arch" type="xml">
+                <tree string="Companies" sample="1">
+                    <field name="code"/>
+                    <field name="display_name"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="manager_id" string="Director"/>
+                    <field name="parent_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="hr.view_department_form" model="ir.ui.view">
+            <field name="name">hr.department.form</field>
+            <field name="model">hr.department</field>
+            <field name="arch" type="xml">
+                <form string="department">
+                    <sheet>
+                        <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                        <field name="active" invisible="1"/>
+                        <group>
+                            <field name="code"/>
+                            <field name="name"/>
+                            <field name="manager_id" options="{'no_create': True, 'no_edit':True}" string="Director" />
+                            <field name="parent_id" options="{'no_create': True, 'no_edit':True}" />
+                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" groups="base.group_user"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
 </odoo>

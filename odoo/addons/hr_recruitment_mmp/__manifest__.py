@@ -13,6 +13,9 @@
         'hr',
         'hr_recruitment'
     ],
+    'assets': {
+        'web.assets_backend':['hr_recruitment_mmp/static/src/css/style.css']
+    },
     'data': [
         'security/ir.model.access.csv',
         'security/security.xml',
@@ -21,6 +24,7 @@
         'views/job.xml',
         'views/ptk.xml',
     ],
+
     'license': 'AGPL-3',
     'installable': True,
     'application': False,

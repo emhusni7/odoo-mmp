@@ -40,9 +40,10 @@
                                 <field name="h_kerja"/>
                                 <field name="shift"/>
                                 <field name="j_k"/>
-                                 <field name="employee_id" invisible="1"/>
+
                                 <field name="fit_ids" widget="many2many_checkboxes"/>
-                                <field name="fit_ket" placeholder="Contoh:&#10;Email: xxxx@megamarine.com&#10;File Server: Folder Umum 01,Folder Umum 02" />
+                                <field name="fit_ket" class="text_high textarea" placeholder="Contoh:&#10;Email: xxxx@megamarine.com&#10;File Server: Folder Umum 01,Folder Umum 02" />
+                                <field name="employee_id" invisible="1"/>
                             </group>
                         </page>
                         <page string="Keterangan">
