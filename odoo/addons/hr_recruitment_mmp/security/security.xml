@@ -1,20 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<odoo>
-    <data noupdate="1">
-        <record id="sequence_ptk_seq" model="ir.sequence">
-            <field name="name">PTK sequence</field>
-            <field name="code">ptk.mmp.sec</field>
-            <field name="prefix">PTK/%(month)s/%(y)s/</field>
-            <field eval="1" name="number_next"/>
-            <field eval="1" name="number_increment"/>
-            <field eval="3" name="padding"/>
-            <field name="use_date_range" eval="1"/>
-            <field eval="False" name="company_id"/>
-        </record>
-    </data>
+<odoo noupdate="1">
+
+    <record id="sequence_ptk_seq" model="ir.sequence">
+        <field name="name">PTK sequence</field>
+        <field name="code">ptk.mmp.sec</field>
+        <field name="prefix">PTK/%(month)s/%(y)s/</field>
+        <field eval="1" name="number_next"/>
+        <field eval="1" name="number_increment"/>
+        <field eval="3" name="padding"/>
+        <field name="use_date_range" eval="1"/>
+        <field eval="False" name="company_id"/>
+    </record>
+
+    <record model="ir.module.category" id="base.module_category_human_resources_recruitment">
+        <field name="description">Helps you manage your recruitments.</field>
+        <field name="name">PTK</field>
+        <field name="sequence">11</field>
+    </record>
+
     <record id="group_hidden_menu_user" model="res.groups">
         <field name="name">Hidden Menu</field>
         <field name="category_id" ref="base.module_category_human_resources_employees"/>
         <field name="comment">Hidden Menu Odoo.</field>
     </record>
+
+    <record id="hr_recruitment.group_hr_recruitment_user" model="res.groups">
+        <field name="name">PKT Officer</field>
+        <field name="category_id" ref="base.module_category_human_resources_recruitment"/>
+        <field name="implied_ids" eval="[(4, ref('hr.group_hr_user'))]"/>
+    </record>
+
+    <record id="hr_recruitment.group_hr_recruitment_manager" model="res.groups">
+        <field name="name">PKT Administrator</field>
+        <field name="category_id" ref="base.module_category_human_resources_recruitment"/>
+        <field name="implied_ids" eval="[(4, ref('hr_recruitment.group_hr_recruitment_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
 </odoo>

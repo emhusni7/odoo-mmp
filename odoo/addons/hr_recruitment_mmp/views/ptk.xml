@@ -64,7 +64,7 @@
         <field name="model">ptk.mmp</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="employee_id"/>
+                <field name="employee_id" string="Request By" />
                 <field name="department_id"/>
                 <field name="divisi_id"/>
                 <field name="team_id"/>

@@ -4,7 +4,7 @@
     'name': 'Recruitement For MMP ',
     'category': 'Generic Modules/Human Resources',
     'version': '15.0.1.0.0',
-    'author': 'Odoo SA,Payroll Custom MMP',
+    'author': 'Odoo SA,Recruitment Custom MMP',
     'company': 'Mega Marine Pride',
     'maintainer': 'Mega Marine Pride',
     'summary': 'Manage your employsee payroll records',

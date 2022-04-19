@@ -131,7 +131,7 @@
             <field name="model">team.mmp</field>
             <field name="arch" type="xml">
                 <search string="team">
-                    <field name="name" filter_domain="['|',('name','ilike', self),('code','ilike', self)]" string="Job Position"/>
+                    <field name="name" filter_domain="['|',('name','ilike', self),('code','ilike', self)]" string="Name"/>
                     <field name="department_id" operator="child_of"/>
                     <separator/>
                     <group expand="0" string="Group By">
@@ -197,11 +197,28 @@
         </field>
     </record>
 
+    <record id="view_unit_mmp_filter" model="ir.ui.view">
+            <field name="name">unit.search</field>
+            <field name="model">unit.mmp</field>
+            <field name="arch" type="xml">
+                <search string="team">
+                    <field name="name" filter_domain="['|',('name','ilike', self),('code','ilike', self)]" string="Name"/>
+                    <field name="department_id" operator="child_of"/>
+                    <field name="team_id"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Department" name="department" domain="[]" context="{'group_by': 'department_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
     <!-- Degree Action -->
     <record id="hr_unit_mmp_action" model="ir.actions.act_window">
         <field name="name">Unit</field>
         <field name="res_model">unit.mmp</field>
         <field name="view_id" ref="hr_unit_mmp_tree"/>
+        <field name="search_view_id" ref="view_unit_mmp_filter"/>
     </record>
 
      <menuitem
@@ -257,6 +274,20 @@
             </tree>
         </field>
     </record>
+
+    <record id="view_fasilitas_it_filter" model="ir.ui.view">
+            <field name="name">fasilitas.it.search</field>
+            <field name="model">fasilitas.it.mmp</field>
+            <field name="arch" type="xml">
+                <search string="team">
+                    <field name="name"  string="Name"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Category" name="category" domain="[]" context="{'group_by': 'category'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
 
     <record id="hr_fasilitas_action" model="ir.actions.act_window">
         <field name="name">Fasilitas IT</field>
