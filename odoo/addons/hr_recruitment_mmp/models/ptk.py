@@ -14,7 +14,7 @@ class PTK(models.Model):
     team_id = fields.Many2one("team.mmp","Team")
     unit_id = fields.Many2one("unit.mmp","Unit", domain="[('team_id','=',team_id)]")
     grade = fields.Many2one("hr.recruitment.degree", "Grade", required=1)
-    level = fields.Many2one("hr.level","Level", required=1)
+    level = fields.Many2one("hr.level","Level", required=1, domain="[('grade_categ','=',grade)]")
     type_ptk = fields.Many2one("hr.applicant.refuse.reason","Type PTK", domain=[('template_id','=',False)],required=1)
     pendidikan = fields.Selection([("sma","SMA/SMK"),("d3","D3"),("s1","S1"),("s2","S2"),("s3","S3")],"Pendidikan",required=1)
     jurusan = fields.Char("Kualikasi Jurusan", required=1)
@@ -51,12 +51,25 @@ class PTK(models.Model):
     def onchange_dep(self):
         if self.env.user.has_group ('hr_recruitment.group_hr_recruitment_manager'):
             return {
+                'value':{'divisi_id': False},
                 'domain':
-                    {'department_id': [('active', '=', True)]}}
+                    {'department_id': [('active', '=', True)]}
+                    }
         else:
             return {
+                'value': {'divisi_id': False},
                 'domain':
                     {'department_id': [('id', '=', self.env.user.employee_id.department_id.id)]}}
+
+    @api.onchange('team_id')
+    def onchange_team(self):
+        self.unit_id = False
+
+    @api.onchange('divisi_id')
+    def onchange_divisi(self):
+        return {
+            'value': {'sect_id':False}
+        }
 
     @api.depends('type_pekerja')
     def _compute_apd(self):
@@ -71,11 +84,23 @@ class PTK(models.Model):
     def _onchange_section(self):
         if not self.sub_sect_id:
             return {
-                'domain':
-                    {'team_id': [('section_id', '=', self.sect_id.id)]}}
+                'value': {
+                    'team_id': False
+                },
+                'domain': {'team_id': [('section_id', '=', self.sect_id.id)]}
+            }
         return {
+            'value': {'team_id': False},
             'domain':
                 {'team_id': [('sub_section_id', '=', self.sub_sect_id.id)]}}
+
+    @api.onchange('sect_id')
+    def onchange_sect(self):
+        self.sub_sect_id = False
+
+    @api.onchange('grade')
+    def onchange_grade(self):
+        self.level = False
 
     def get_employee(self):
         emp = self.sudo().env['hr.employee'].search([('user_id','=',self.env.uid),('active','=',True)],limit=1).ids
