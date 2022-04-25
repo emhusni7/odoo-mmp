@@ -46,4 +46,63 @@
 
     <menuitem id="hr_recruitment.menu_hr_department" name="Departments"
             parent="hr_recruitment.menu_hr_recruitment_configuration" action="hr_recruitment.action_hr_department" sequence="2"/>
+
+    <!-- Stage Form View -->
+    <record model="ir.ui.view" id="hr_recruitment.hr_recruitment_stage_form">
+        <field name="name">hr.recruitment.stage.form</field>
+        <field name="model">hr.recruitment.stage</field>
+        <field name="arch" type="xml">
+            <form string="Stage">
+            <sheet>
+                <group name="stage_definition" string="Stage Definition">
+                    <group>
+                        <field name="sequence"/>
+                        <field name="name"/>
+                        <field name="template_id" domain= "[('model_id.model', '=', 'ptk.mmp')]"/>
+                    </group>
+                    <group name="stage_details" invisible="1">
+                        <field name="fold"/>
+                        <field name="hired_stage"/>
+                        <field name="is_warning_visible" invisible="1"/>
+                        <span attrs="{'invisible': [('is_warning_visible', '=', False)]}">
+                            <span
+                                class="fa fa-exclamation-triangle text-danger pl-3">
+                            </span>
+                            <span class="text-danger">
+                                All applications will lose their hired date and hired status.
+                            </span>
+                        </span>
+                        <field name="job_ids" widget="many2many_tags"/>
+                    </group>
+                </group>
+                <group name="tooltips" string="Tooltips" invisible="1">
+                    <p class="text-muted" colspan="2">
+                        You can define here the labels that will be displayed for the kanban state instead
+                        of the default labels.
+                    </p>
+                    <label for="legend_normal" string=" " class="o_status"/>
+                    <field name="legend_normal" nolabel="1"/>
+                    <label for="legend_blocked" string=" " class="o_status o_status_red"/>
+                    <field name="legend_blocked" nolabel="1"/>
+                    <label for="legend_done" string=" " class="o_status o_status_green"/>
+                    <field name="legend_done" nolabel="1"/>
+                </group>
+                <separator string="Requirements"/>
+                <field name="requirements"/>
+            </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="hr_recruitment.hr_recruitment_stage_tree">
+        <field name="name">hr.recruitment.stage.tree</field>
+        <field name="model">hr.recruitment.stage</field>
+        <field name="arch" type="xml">
+            <tree string="Stages">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
 </odoo>

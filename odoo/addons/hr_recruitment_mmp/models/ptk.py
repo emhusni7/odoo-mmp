@@ -1,11 +1,15 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+from odoo.http import request
 
 class PTK(models.Model):
     _name = "ptk.mmp"
+    _inherit = ['mail.thread']
     _description = "PTK"
 
     name = fields.Char("Name", readonly=1, default='/')
+    stage_id = fields.Many2one("hr.recruitment.stage","Stage", required=1, default= lambda self: self.env['hr.recruitment.stage'].search([('name','=','User')]).ids[0], track_visibility="onchange")
+    stage_name = fields.Char("Stage", related='stage_id.name')
     employee_id = fields.Many2one("hr.employee", "Employee", required=1, default= lambda self: self.get_employee())
     department_id = fields.Many2one("hr.department","Department" ,required=1)
     divisi_id = fields.Many2one("hr.divisi.mmp","Divisi", required=1, domain="[('department_id','=',department_id)]")
@@ -16,10 +20,10 @@ class PTK(models.Model):
     grade = fields.Many2one("hr.recruitment.degree", "Grade", required=1)
     level = fields.Many2one("hr.level","Level", required=1, domain="[('grade_categ','=',grade)]")
     type_ptk = fields.Many2one("hr.applicant.refuse.reason","Type PTK", domain=[('template_id','=',False)],required=1)
-    pendidikan = fields.Selection([("sma","SMA/SMK"),("d3","D3"),("s1","S1"),("s2","S2"),("s3","S3")],"Pendidikan",required=1)
+    pendidikan = fields.Selection([("sma","SMA/SMK"),("d3","D3"),("s1","S1"),("s2","S2"),("s3","S3")],"Pendidikan",required=1, track_visibility="onchange")
     jurusan = fields.Char("Kualikasi Jurusan", required=1)
     pengalaman = fields.Integer("Pengalaman Kerja", default=0,required=1)
-    jml_pengajuan = fields.Integer("Jumlah Pengajuan", default=1, required=1)
+    jml_pengajuan = fields.Integer("Jumlah Pengajuan", default=1, required=1, track_visibility="onchange")
     tgl_butuh = fields.Date("Tanggal Butuh",required=1)
     penempatan = fields.Selection([("os","Under OS"),("pt","Under PT")],"Penempatan", required=1)
     gaji = fields.Selection([("monthly","Monthly Base"),("out","Output Base"),("time","Time Base")],"Basis Penggajian", required=1)
@@ -41,11 +45,50 @@ class PTK(models.Model):
     list_k = fields.Text("List Karyawan yg Resign/Mutasi/Demosi")
     kriteria = fields.Text("Kriteria", required=1)
     job_desc = fields.Text("Job Desc", required=1)
+    link_login = fields.Char("Link")
+    invisible_stage = fields.Boolean("Invisible",compute="_compute_inv")
+
+    def set_cancel(self):
+        rule = self.sudo().env['hr.recruitment.stage'].search([('sequence','=',0)]).ids
+        if rule:
+            self.stage_id = rule[0]
+
+    @api.depends('stage_id')
+    def _compute_inv(self):
+        self.invisible_stage = True
+        rule = self.sudo().department_id.rule_ids.filtered(lambda x: x.next_stage_id.id == self.stage_id.id).sorted(lambda x: x.sequence)
+        print(rule)
+        if rule:
+            for rl in rule:
+                if rl.employee_id.id in self.env.user.employee_ids.ids:
+                    self.invisible_stage = False
+                    break
+        elif not rule:
+            if self.stage_id.sequence == 1:
+                if self.employee_id.id in self.env.user.employee_ids.ids:
+                    self.invisible_stage = False
+
 
     @api.model
     def create(self, vals):
         vals['name'] = self.env['ir.sequence'].next_by_code('ptk.mmp.sec')
         return super(PTK, self).create(vals)
+
+    def send_mail(self):
+        states = self.sudo().department_id.rule_ids.filtered(lambda x: x.stage_id.id == self.stage_id.id)
+        for state in states:
+            if not state.email_to or not state.employee_id:
+                self.stage_id = state.next_stage_id.id
+                continue
+            base_url = request.env['ir.config_parameter'].sudo().get_param('web.base.url')
+            self.link_login="{}/web?db={}#id={}&view_type=form&model={}".format(base_url, self.sudo().env.cr.dbname, self.id, 'ptk.mmp')
+
+            template = state.stage_id.template_id
+            if template:
+                receipt_list = state.email_to or state.employee_id.work_email
+                email_values = {'email_to': receipt_list}
+                template.sudo().send_mail(self.id, email_values=email_values,force_send=True)
+                self.stage_id = state.next_stage_id.id
 
     @api.onchange('department_id')
     def onchange_dep(self):

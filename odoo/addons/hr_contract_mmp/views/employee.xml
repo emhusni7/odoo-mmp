@@ -159,8 +159,36 @@
             <xpath expr="//field[@name='job_id']" position="replace" >
             </xpath>
             <xpath expr="//field[@name='department_id']" position="after">
-                <field name="job_id"/>
+                <field name="job_id" options="{'no_create': True, 'no_edit': True}"/>
+            </xpath>
+            <xpath expr="//field[@name='department_id']" position="attributes">
+                <attribute name="required">True</attribute>
+                <attribute name="options">{'no_create': True, 'no_edit': True}</attribute>
             </xpath>
         </field>
     </record>
+    <menuitem
+                id="hr.menu_human_resources_configuration_employee"
+                name="Employee"
+                parent="hr.menu_human_resources_configuration"
+                groups="hr.group_hr_user"
+                sequence="1"/>
+
+     <menuitem
+                id="hr.menu_hr_department_tree"
+                action="hr.hr_department_tree_action"
+                parent="hr.menu_human_resources_configuration_employee"
+                sequence="1"
+                groups="hr.group_hr_user"/>
+    <menuitem
+                id="hr.menu_view_hr_job"
+                action="hr.action_hr_job"
+                parent="hr.menu_human_resources_configuration_employee"
+                sequence="3"/>
+    <menuitem
+                id="hr.menu_hr_work_location_tree"
+                action="hr.hr_work_location_action"
+                parent="hr.menu_human_resources_configuration_employee"
+                sequence="5"
+                groups="hr.group_hr_user"/>
 </odoo>

@@ -36,7 +36,8 @@ class Employee(models.Model):
     bpjs = fields.Char("No. BPJS")
     npwp = fields.Char("No. NPWP")
     address = fields.Text("Address")
-    private_email = fields.Char(string="Private Email", groups="hr.group_hr_user")
+    private_email = fields.Char(string="Private Email", groups="hr.group_hr_user", store=True, readonly=False)
+    phone = fields.Char("Private Phone",readonly=False,groups="hr.group_hr_user")
     ptkp_id = fields.Many2one("ptkp", "PTKP", required=1)
     fam_ids = fields.One2many("family.mmp","employee_id","Family Data")
     employee_type = fields.Selection(selection=[
@@ -47,6 +48,7 @@ class Employee(models.Model):
         help="The employee type. Although the primary purpose may seem to categorize employees, this field has also an impact in the Contract History. Only Employee type is supposed to be under contract and will have a Contract History.")
     jenis_kerja = fields.Selection(selection=[('contr','Kontrak'),('bln','Bulanan'),('ming','Mingguan'),('bor','Borongan')])
     keahlian = fields.Text("Keahlian")
+    work_phone = fields.Char('Work Phone', readonly=False)
     marital = fields.Selection([
         ('single', 'Single'),
         ('married', 'Menikah'),

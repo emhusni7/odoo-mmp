@@ -11,16 +11,18 @@
     'description': "Odoo Req",
     'depends': [
         'hr',
-        'hr_recruitment'
+        'hr_recruitment',
+        'hr_contract_mmp',
     ],
     'assets': {
         'web.assets_backend':['hr_recruitment_mmp/static/src/css/style.css']
     },
     'data': [
-        'security/ir.model.access.csv',
         'security/security.xml',
+        'security/ir.model.access.csv',
         'views/hr_divisi_views.xml',
         'views/hr_recruitment_views.xml',
+        'views/employee.xml',
         'views/job.xml',
         'views/ptk.xml',
     ],

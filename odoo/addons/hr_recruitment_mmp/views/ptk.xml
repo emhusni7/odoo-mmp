@@ -5,56 +5,69 @@
         <field name="model">ptk.mmp</field>
         <field name="arch" type="xml">
             <form string="PTK">
+                <header>
+                    <button name="send_mail" type="object" attrs="{'invisible':[('invisible_stage','=',True)]}" class="oe_highlight" string="Approve"/>
+                    <button name="set_cancel" type="object" attrs="{'invisible':[('invisible_stage','=',True)]}" class="btn-danger" string="Cancel"/>
+                    <field name="stage_id" widget="statusbar" decoration-info="stage_name in ['User','Manager','Direksi','HRD']" decoration-muted="stage_name in ['Recruitment']" decoration-success="stage_name in ['Complete']" decoration-danger="stage_name in ['Reject']" />
+                </header>
                 <sheet>
                      <div class="oe_title">
                           <label for="name"/>
                           <h1><field name="name" readony="1" placeholder="e.g. Accounting"/></h1>
                         </div>
+                    <field name="stage_name" invisible="1"/>
                     <group col="4">
-                        <field name="department_id" options="{'no_create':True,'no_edit':True}" />
-                        <field name="divisi_id" options="{'no_create':True,'no_edit':True}" />
-                        <field name="sect_id" options="{'no_create':True,'no_edit':True}" />
-                        <field name="sub_sect_id" options="{'no_create':True,'no_edit':True}" />
-                        <field name="team_id" options="{'no_create':True,'no_edit':True}" />
-                        <field name="unit_id" options="{'no_create':True,'no_edit':True}" />
-                        <field name="grade" options="{'no_create':True,'no_edit':True}" />
-                        <field name="level" options="{'no_create':True,'no_edit':True}"/>
+                        <field name="department_id" attrs="{'readonly':[('stage_name','!=','User')]}" options="{'no_create':True,'no_edit':True}" />
+                        <field name="divisi_id" attrs="{'readonly':[('stage_name','!=','User')]}" options="{'no_create':True,'no_edit':True}" />
+                        <field name="sect_id" attrs="{'readonly':[('stage_name','!=','User')]}" options="{'no_create':True,'no_edit':True}" />
+                        <field name="sub_sect_id" attrs="{'readonly':[('stage_name','!=','User')]}" options="{'no_create':True,'no_edit':True}" />
+                        <field name="team_id" attrs="{'readonly':[('stage_name','!=','User')]}" options="{'no_create':True,'no_edit':True}" />
+                        <field name="unit_id" attrs="{'readonly':[('stage_name','!=','User')]}" options="{'no_create':True,'no_edit':True}" />
+                        <field name="grade" attrs="{'readonly':[('stage_name','!=','User')]}" options="{'no_create':True,'no_edit':True}" />
+                        <field name="level" attrs="{'readonly':[('stage_name','!=','User')]}" options="{'no_create':True,'no_edit':True}"/>
                     </group>
                     <separator />
                     <notebook>
                         <page string="Info">
                             <group col="4">
-                                 <field name="type_ptk" options="{'no_create':True,'no_edit':True}"/>
-                                <field name="pendidikan"/>
-                                <field name="jurusan"/>
-                                <field name="pengalaman"/>
-                                <field name="jml_pengajuan"/>
-                                <field name="tgl_butuh"/>
-                                <field name="penempatan"/>
-                                <field name="gaji"/>
-                                <field name="type_pekerja"/>
-                                <field name="type_apd"/>
-                                <field name="wl_id"/>
-                                <field name="contract"/>
-                                <field name="mcu"/>
-                                <field name="h_kerja"/>
-                                <field name="shift"/>
-                                <field name="j_k"/>
+                                 <field name="type_ptk" attrs="{'readonly':[('stage_name','!=','User')]}" options="{'no_create':True,'no_edit':True}"/>
+                                <field name="pendidikan" attrs="{'readonly':[('stage_name','=','Complete')]}" />
+                                <field name="jurusan" attrs="{'readonly':[('stage_name','!=','User')]}" />
+                                <field name="pengalaman" attrs="{'readonly':[('stage_name','=','Complete')]}" />
+                                <field name="jml_pengajuan" attrs="{'readonly':[('stage_name','=','Complete')]}" />
+                                <field name="tgl_butuh" attrs="{'readonly':[('stage_name','!=','User')]}"/>
+                                <field name="penempatan" attrs="{'readonly':[('stage_name','!=','User')]}"/>
+                                <field name="gaji" attrs="{'readonly':[('stage_name','=','Complete')]}" />
+                                <field name="type_pekerja" attrs="{'readonly':[('stage_name','!=','User')]}"/>
+                                <field name="type_apd" attrs="{'readonly':[('stage_name','!=','User')]}"/>
+                                <field name="wl_id" attrs="{'readonly':[('stage_name','!=','User')]}"/>
+                                <field name="contract" attrs="{'readonly':[('stage_name','!=','User')]}"/>
+                                <field name="mcu" attrs="{'readonly':[('stage_name','!=','User')]}"/>
+                                <field name="h_kerja" attrs="{'readonly':[('stage_name','!=','User')]}" />
+                                <field name="shift" attrs="{'readonly':[('stage_name','!=','User')]}" />
+                                <field name="j_k" attrs="{'readonly':[('stage_name','!=','User')]}"/>
 
-                                <field name="fit_ids" widget="many2many_checkboxes"/>
-                                <field name="fit_ket" class="text_high textarea" placeholder="Contoh:&#10;Email: xxxx@megamarine.com&#10;File Server: Folder Umum 01,Folder Umum 02" />
+                                <field name="fit_ids" widget="many2many_checkboxes" attrs="{'readonly':[('stage_name','!=','User')]}" />
+                                <field name="fit_ket" attrs="{'readonly':[('stage_name','!=','User')]}" class="text_high textarea" placeholder="Contoh:&#10;Email: xxxx@megamarine.com&#10;File Server: Folder Umum 01,Folder Umum 02" />
                                 <field name="employee_id" invisible="1"/>
                             </group>
                         </page>
                         <page string="Keterangan">
                             <group>
-                                <field name="list_k" placeholder="Isikan NIK dan Nama"/>
-                                <field name="kriteria" placeholder="Kriteria yg dibutuhkan"/>
-                                <field name="job_desc" placeholder="Tugas Pokok"/>
+                                <field name="list_k" attrs="{'readonly':[('stage_name','!=','User')]}" placeholder="Isikan NIK dan Nama"/>
+                                <field name="kriteria" attrs="{'readonly':[('stage_name','!=','User')]}" placeholder="Kriteria yg dibutuhkan"/>
+                                <field name="job_desc" attrs="{'readonly':[('stage_name','!=','User')]}" placeholder="Tugas Pokok"/>
+                                <field name="link_login" invisible="1" />
+                                <field name="invisible_stage"/>
                             </group>
                         </page>
                     </notebook>
                 </sheet>
+                <footer>
+                <div class="oe_chatter">
+                   <field name="message_ids"/>
+                </div>
+                </footer>
             </form>
         </field>
     </record>
@@ -63,12 +76,14 @@
         <field name="name">PTK MMP</field>
         <field name="model">ptk.mmp</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree decoration-info="stage_name in ['User','Manager','Direksi','HRD']" decoration-muted="stage_name in ['Recruitment']" decoration-success="stage_name in ['Complete']" decoration-danger="stage_name in ['Reject']" >
                 <field name="employee_id" string="Request By" />
                 <field name="department_id"/>
                 <field name="divisi_id"/>
+                <field name="stage_name" invisible="1" />
                 <field name="team_id"/>
                 <field name="unit_id"/>
+                <field name="stage_id" widget="badge" decoration-info="stage_name in ['User','Manager','HRD']" decoration-warning="stage_name in ['Direksi','Recruitment']" decoration-danger="stage_name == 'Reject'" decoration-success="stage_name == 'Complete'" />
             </tree>
         </field>
     </record>
@@ -83,9 +98,11 @@
                 <field name="sect_id"/>
                 <field name="team_id"/>
                 <field name="unit_id"/>
+                <field name="stage_id"/>
                 <separator/>
                 <group expand="0" string="Group By">
                     <filter string="Department" name="department_id" domain="[]" context="{'group_by': 'department_id'}"/>
+                    <filter string="Stage" name="stage" domain="[]" context="{'group_by': 'stage_id'}"/>
                 </group>
             </search>
         </field>
@@ -98,7 +115,7 @@
            <field name="view_id" ref="view_ptk_tree" />
            <field name="search_view_id" ref="hr_ptk_mmp_view" />
            <field name="context">{
-                'search_default_group_by_department_id': 1,
+                'group_by': 'department_id'
             }</field>
             <field name="domain">[]</field>
             <field name="help" type="html">

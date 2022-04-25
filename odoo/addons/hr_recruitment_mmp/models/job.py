@@ -3,6 +3,7 @@ from odoo import models, fields,api
 class Job(models.Model):
     _inherit = "hr.job"
     _rec_name = "complete_name"
+    _description = "Section"
     _sql_constraints = [
         ('job_code_uniq', 'unique (code)', """Only one value can be defined for each given usage!"""),
     ]
@@ -26,9 +27,20 @@ class Job(models.Model):
             else:
                 x.is_sub = 'Sub Section'
 
+class HrEmployee(models.Model):
+    _inherit = "hr.employee"
+    job_id = fields.Many2one("hr.job", "Section", domain="[('divisi_id','=',divisi_id)]")
+
+    @api.onchange('divisi_id')
+    def onchange_divisi(self):
+        self.job_id = False
+
+HrEmployee
+
 class Team(models.Model):
     _name = "team.mmp"
     _rec_name = "complete_name"
+    _description = "Team"
     _sql_constraints = [
         ('team_code_uniq', 'unique (code)', """Only one value can be defined for each given usage!"""),
     ]
@@ -61,6 +73,7 @@ class Team(models.Model):
 class Unit(models.Model):
     _name = "unit.mmp"
     _rec_name = "complete_name"
+    _description = "Unit"
 
     code = fields.Char("Unit Code", required=1)
     name = fields.Char("Unit Name", required=1)
@@ -98,5 +111,3 @@ class Unit(models.Model):
         return {
             'domain':
                 {'team_id': [('sub_section_id', '=', self.sub_section_id.id)]}}
-
-

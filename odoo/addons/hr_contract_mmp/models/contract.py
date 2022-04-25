@@ -95,3 +95,13 @@ class Contract(models.Model):
 
     bpjs_kes_tran_ids = fields.One2many("bpjs.kes.contract.mmp","contract_id", "BPJS Kesehatan")
     bpjs_ket_tran_ids = fields.One2many("bpjs.ket.contract.mmp", "contract_id", "BPJS Ketenagakerjaan")
+    department_id = fields.Many2one("hr.department", compute='get_department', readonly=1)
+    job_id = fields.Many2one("hr.job", compute='get_job', readonly=1)
+
+    @api.depends('employee_id.department_id')
+    def get_department(self):
+        self.department_id = self.employee_id.department_id.id
+
+    @api.depends('employee_id.job_id')
+    def get_job(self):
+        self.job_id = self.employee_id.job_id.id

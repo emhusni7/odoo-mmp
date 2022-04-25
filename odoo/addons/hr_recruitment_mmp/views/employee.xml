@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="employee_recruitment_mmp" model="ir.ui.view">
+        <field name="name">employee.inherit.form</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr_contract_mmp.employee_form_mmp"/>
+        <field name="arch" type="xml">
+            <field name="job_id" position="before">
+                <field name="divisi_id" options="{'no_create': True, 'no_edit': True}"/>
+            </field>
+        </field>
+    </record>
+</odoo>

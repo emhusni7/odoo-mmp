@@ -757,7 +757,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr.field_res_users__address_home_id
 #: model:ir.model.fields,field_description:hr_contract_mmp.field_hr_employee__address
 msgid "Address"
-msgstr ""
+msgstr "Alamat Rumah"
 
 #. module: hr_recruitment
 #: model:ir.model.fields,help:hr_recruitment.field_hr_job__address_id
@@ -1702,7 +1702,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr.field_hr_employee__country_of_birth
 #: model:ir.model.fields,field_description:hr.field_res_users__country_of_birth
 msgid "Country of Birth"
-msgstr ""
+msgstr "Warga Negara"
 
 #. modules: hr_contract, hr_recruitment
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_form
@@ -1864,7 +1864,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr.field_hr_employee__birthday
 #: model:ir.model.fields,field_description:hr.field_res_users__birthday
 msgid "Date of Birth"
-msgstr ""
+msgstr "Tanggal Lahir"
 
 #. module: hr_recruitment
 #: model:ir.model.fields,field_description:hr_recruitment.field_hr_applicant__day_close
@@ -2215,13 +2215,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr.field_hr_employee__emergency_contact
 #: model:ir.model.fields,field_description:hr.field_res_users__emergency_contact
 msgid "Emergency Contact"
-msgstr ""
+msgstr "Nama Kontak Emergensi"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__emergency_phone
 #: model:ir.model.fields,field_description:hr.field_res_users__emergency_phone
 msgid "Emergency Phone"
-msgstr ""
+msgstr "No HP (Emergensi)"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
@@ -2317,7 +2317,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr.field_res_users__employee_type
 #: model:ir.model.fields,field_description:hr_contract_mmp.field_hr_employee__employee_type
 msgid "Employee Type"
-msgstr ""
+msgstr "Tipe Karyawan"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.res_config_settings_view_form
@@ -2538,7 +2538,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_contract.field_hr_employee__first_contract_date
 #: model:ir.model.fields,field_description:hr_contract.field_hr_employee_public__first_contract_date
 msgid "First Contract Date"
-msgstr ""
+msgstr "Tanggal Awal Kontrak"
 
 #. module: hr_recruitment
 #: model:hr.recruitment.stage,name:hr_recruitment.stage_job2
@@ -2769,7 +2769,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr.field_hr_employee__km_home_work
 #: model:ir.model.fields,field_description:hr.field_res_users__km_home_work
 msgid "Home-Work Distance"
-msgstr ""
+msgstr "Jarak Rumah - Kantor"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__hr_icon_display
@@ -3488,7 +3488,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_contract_mmp.field_hr_employee__marital
 #: model_terms:ir.ui.view,arch_db:hr.res_users_view_form_profile
 msgid "Marital Status"
-msgstr ""
+msgstr "Status"
 
 #. module: hr
 #: model:ir.model.fields.selection,name:hr.selection__hr_employee__certificate__master
@@ -4100,13 +4100,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr.res_users_view_form_profile
 #: model_terms:ir.ui.view,arch_db:hr.view_employee_form
 msgid "Phone"
-msgstr ""
+msgstr "No. Telfon"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__place_of_birth
 #: model:ir.model.fields,field_description:hr.field_res_users__place_of_birth
 msgid "Place of Birth"
-msgstr ""
+msgstr "Tempat Lahir"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_plan_wizard__plan_id
@@ -5426,7 +5426,7 @@ msgstr ""
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_res_company__hr_presence_control_ip_list
 #: model:ir.model.fields,field_description:hr.field_res_config_settings__hr_presence_control_ip_list
-msgid "Valid IP addresses"
+msgid "Valid IP es"
 msgstr ""
 
 #. module: hr_contract_mmp
@@ -5511,8 +5511,8 @@ msgid ""
 msgstr ""
 
 #. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_employee__address_id
-#: model:ir.model.fields,field_description:hr.field_hr_employee_base__address_id
+#: model:ir.model.fields,field_description:hr.field_hr_employee___id
+#: model:ir.model.fields,field_description:hr.field_hr_employee_base___id
 #: model:ir.model.fields,field_description:hr.field_hr_employee_public__address_id
 #: model:ir.model.fields,field_description:hr.field_hr_work_location__address_id
 #: model:ir.model.fields,field_description:hr.field_res_users__address_id
@@ -5525,7 +5525,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr.field_hr_employee_public__work_email
 #: model:ir.model.fields,field_description:hr.field_res_users__work_email
 msgid "Work Email"
-msgstr ""
+msgstr "Email Kantor"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.hr_employee_public_view_form
@@ -5562,7 +5562,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr.field_hr_employee_public__mobile_phone
 #: model:ir.model.fields,field_description:hr.field_res_users__mobile_phone
 msgid "Work Mobile"
-msgstr ""
+msgstr "HP Kantor"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.res_config_settings_view_form

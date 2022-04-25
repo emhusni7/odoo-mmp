@@ -3,6 +3,7 @@ from odoo import models, fields
 #Applicant => Company Outsource
 class HrApplicantComp(models.Model):
     _inherit = "hr.applicant.category"
+    _description = "Company Recruit"
 
     code = fields.Char("Code", required=True)
 

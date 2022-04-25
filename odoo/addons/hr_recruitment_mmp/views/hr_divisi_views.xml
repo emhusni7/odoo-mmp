@@ -49,6 +49,6 @@
         <field name="view_mode">form,tree</field>
     </record>
 
-    <menuitem name="Divisi" parent="hr.menu_human_resources_configuration" id="menu_hr_divisi" action="action_hr_divisi" sequence="3"/>
+    <menuitem name="Divisi" parent="hr.menu_human_resources_configuration_employee" id="menu_hr_divisi" action="action_hr_divisi" sequence="2"/>
     <menuitem name="Divisi" parent="hr_recruitment.menu_hr_recruitment_configuration" id="menu_hr_divisi_req" action="action_hr_divisi" sequence="3"/>
 </odoo>

@@ -24,17 +24,106 @@
         <field name="comment">Hidden Menu Odoo.</field>
     </record>
 
-    <record id="hr_recruitment.group_hr_recruitment_user" model="res.groups">
-        <field name="name">PKT Officer</field>
+    <record id="group_hr_recruitment_view" model="res.groups">
+        <field name="name">PKT View</field>
         <field name="category_id" ref="base.module_category_human_resources_recruitment"/>
-        <field name="implied_ids" eval="[(4, ref('hr.group_hr_user'))]"/>
+    </record>
+
+    <menuitem
+        name="Recruitment"
+        id="hr_recruitment.menu_hr_recruitment_root"
+        web_icon="hr_recruitment,static/description/icon.png"
+        groups="hr_recruitment.group_hr_recruitment_user,group_hr_recruitment_view"
+        sequence="210"/>
+
+
+    <!-- PTK View Access -->
+
+    <record id="module_human_resource_ptk_view_access" model="ir.module.category">
+        <field name="name">PTK View Access</field>
+        <field name="sequence" eval="12"/>
+    </record>
+
+    <record id="group_pkt_access_employee_view" model="res.groups">
+        <field name="name">User</field>
+        <field name="category_id" ref="module_human_resource_ptk_view_access"/>
+    </record>
+
+    <record id="group_pkt_access_divisi_view" model="res.groups">
+        <field name="name">Divisi</field>
+        <field name="category_id" ref="module_human_resource_ptk_view_access"/>
+    </record>
+
+    <record id="group_pkt_access_department_view" model="res.groups">
+        <field name="name">Department</field>
+        <field name="category_id" ref="module_human_resource_ptk_view_access"/>
+    </record>
+
+    <record id="group_pkt_access_all_view" model="res.groups">
+        <field name="name">All</field>
+        <field name="category_id" ref="module_human_resource_ptk_view_access"/>
+    </record>
+
+    <record id="ir_rule_ptk_divisi" model="ir.rule">
+        <field name="name">Divisi</field>
+        <field name="model_id" ref="model_ptk_mmp" />
+        <field name="groups" eval="[(4, ref ('hr_recruitment_mmp.group_pkt_access_divisi_view'))]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+        <field name = "domain_force"> [('divisi_id', '=', user.employee_id.divisi_id.id)] </field>
+    </record>
+
+    <record id="ir_rule_ptk_department" model="ir.rule">
+        <field name="name">Department</field>
+        <field name="model_id" ref="model_ptk_mmp" />
+        <field name="groups" eval="[(4, ref ('hr_recruitment_mmp.group_pkt_access_department_view'))]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+        <field name = "domain_force"> [('department_id', '=', user.employee_id.department_id.id)] </field>
+    </record>
+
+    <record id="ir_rule_ptk_all" model="ir.rule">
+        <field name="name">ALL</field>
+        <field name="model_id" ref="model_ptk_mmp" />
+        <field name="groups" eval="[(4, ref ('hr_recruitment_mmp.group_pkt_access_all_view'))]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+        <field name = "domain_force">[(1, '=', 1)] </field>
+    </record>
+
+    <record id="ir_rule_ptk_own" model="ir.rule">
+        <field name="name">User</field>
+        <field name="groups" eval="[(4, ref ('hr_recruitment_mmp.group_pkt_access_employee_view'))]" />
+        <field name="model_id" ref="model_ptk_mmp" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+        <field name="domain_force"> [('employee_id', '=', user.employee_id.id)] </field>
     </record>
 
     <record id="hr_recruitment.group_hr_recruitment_manager" model="res.groups">
         <field name="name">PKT Administrator</field>
         <field name="category_id" ref="base.module_category_human_resources_recruitment"/>
-        <field name="implied_ids" eval="[(4, ref('hr_recruitment.group_hr_recruitment_user'))]"/>
+        <field name="implied_ids" eval="[(4, ref('hr_recruitment.group_hr_recruitment_user')),(4, ref('hr_recruitment.group_hr_recruitment_user_ext')),(4, ref('group_pkt_access_all_view'))]"/>
         <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
 
+    <record id="hr_recruitment.group_hr_recruitment_user" model="res.groups">
+        <field name="name">PKT Officer</field>
+        <field name="category_id" ref="base.module_category_human_resources_recruitment"/>
+        <field name="implied_ids" eval="[(4, ref('group_hr_recruitment_view')),(4, ref('group_pkt_access_employee_view'))]"/>
+    </record>
+
+    <record id="group_hr_recruitment_user_ext" model="res.groups">
+        <field name="name">PKT Officer with company view</field>
+        <field name="category_id" ref="base.module_category_human_resources_recruitment"/>
+        <field name="implied_ids" eval="[(4, ref('hr_recruitment.group_hr_recruitment_user'))]"/>
+    </record>
 </odoo>
