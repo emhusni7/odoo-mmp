@@ -47,6 +47,29 @@ class PTK(models.Model):
     job_desc = fields.Text("Job Desc", required=1)
     link_login = fields.Char("Link")
     invisible_stage = fields.Boolean("Invisible",compute="_compute_inv")
+    jml_pemenuhan = fields.Integer("Sudah Diterima")
+    employee_ids = fields.One2many("hr.employee", "ptk_id", "Employee")
+
+    def act_pemenuhan(self):
+        action = self.env["ir.actions.actions"]._for_xml_id("hr.open_view_employee_list_my")
+        print(self.divisi_id)
+        print(self.sect_id)
+        action['context'] = {
+            'default_res_model': self._name,
+            'default_res_id': self.ids[0],
+            'default_ptk_id': self.id,
+            'default_department_id': self.department_id.id,
+            'default_divisi_id': self.divisi_id.id,
+            'default_job_id': self.sect_id.id
+        }
+        action['domain'] = [('ptk_id','=', self.id)]
+        return action
+
+    def unlink(self):
+        for x in self:
+            if x.stage_name.lower() not in ['reject','user']:
+                raise UserError("Delete Record hanya bisa dilakukan di stage User / Reject")
+        return super(PTK, self).unlink()
 
     def set_cancel(self):
         rule = self.sudo().env['hr.recruitment.stage'].search([('sequence','=',0)]).ids
@@ -56,8 +79,7 @@ class PTK(models.Model):
     @api.depends('stage_id')
     def _compute_inv(self):
         self.invisible_stage = True
-        rule = self.sudo().department_id.rule_ids.filtered(lambda x: x.next_stage_id.id == self.stage_id.id).sorted(lambda x: x.sequence)
-        print(rule)
+        rule = self.sudo().department_id.rule_ids.filtered(lambda x: x.stage_id.id == self.stage_id.id).sorted(lambda x: x.sequence)
         if rule:
             for rl in rule:
                 if rl.employee_id.id in self.env.user.employee_ids.ids:
@@ -151,3 +173,23 @@ class PTK(models.Model):
             return emp[0]
         else:
             raise UserError("User Tidak mempunyai Link ke Employee")
+
+class HrEmployee(models.Model):
+    _inherit = "hr.employee"
+
+    ptk_id = fields.Many2one("ptk.mmp","No. PTK")
+
+    @api.model
+    def create(self, vals_list):
+        res = super(HrEmployee, self).create(vals_list)
+        if self._context.get("default_res_model") == 'ptk.mmp' and self._context.get("default_res_id"):
+           ptk = self.sudo().env['ptk.mmp'].browse(self._context.get("default_res_id"))
+           ptk.jml_pemenuhan +=1
+           stage_id = self.sudo().env['hr.recruitment.stage'].search([('name', '=', 'Complete')], limit=1)
+           if ptk.jml_pengajuan <= ptk.jml_pemenuhan:
+               if stage_id:
+                   ptk.stage_id = stage_id.id
+        return res
+
+
+

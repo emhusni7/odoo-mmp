@@ -38,7 +38,7 @@ class Employee(models.Model):
     address = fields.Text("Address")
     private_email = fields.Char(string="Private Email", groups="hr.group_hr_user", store=True, readonly=False)
     phone = fields.Char("Private Phone",readonly=False,groups="hr.group_hr_user")
-    ptkp_id = fields.Many2one("ptkp", "PTKP", required=1)
+    ptkp_id = fields.Many2one("ptkp", "PTKP", required=0)
     fam_ids = fields.One2many("family.mmp","employee_id","Family Data")
     employee_type = fields.Selection(selection=[
         ('employee','Karyawan Tetap'),

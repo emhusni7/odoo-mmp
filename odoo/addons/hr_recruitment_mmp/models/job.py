@@ -33,7 +33,9 @@ class HrEmployee(models.Model):
 
     @api.onchange('divisi_id')
     def onchange_divisi(self):
-        self.job_id = False
+        if self.job_id:
+            if self.job_id.divisi_id.id != self.divisi_id.id:
+                self.job_id = False
 
 HrEmployee
 

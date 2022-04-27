@@ -11,6 +11,15 @@
                     <field name="stage_id" widget="statusbar" decoration-info="stage_name in ['User','Manager','Direksi','HRD']" decoration-muted="stage_name in ['Recruitment']" decoration-success="stage_name in ['Complete']" decoration-danger="stage_name in ['Reject']" />
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="act_pemenuhan"
+                            groups="hr.group_hr_user"
+                            class="oe_stat_button"
+                            icon="fa-user-plus" attrs="{'invisible':[('stage_name','not in',['Recruitment','Complete'])]}"
+                            type="object">
+                            <field name="jml_pemenuhan" widget="statinfo" string="Add Employee" help="Jumlah Pemenuhan Employee"/>
+                        </button>
+                    </div>
                      <div class="oe_title">
                           <label for="name"/>
                           <h1><field name="name" readony="1" placeholder="e.g. Accounting"/></h1>
@@ -76,14 +85,15 @@
         <field name="name">PTK MMP</field>
         <field name="model">ptk.mmp</field>
         <field name="arch" type="xml">
-            <tree decoration-info="stage_name in ['User','Manager','Direksi','HRD']" decoration-muted="stage_name in ['Recruitment']" decoration-success="stage_name in ['Complete']" decoration-danger="stage_name in ['Reject']" >
+            <tree  decoration-info="stage_name in ['Recruitment']" decoration-success="stage_name in ['Complete']" decoration-danger="stage_name in ['Reject']" >
                 <field name="employee_id" string="Request By" />
                 <field name="department_id"/>
                 <field name="divisi_id"/>
                 <field name="stage_name" invisible="1" />
-                <field name="team_id"/>
-                <field name="unit_id"/>
-                <field name="stage_id" widget="badge" decoration-info="stage_name in ['User','Manager','HRD']" decoration-warning="stage_name in ['Direksi','Recruitment']" decoration-danger="stage_name == 'Reject'" decoration-success="stage_name == 'Complete'" />
+                <field name="jml_pengajuan" string="Qty Permintaan" />
+                <field name="jml_pemenuhan" />
+                <field name="stage_id" widget="badge" decoration-warning="stage_name in ['User','Manager','HRD']" decoration-info="stage_name in ['Direksi','Recruitment']" decoration-danger="stage_name == 'Reject'" decoration-success="stage_name == 'Complete'" />
+                <button name="act_pemenuhan" class="oe_stat_button" groups="hr.group_hr_user" attrs="{'invisible':[('stage_name','!=','Recruitment')]}" icon="fa-user-plus" type="object"></button>
             </tree>
         </field>
     </record>
@@ -115,7 +125,7 @@
            <field name="view_id" ref="view_ptk_tree" />
            <field name="search_view_id" ref="hr_ptk_mmp_view" />
            <field name="context">{
-                'group_by': 'department_id'
+                'group_by': 'stage_id'
             }</field>
             <field name="domain">[]</field>
             <field name="help" type="html">

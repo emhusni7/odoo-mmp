@@ -19,4 +19,6 @@ class HrEmployee(models.Model):
 
     @api.onchange('department_id')
     def onchange_deparment(self):
-        self.divisi_id = False
+        if self.divisi_id:
+            if self.divisi_id.department_id.id != self.department_id.id:
+                self.divisi_id = False
