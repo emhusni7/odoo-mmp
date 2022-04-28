@@ -8,9 +8,10 @@ class PTK(models.Model):
     _description = "PTK"
 
     name = fields.Char("Name", readonly=1, default='/')
+    request_date = fields.Date("Request Date", default= fields.Date.today(), required=1)
     stage_id = fields.Many2one("hr.recruitment.stage","Stage", required=1, default= lambda self: self.env['hr.recruitment.stage'].search([('name','=','User')]).ids[0], track_visibility="onchange")
     stage_name = fields.Char("Stage", related='stage_id.name')
-    employee_id = fields.Many2one("hr.employee", "Employee", required=1, default= lambda self: self.get_employee())
+    employee_id = fields.Many2one("hr.employee", "Request By", required=1, default= lambda self: self.get_employee())
     department_id = fields.Many2one("hr.department","Department" ,required=1)
     divisi_id = fields.Many2one("hr.divisi.mmp","Divisi", required=1, domain="[('department_id','=',department_id)]")
     sect_id = fields.Many2one("hr.job","Section", domain="[('divisi_id','=',divisi_id)]")
@@ -79,16 +80,13 @@ class PTK(models.Model):
     @api.depends('stage_id')
     def _compute_inv(self):
         self.invisible_stage = True
-        rule = self.sudo().department_id.rule_ids.filtered(lambda x: x.stage_id.id == self.stage_id.id).sorted(lambda x: x.sequence)
+        rule = self.sudo().department_id.rule_ids.filtered(lambda x: x.stage_id.id == self.stage_id.id and x.employee_id.id in self.env.user.employee_ids.ids).sorted(lambda x: x.sequence)
         if rule:
             for rl in rule:
-                if rl.employee_id.id in self.env.user.employee_ids.ids:
-                    self.invisible_stage = False
-                    break
-        elif not rule:
-            if self.stage_id.sequence == 1:
-                if self.employee_id.id in self.env.user.employee_ids.ids:
-                    self.invisible_stage = False
+                self.invisible_stage = False
+                break
+        elif self.stage_id.sequence == 1:
+            self.invisible_stage = False
 
 
     @api.model
@@ -96,21 +94,33 @@ class PTK(models.Model):
         vals['name'] = self.env['ir.sequence'].next_by_code('ptk.mmp.sec')
         return super(PTK, self).create(vals)
 
-    def send_mail(self):
-        states = self.sudo().department_id.rule_ids.filtered(lambda x: x.stage_id.id == self.stage_id.id)
-        for state in states:
-            if not state.email_to or not state.employee_id:
+    def send_approval(self, now_stage):
+        for state in now_stage.sorted(lambda x: x.sequence):
+            if state.employee_id in self.env.user.employee_ids:
                 self.stage_id = state.next_stage_id.id
-                continue
-            base_url = request.env['ir.config_parameter'].sudo().get_param('web.base.url')
-            self.link_login="{}/web?db={}#id={}&view_type=form&model={}".format(base_url, self.sudo().env.cr.dbname, self.id, 'ptk.mmp')
+                break
+            elif not state.employee_id:
+                self.stage_id = state.next_stage_id.id
+                break
 
-            template = state.stage_id.template_id
+
+    def send_mail(self):
+        now_stage = self.department_id.get_now_stage(self.stage_id)
+        nextstage = self.department_id.get_next_stage_email(now_stage)
+        base_url = request.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        self.link_login="{}/web?db={}#id={}&view_type=form&model={}".format(base_url, self.sudo().env.cr.dbname, self.id, 'ptk.mmp')
+        if nextstage:
+            template = nextstage and nextstage[0].stage_id.template_id or False
             if template:
-                receipt_list = state.email_to or state.employee_id.work_email
-                email_values = {'email_to': receipt_list}
-                template.sudo().send_mail(self.id, email_values=email_values,force_send=True)
-                self.stage_id = state.next_stage_id.id
+                email_to = [x.email_to for x in nextstage]
+                if email_to:
+                    self.send_approval(now_stage)
+                    receipt_list = ';'.join(email_to)
+                    email_values = {'email_to': receipt_list}
+                    template.sudo().send_mail(self.id, email_values=email_values, force_send=True)
+
+                else:
+                    self.send_approval(now_stage)
 
     @api.onchange('department_id')
     def onchange_dep(self):

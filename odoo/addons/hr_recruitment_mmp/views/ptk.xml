@@ -34,6 +34,7 @@
                         <field name="unit_id" attrs="{'readonly':[('stage_name','!=','User')]}" options="{'no_create':True,'no_edit':True}" />
                         <field name="grade" attrs="{'readonly':[('stage_name','!=','User')]}" options="{'no_create':True,'no_edit':True}" />
                         <field name="level" attrs="{'readonly':[('stage_name','!=','User')]}" options="{'no_create':True,'no_edit':True}"/>
+                        <field name="request_date" attrs="{'readonly':[('stage_name','!=','User')]}" />
                     </group>
                     <separator />
                     <notebook>
@@ -125,7 +126,7 @@
            <field name="view_id" ref="view_ptk_tree" />
            <field name="search_view_id" ref="hr_ptk_mmp_view" />
            <field name="context">{
-                'group_by': 'stage_id'
+                'search_default_stage': True
             }</field>
             <field name="domain">[]</field>
             <field name="help" type="html">

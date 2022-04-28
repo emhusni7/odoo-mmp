@@ -6,6 +6,14 @@ class Department(models.Model):
     code = fields.Char("Code", size=2, required=1)
     rule_ids = fields.One2many("hr.approval.rule", "department_id", "Approval Rule")
 
+    def get_now_stage(self, stage_id):
+        now_st = self.sudo().rule_ids.filtered(lambda x: x.stage_id.id == stage_id.id)
+        return now_st
+
+    def get_next_stage_email(self, now_stage):
+        next_stage = self.sudo().rule_ids.filtered(lambda x: x.stage_id.id in [x.next_stage_id.id for x in now_stage])
+        return next_stage
+
 Department
 
 class hrApprovalRule(models.Model):
