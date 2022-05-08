@@ -8,6 +8,7 @@
                 <header>
                     <button name="send_mail" type="object" attrs="{'invisible':[('invisible_stage','=',True)]}" class="oe_highlight" string="Approve"/>
                     <button name="set_cancel" type="object" attrs="{'invisible':[('invisible_stage','=',True)]}" class="btn-danger" string="Cancel"/>
+                    <button name="print_report" type="object" class="btn btn-md btn-primary" string="Print"/>
                     <field name="stage_id" widget="statusbar" decoration-info="stage_name in ['User','Manager','Direksi','HRD']" decoration-muted="stage_name in ['Recruitment']" decoration-success="stage_name in ['Complete']" decoration-danger="stage_name in ['Reject']" />
                 </header>
                 <sheet>
@@ -126,7 +127,9 @@
            <field name="view_id" ref="view_ptk_tree" />
            <field name="search_view_id" ref="hr_ptk_mmp_view" />
            <field name="context">{
+                'search_default_department_id': True,
                 'search_default_stage': True
+
             }</field>
             <field name="domain">[]</field>
             <field name="help" type="html">

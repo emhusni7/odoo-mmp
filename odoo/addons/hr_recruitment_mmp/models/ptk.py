@@ -72,6 +72,13 @@ class PTK(models.Model):
                 raise UserError("Delete Record hanya bisa dilakukan di stage User / Reject")
         return super(PTK, self).unlink()
 
+    def print_report(self):
+        data = {
+            'model_id': self.id,
+            'name': self.name,
+        }
+        return self.env.ref('hr_recruitment_mmp.action_report_ptk').report_action(self)
+
     def set_cancel(self):
         rule = self.sudo().env['hr.recruitment.stage'].search([('sequence','=',0)]).ids
         if rule:
