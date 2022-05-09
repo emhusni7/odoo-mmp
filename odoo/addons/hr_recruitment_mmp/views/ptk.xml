@@ -129,9 +129,7 @@
            <field name="view_id" ref="view_ptk_tree" />
            <field name="search_view_id" ref="hr_ptk_mmp_view" />
            <field name="context">{
-                'search_default_department': True,
-                'search_default_stage': True
-
+                'search_default_department': True
             }</field>
             <field name="domain">[]</field>
             <field name="help" type="html">
