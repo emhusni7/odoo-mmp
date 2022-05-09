@@ -69,7 +69,8 @@
                                 <field name="kriteria" attrs="{'readonly':[('stage_name','!=','User')]}" placeholder="Kriteria yg dibutuhkan"/>
                                 <field name="job_desc" attrs="{'readonly':[('stage_name','!=','User')]}" placeholder="Tugas Pokok"/>
                                 <field name="link_login" invisible="1" />
-                                <field name="invisible_stage"/>
+                                <field name="invisible_stage" invisible="1"/>
+                                <field name="ptk_app_ids" invisible="1" />
                             </group>
                         </page>
                     </notebook>
@@ -113,8 +114,9 @@
                 <field name="stage_id"/>
                 <separator/>
                 <group expand="0" string="Group By">
-                    <filter string="Department" name="department_id" domain="[]" context="{'group_by': 'department_id'}"/>
+                    <filter string="Department" name="department" domain="[]" context="{'group_by': 'department_id'}"/>
                     <filter string="Stage" name="stage" domain="[]" context="{'group_by': 'stage_id'}"/>
+                    <filter string="Recruitment" name="recruit" domain="[('stage_id','=','Recruitment')]" />
                 </group>
             </search>
         </field>
@@ -127,7 +129,7 @@
            <field name="view_id" ref="view_ptk_tree" />
            <field name="search_view_id" ref="hr_ptk_mmp_view" />
            <field name="context">{
-                'search_default_department_id': True,
+                'search_default_department': True,
                 'search_default_stage': True
 
             }</field>

@@ -2,17 +2,96 @@
 <odoo>
     <template id="report_ptk">
         <t t-call="web.html_container">
-            <t t-call="web.html_container">
-                <t t-foreach="docs" t-as="o">
-                    <t t-call="web.external_layout">
-                        <div class="page">
-                            <h2>Pay Slip</h2>
-                            <p t-field="o.name"/>
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h5 style="text-align:center;font-weight:bold;">PERMINTAAN TENAGA KERJA<br></br> <span t-field="o.name" /></h5>
+                    <table class="table table-sm">
+                        <tr>
+                            <td><strong>Department</strong></td>
+                            <td><span t-field="o.department_id.name"/></td>
+                            <td><strong>Divisi</strong></td>
+                            <td><span t-field="o.divisi_id.name"/></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Section</strong></td>
+                            <td><span t-field="o.sect_id.name"/></td>
+                            <td><strong>Sub Section</strong></td>
+                            <td><span t-field="o.sub_sect_id.name"/></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Team</strong></td>
+                            <td><span t-field="o.team_id.name"/></td>
+                            <td><strong>Unit</strong></td>
+                            <td><span t-field="o.sub_sect_id.name"/></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Grade</strong></td>
+                            <td><span t-field="o.grade.sequence"/></td>
+                            <td><strong>Level</strong></td>
+                            <td><span t-field="o.level.name"/></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Jml Permintaan </strong></td>
+                            <td><span t-field="o.jml_pengajuan"/> Orang</td>
+                            <td><strong>Tgl Butuh (MM/DD/YYYY)</strong></td>
+                            <td><span t-field="o.tgl_butuh"/></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Type PTK</strong></td>
+                            <td><span t-field="o.type_ptk.name"/></td>
+                            <td><strong>Basis Penggajian</strong></td>
+                            <td><span t-field="o.gaji"/></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pendidikan Minimal</strong></td>
+                            <td><span t-field="o.pendidikan"/></td>
+                            <td><strong>Pengalaman Kerja</strong></td>
+                            <td><span t-field="o.pengalaman"/> Thn</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Kriteria</strong></td>
+                            <td><span t-field="o.kriteria"/></td>
+                            <td><strong>Tugas Pokok</strong></td>
+                            <td><span t-field="o.job_desc"/></td>
+                        </tr>
+                    </table>
+                    <div class="column">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Stage</th>
+                                    <th>Date Approved</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.ptk_app_ids" t-as="line">
+                                    <td><span t-field="line.new_value_char"/></td>
+                                    <td><span t-field="line.write_date"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row" style="text-align:center;page-break-after: auto;">
+                        <div class="col-4">
+                            <p>Diajukan Oleh,</p><br/><br/><br/>
+                            <span style="font-weight:bold;" t-field="o.employee_id.name"/>
                         </div>
-                    </t>
-                </t>
+                        <div class="col-4">
+                            <p>Disetujui Oleh,</p>
+                            <br/><br/><br/>
+                            <span style="font-weight:bold;">Tri Mey Diandono</span>
+                        </div>
+                        <div class="col-4">
+                            <p>Disetujui Oleh,</p>
+                            <br/><br/><br/>
+                            <span style="font-weight:bold;">Rachmat Hartojo</span>
+                        </div>
+                    </div>
             </t>
         </t>
+    </t>
     </template>
 
     <record id="action_report_ptk" model="ir.actions.report">
@@ -20,9 +99,9 @@
             <field name="model">ptk.mmp</field>
             <field name="report_type">qweb-pdf</field>
             <field name="report_type">qweb-pdf</field>
-            <field name="report_name">report_ptk</field>
-            <field name="report_file">report_ptk</field>
-            <field name="print_report_name">(’PTK - %s' % (object.name))</field>
+            <field name="report_name">hr_recruitment_mmp.report_ptk</field>
+            <field name="report_file">hr_recruitment_mmp.report_ptk</field>
+            <field name="print_report_name">'PTK - %s' % (object.name)</field>
             <field name="binding_model_id" ref="model_ptk_mmp"/>
             <field name="binding_type">report</field>
     </record>

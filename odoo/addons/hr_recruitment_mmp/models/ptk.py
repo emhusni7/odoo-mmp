@@ -50,6 +50,13 @@ class PTK(models.Model):
     invisible_stage = fields.Boolean("Invisible",compute="_compute_inv")
     jml_pemenuhan = fields.Integer("Sudah Diterima")
     employee_ids = fields.One2many("hr.employee", "ptk_id", "Employee")
+    ptk_app_ids = fields.One2many("mail.tracking.value", compute="_compute_approval", string="Approval")
+
+    def _compute_approval(self):
+        self.ptk_app_ids = self.env['mail.tracking.value'].search([('mail_message_id.model','=','ptk.mmp'),
+                                                                   ('field_desc','=','Stage'),
+                                                                   ('mail_message_id.res_id', '=', self.id),
+                                                                   ], order='write_date')
 
     def act_pemenuhan(self):
         action = self.env["ir.actions.actions"]._for_xml_id("hr.open_view_employee_list_my")
