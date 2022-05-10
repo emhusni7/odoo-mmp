@@ -21,6 +21,7 @@
         'security/security.xml',
         'security/ir.model.access.csv',
         'report/report.xml',
+        'wizard/wiz_ptk_mmp.xml',
         'views/hr_divisi_views.xml',
         'views/hr_recruitment_views.xml',
         'views/employee.xml',

@@ -7,6 +7,12 @@ class PTK(models.Model):
     _inherit = ['mail.thread']
     _description = "PTK"
 
+    # @api.onchange('department_id')
+    # def get_stage(self):
+    #     rule = self.department_id.rule_ids.filtered(lambda x: x.employee_id.id in self.env.user.employee_ids.ids).sorted(lambda x: x.sequence)
+    #     if rule:
+    #         self.stage_id = rule[0].stage_id.id
+
     name = fields.Char("Name", readonly=1, default='/')
     request_date = fields.Date("Request Date", default= fields.Date.today(), required=1)
     stage_id = fields.Many2one("hr.recruitment.stage","Stage", required=1, default= lambda self: self.env['hr.recruitment.stage'].search([('name','=','User')]).ids[0], track_visibility="onchange")
@@ -60,8 +66,6 @@ class PTK(models.Model):
 
     def act_pemenuhan(self):
         action = self.env["ir.actions.actions"]._for_xml_id("hr.open_view_employee_list_my")
-        print(self.divisi_id)
-        print(self.sect_id)
         action['context'] = {
             'default_res_model': self._name,
             'default_res_id': self.ids[0],

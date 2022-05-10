@@ -18,7 +18,7 @@ class BPJSKesContractMMp(models.Model):
     @api.onchange('bpjs_kes_id')
     def onchange_bpjs_kes(self):
         for bpjs in self:
-            bpjs.contract_id = self._context.get('default_contract_id')
+            # bpjs.contract_id = self._context.get('default_contract_id')
             bpjs.rate_company = bpjs.bpjs_kes_id.company_rate
             bpjs.rate_employee = bpjs.bpjs_kes_id.employee_rate
             bpjs.max_wages = bpjs.bpjs_kes_id.max_salary
@@ -58,7 +58,7 @@ class BPJSKetContractMMp(models.Model):
 
     @api.onchange('bpjs_ket_id')
     def onchange_bpjs_ket(self):
-        self.contract_id = self._context.get('default_contract_id')
+        # self.contract_id = self._context.get('default_contract_id')
         self.rate_jht = self.bpjs_ket_id.rate_jht
         self.rate_jht_emp = self.bpjs_ket_id.rate_jht_emp
         self.rate_jp = self.bpjs_ket_id.rate_jp
