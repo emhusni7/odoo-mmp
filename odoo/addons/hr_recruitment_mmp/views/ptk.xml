@@ -88,7 +88,7 @@
         <field name="name">PTK MMP</field>
         <field name="model">ptk.mmp</field>
         <field name="arch" type="xml">
-            <tree  decoration-info="stage_name in ['Recruitment']" decoration-success="stage_name in ['Complete']" decoration-danger="stage_name in ['Reject']" >
+            <tree>
                 <field name="employee_id" string="Request By" />
                 <field name="department_id"/>
                 <field name="divisi_id"/>
@@ -147,8 +147,5 @@
         id="hr_recruitment.menu_crm_case_categ0_act_job"
         action="ptk_action"
         sequence="2"/>
-
-
-
 
 </odoo>
