@@ -26,3 +26,4 @@ hr_recruitment.access_hr_recruitment_refuse_reason,hr.applicant.refuse.reason,hr
 access_hr_recruitment_refuse_reason_user,hr.applicant.refuse.reason,hr_recruitment.model_hr_applicant_refuse_reason,hr_recruitment.group_hr_recruitment_user,1,0,0,0
 access_hr_approval_rule,hr.approval.rule.ptk,model_hr_approval_rule,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
 access_ptk_report_xls,wiz.ptk.report,model_wiz_ptk_report,hr_recruitment.group_hr_recruitment_user,1,1,1,1
+access_ptk_pemenuhan,ptk.pemenuhan,model_ptk_pemenuhan,hr_recruitment.group_hr_recruitment_user,1,1,1,1

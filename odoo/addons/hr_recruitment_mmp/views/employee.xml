@@ -24,6 +24,7 @@
 
             <field name="work_phone" position="after">
                 <field name="ptk_id" />
+                <field name="ptk_pemenuhan_id" />
             </field>
         </field>
     </record>

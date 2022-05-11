@@ -7,15 +7,20 @@ class PTK(models.Model):
     _inherit = ['mail.thread']
     _description = "PTK"
 
-    # @api.onchange('department_id')
-    # def get_stage(self):
-    #     rule = self.department_id.rule_ids.filtered(lambda x: x.employee_id.id in self.env.user.employee_ids.ids).sorted(lambda x: x.sequence)
-    #     if rule:
-    #         self.stage_id = rule[0].stage_id.id
+    _order = "request_date desc"
+
+    @api.onchange('department_id')
+    def get_stage(self):
+        rule = self.sudo().department_id.rule_ids.filtered(lambda x: x.employee_id.id in self.env.user.employee_ids.ids and x.stage_id.name in ['User','Manager']).sorted(lambda x: x.sequence)
+        if rule:
+            self.stage_id = rule[0].stage_id.id
+        else:
+            stage_id = self.sudo().env['hr.recruitment.stage'].search([('name','=','User')]).ids[0]
+            self.stage_id = stage_id
 
     name = fields.Char("Name", readonly=1, default='/')
     request_date = fields.Date("Request Date", default= fields.Date.today(), required=1)
-    stage_id = fields.Many2one("hr.recruitment.stage","Stage", required=1, default= lambda self: self.env['hr.recruitment.stage'].search([('name','=','User')]).ids[0], track_visibility="onchange")
+    stage_id = fields.Many2one("hr.recruitment.stage","Stage", required=1, default= lambda self: self.get_stage, track_visibility="onchange")
     stage_name = fields.Char("Stage", related='stage_id.name')
     employee_id = fields.Many2one("hr.employee", "Request By", required=1, default= lambda self: self.get_employee())
     department_id = fields.Many2one("hr.department","Department" ,required=1)
@@ -54,21 +59,33 @@ class PTK(models.Model):
     job_desc = fields.Text("Job Desc", required=1)
     link_login = fields.Char("Link")
     invisible_stage = fields.Boolean("Invisible",compute="_compute_inv")
-    jml_pemenuhan = fields.Integer("Sudah Diterima")
+    jml_pemenuhan = fields.Integer("Sudah Dipenuhi", store=True, compute="_compute_pemenuhan")
     employee_ids = fields.One2many("hr.employee", "ptk_id", "Employee")
     ptk_app_ids = fields.One2many("mail.tracking.value", compute="_compute_approval", string="Approval")
+    jml_pengajuan_dummy = fields.Integer("Jml Pengajuan", related="jml_pengajuan")
+    pemenuhan_ids = fields.One2many("ptk.pemenuhan", "ptk_id", "Pemenuhan")
 
     def _compute_approval(self):
         self.ptk_app_ids = self.env['mail.tracking.value'].search([('mail_message_id.model','=','ptk.mmp'),
                                                                    ('field_desc','=','Stage'),
                                                                    ('mail_message_id.res_id', '=', self.id),
                                                                    ], order='write_date')
+    @api.depends('pemenuhan_ids')
+    def _compute_pemenuhan(self):
+        self.jml_pemenuhan = sum([x.jml_pemenuhan for x in self.pemenuhan_ids])
+        if self.jml_pengajuan <= self.jml_pemenuhan and self.stage_name == 'Recruitment':
+           stage_id = self.sudo().env['hr.recruitment.stage'].search([('name', '=', 'Complete')], limit=1)
+           if stage_id:
+               self.stage_id = stage_id.id
+        elif self.jml_pengajuan > self.jml_pemenuhan and self.stage_name == 'Complete':
+           stage_id = self.sudo().env['hr.recruitment.stage'].search([('name', '=', 'Recruitment')], limit=1)
+           if stage_id:
+               self.stage_id = stage_id.id
 
-    def act_pemenuhan(self):
+    def act_view_ptk(self):
         action = self.env["ir.actions.actions"]._for_xml_id("hr.open_view_employee_list_my")
         action['context'] = {
             'default_res_model': self._name,
-            'default_res_id': self.ids[0],
             'default_ptk_id': self.id,
             'default_department_id': self.department_id.id,
             'default_divisi_id': self.divisi_id.id,
@@ -201,23 +218,62 @@ class PTK(models.Model):
             return emp[0]
         else:
             raise UserError("User Tidak mempunyai Link ke Employee")
+PTK
+
+class PTKPemenuhan(models.Model):
+    _name = 'ptk.pemenuhan'
+    _rec_name = 'tgl_pemenuhan'
+
+    ptk_id = fields.Many2one("ptk.mmp","PTK No")
+    jml_pemenuhan = fields.Integer("Jml Pemenuhan", required=1)
+    tgl_pemenuhan = fields.Date("Tgl", required=1)
+    count_emp = fields.Integer("Emp. Created", compute="_compute_emp")
+    employee_ids = fields.One2many("hr.employee","ptk_pemenuhan_id", "PTK Pemenuhan")
+
+    def _compute_emp(self):
+        for x in self:
+            x.count_emp = len(x.employee_ids)
+
+    def unlink(self):
+        if self.count_emp > 0:
+            raise UserError("Cannot Be Delete When Employee From PTK Has Been Created From this Document")
+        return super(PTKPemenuhan, self).unlink()
+
+    @api.constrains('jml_pemenuhan')
+    def _check_pemenuhan(self):
+        if self.ptk_id.jml_pemenuhan > self.ptk_id.jml_pengajuan:
+            raise UserError(_("Jumlah Pengajuan Karyawan > Jumlah Pemenuhan"))
+
+    def act_pemenuhan(self):
+        action = self.env["ir.actions.actions"]._for_xml_id("hr.open_view_employee_list_my")
+        action['context'] = {
+            'default_res_model': self._name,
+            'default_res_id': self.ids[0],
+            'default_ptk_id': self.ptk_id.id,
+            'default_ptk_pemenuhan_id': self.id,
+            'default_department_id': self.ptk_id.department_id.id,
+            'default_divisi_id': self.ptk_id.divisi_id.id,
+            'default_job_id': self.ptk_id.sect_id.id,
+            'jml_pemenuhan': self.jml_pemenuhan,
+            'count_emp': self.count_emp
+        }
+        action['domain'] = [('ptk_id','=', self.ptk_id.id),('ptk_pemenuhan_id','=', self.id)]
+        return action
+
+PTKPemenuhan
 
 class HrEmployee(models.Model):
     _inherit = "hr.employee"
 
     ptk_id = fields.Many2one("ptk.mmp","No. PTK")
+    ptk_pemenuhan_id = fields.Many2one("ptk.pemenuhan","PTK Pemenuhan", domain="[('ptk_id','=',ptk_id)]")
 
     @api.model
     def create(self, vals_list):
+        if self._context.get("default_res_model") == 'ptk.mmp':
+            raise UserError("Tidak Bisa Create Employee tanpa melaui Pemenuhan")
+        if self._context.get("default_res_model") == 'ptk.pemenuhan':
+            if self._context.get('jml_pemenuhan') < self._context.get('count_emp') + 1:
+                raise UserError("Employee telah melebihi PTK")
         res = super(HrEmployee, self).create(vals_list)
-        if self._context.get("default_res_model") == 'ptk.mmp' and self._context.get("default_res_id"):
-           ptk = self.sudo().env['ptk.mmp'].browse(self._context.get("default_res_id"))
-           ptk.jml_pemenuhan +=1
-           stage_id = self.sudo().env['hr.recruitment.stage'].search([('name', '=', 'Complete')], limit=1)
-           if ptk.jml_pengajuan <= ptk.jml_pemenuhan:
-               if stage_id:
-                   ptk.stage_id = stage_id.id
         return res
-
-
-

@@ -28,6 +28,8 @@ class Education(models.Model):
     masuk = fields.Integer("Tahun Masuk")
     keluar = fields.Integer("Tahun Keluar")
     employee_id = fields.Many2one("hr.employee","Empoyee",invisible=1,default=lambda self: self.env.context.get('active_id'))
+
+
 Education
 
 class Employee(models.Model):
@@ -58,12 +60,14 @@ class Employee(models.Model):
     trans_bpjs = fields.One2many("bpjs.kes.contract.mmp",compute="_compute_emp_bpjs",string="BPJS Kesehatan")
     trans_bpjs_k = fields.One2many("bpjs.ket.contract.mmp",compute="_compute_emp_bpjs_k",string="BPJS Ketenaga Kerjaan")
 
+    @api.depends('contract_id.bpjs_kes_tran_ids')
     def _compute_emp_bpjs(self):
         if self.contract_id.bpjs_kes_tran_ids:
             self.trans_bpjs = self.contract_id.bpjs_kes_tran_ids.ids
         else:
             self.trans_bpjs = False
 
+    @api.depends('contract_id.bpjs_ket_tran_ids')
     def _compute_emp_bpjs_k(self):
         if self.contract_id.bpjs_ket_tran_ids:
             self.trans_bpjs_k = self.contract_id.bpjs_ket_tran_ids.ids
