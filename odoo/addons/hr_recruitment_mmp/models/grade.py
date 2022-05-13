@@ -7,7 +7,7 @@ class Department(models.Model):
     rule_ids = fields.One2many("hr.approval.rule", "department_id", "Approval Rule")
 
     def get_now_stage(self, stage_id):
-        now_st = self.sudo().rule_ids.filtered(lambda x: x.stage_id.id == stage_id.id)
+        now_st = self.sudo().rule_ids.filtered(lambda x: x.stage_id.id == stage_id.id and x.employee_id.id in self.env.user.employee_ids.ids)
         return now_st
 
     def get_next_stage_email(self, now_stage):

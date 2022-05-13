@@ -64,6 +64,12 @@ class PTK(models.Model):
     ptk_app_ids = fields.One2many("mail.tracking.value", compute="_compute_approval", string="Approval")
     jml_pengajuan_dummy = fields.Integer("Jml Pengajuan", related="jml_pengajuan")
     pemenuhan_ids = fields.One2many("ptk.pemenuhan", "ptk_id", "Pemenuhan")
+    emp_created = fields.Integer("Emp Created", store=True, compute="_compute_emp_created")
+
+    @api.depends('pemenuhan_ids', 'pemenuhan_ids.employee_ids')
+    def _compute_emp_created(self):
+        for x in self:
+            x.emp_created = len(x.employee_ids)
 
     def _compute_approval(self):
         self.ptk_app_ids = self.env['mail.tracking.value'].search([('mail_message_id.model','=','ptk.mmp'),

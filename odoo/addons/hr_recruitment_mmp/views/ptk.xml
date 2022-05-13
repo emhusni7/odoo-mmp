@@ -113,6 +113,7 @@
                 <field name="stage_name" invisible="1" />
                 <field name="jml_pengajuan" string="Qty Permintaan" />
                 <field name="jml_pemenuhan" />
+                <field name="emp_created" />
                 <field name="stage_id" widget="badge" decoration-warning="stage_name in ['User','Manager','HRD']" decoration-info="stage_name in ['Direksi','Recruitment']" decoration-danger="stage_name == 'Reject'" decoration-success="stage_name == 'Complete'" />
             </tree>
         </field>
