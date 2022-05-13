@@ -149,13 +149,14 @@ class Job(models.Model):
     def create(self, vals):
         vals['favorite_user_ids'] = vals.get('favorite_user_ids', []) + [(4, self.env.uid)]
         new_job = super(Job, self).create(vals)
-        utm_linkedin = self.env.ref("utm.utm_source_linkedin", raise_if_not_found=False)
-        if utm_linkedin:
-            source_vals = {
-                'source_id': utm_linkedin.id,
-                'job_id': new_job.id,
-            }
-            self.env['hr.recruitment.source'].create(source_vals)
+        # remark hs no create source aplicant
+        # utm_linkedin = self.env.ref("utm.utm_source_linkedin", raise_if_not_found=False)
+        # if utm_linkedin:
+        #     source_vals = {
+        #         'source_id': utm_linkedin.id,
+        #         'job_id': new_job.id,
+        #     }
+        #     self.env['hr.recruitment.source'].create(source_vals)
         return new_job
 
     def write(self, vals):
