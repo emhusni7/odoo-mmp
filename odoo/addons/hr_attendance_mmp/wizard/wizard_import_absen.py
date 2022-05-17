@@ -29,7 +29,7 @@ class WizAbsen(models.Model):
             try:
                 dtime = datetime.strptime("%s %s"%(row[3],row[4]),"%Y/%m/%d %H:%M:%S") - timedelta(hours=7)
             except:
-                raise UserError("Wrong Format Date and time use (yyyy/mm/dd hh:mm:ss)")
+                raise UserError("Wrong Format Date and time use (YYYY/MM/DD HH:MM:SS)")
 
             vals = {
                 'code': row[0],
