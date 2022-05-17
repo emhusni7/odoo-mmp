@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import models, fields, _
 from odoo.exceptions import UserError
 import base64, io, csv
 from datetime import datetime, timedelta
@@ -25,7 +25,7 @@ class WizAbsen(models.Model):
             rfid = row[1]
             emp = empObj.search([('barcode','=',rfid)], limit=1)
             if not emp:
-                raise UserError('Employee with RFID %s Not Found', rfid)
+                raise UserError(_('Employee with RFID %s Not Found')%rfid)
             try:
                 dtime = datetime.strptime("%s %s"%(row[3],row[4]),"%Y/%m/%d %H:%M:%S") - timedelta(hours=7)
             except:
