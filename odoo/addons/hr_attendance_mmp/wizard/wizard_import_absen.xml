@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_import_absen_xls" model="ir.ui.view">
+        <field name="name">Import Absen</field>
+        <field name="model">wiz.import.absen</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="file_xls" filename="file_name"/>
+                        <field name="file_name" invisible="1" />
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Save" name="import_xls" type="object" class="btn-primary" />
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="act_attendance_import_xls" model="ir.actions.act_window">
+        <field name="name">Import Absen (CSV)</field>
+        <field name="res_model">wiz.import.absen</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

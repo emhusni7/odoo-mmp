@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_attendance_user_mmp,hr.attendance.mmp.user,model_hr_attendance_mmp,hr_attendance_mmp.group_hr_attendance_user_mmp,1,0,1,0
+access_hr_attendance_manager_mmp,hr.attendance.mmp.manager,model_hr_attendance_mmp,hr_attendance_mmp.group_hr_attendance_manager_mmp,1,1,1,1
+access_hr_import_xls,wiz.import.xls.user,model_wiz_import_absen,hr_attendance_mmp.group_hr_attendance_user_mmp,1,1,1,1

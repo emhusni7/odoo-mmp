@@ -1235,7 +1235,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr.field_hr_employee__barcode
 #: model:ir.model.fields,field_description:hr.field_res_users__barcode
 msgid "Badge ID"
-msgstr ""
+msgstr "RFID"
 
 #. modules: hr_contract, hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__bank_account_id
