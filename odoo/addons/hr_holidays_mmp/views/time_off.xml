@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <delete model="ir.ui.menu" id="hr_holidays.hr_leave_menu_new_request" />
+    <delete model="ir.ui.menu" id="hr_holidays.menu_hr_holidays_dashboard" />
+    <delete model="ir.ui.menu" id="hr_holidays.hr_holidays_accrual_menu_configuration" />
+    <delete model="ir.ui.menu" id="hr_holidays.hr_holidays_menu_config_activity_type" />
+
+    <record id="hr_holidays.hr_leave_action_my" model="ir.actions.act_window">
+        <field name="name">Time Off</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.leave</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="search_view_id" ref="hr_holidays.hr_leave_view_search_my"/>
+        <field name="domain">[]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Keep track of your PTOs.
+            </p><p>
+                A great way to keep track on your time off requests, sick days, and approval status.
+            </p>
+        </field>
+    </record>
+
+    <record id="hr_holidays.hr_leave_action_my_view_form" model="ir.actions.act_window.view">
+        <field name="sequence">2</field>
+        <field name="view_mode">form</field>
+        <field name="act_window_id" ref="hr_holidays.hr_leave_action_my"/>
+        <field name="view_id" ref="hr_holidays.hr_leave_view_form_manager"/>
+    </record>
+
+    <record id="view_time_off_type_inherit" model="ir.ui.view">
+        <field name="name">hr.leave.type.form</field>
+        <field name="model">hr.leave.type</field>
+        <field name="priority" eval="70"></field>
+        <field name="inherit_id" ref="hr_holidays.edit_holiday_status_form"></field>
+        <field name="arch" type="xml">
+            <field name="request_unit" position="before">
+                <field name="libur" />
+            </field>
+            <xpath expr="//group[@name='visual']" position="replace">
+            </xpath>
+        </field>
+    </record>
+
+    <record id="hr_holidays.hr_leave_allocation_action_my" model="ir.actions.act_window">
+        <field name="name">Allocations</field>
+        <field name="res_model">hr.leave.allocation</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="hr_holidays.hr_leave_allocation_view_search_my"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new time off allocation request
+            </p><p>
+                Time Off Officers allocate time off days to employees (e.g. paid time off).<br/>
+                Employees request allocations to Time Off Officers (e.g. recuperation days).
+            </p>
+        </field>
+        <field name="context">{}</field>
+        <field name="domain">[]</field>
+    </record>
+
+
+    <record id="hr_holidays.hr_leave_allocation_action_my_view_form" model="ir.actions.act_window.view">
+        <field name="sequence">2</field>
+        <field name="view_mode">form</field>
+        <field name="act_window_id" ref="hr_holidays.hr_leave_allocation_action_my"/>
+        <field name="view_id" ref="hr_holidays.hr_leave_allocation_view_form_manager"/>
+    </record>
+
+    <record id="view_leave_allocation_inherit" model="ir.ui.view">
+        <field name="name">hr.leave.allocation.form</field>
+        <field name="model">hr.leave.allocation</field>
+        <field name="priority" eval="70"></field>
+        <field name="inherit_id" ref="hr_holidays.hr_leave_allocation_view_form_manager"></field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='allocation_type']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+<!--            <xpath expr="//field[@name='holiday_type']" position="replace">-->
+<!--                <field name="holiday_type" invisible="1" />-->
+<!--            </xpath>-->
+
+        </field>
+    </record>
+
+
+</odoo>

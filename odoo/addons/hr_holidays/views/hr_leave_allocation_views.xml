@@ -158,9 +158,9 @@
                     <h2><field name="name" placeholder="e.g. Time Off type (From validity start to validity end / no limit)" required="1"/></h2>
                 </div>
             </xpath>
-            <xpath expr="//field[@name='employee_id']" position="before">
-                <field name="holiday_type" string="Mode" groups="hr_holidays.group_hr_holidays_user" context="{'employee_id':employee_id}" />
-            </xpath>
+<!--            <xpath expr="//field[@name='employee_id']" position="before">-->
+<!--                <field name="holiday_type" string="Mode" groups="hr_holidays.group_hr_holidays_user" context="{'employee_id':employee_id}" />-->
+<!--            </xpath>-->
             <xpath expr="//field[@name='employee_id']" position="replace">
                 <field name="multi_employee" invisible="1" force_save="1"/>
                 <!-- Employee id is only visible if the allocation is created specifically for that user in `_action_validate_create_childs` -->
