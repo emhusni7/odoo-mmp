@@ -23,9 +23,9 @@ class Job(models.Model):
     def _compute_sub(self):
         for x in self:
             if x.parent_sec_id:
-                x.is_sub = 'Section'
-            else:
                 x.is_sub = 'Sub Section'
+            else:
+                x.is_sub = 'Section'
 
 class HrEmployee(models.Model):
     _inherit = "hr.employee"
