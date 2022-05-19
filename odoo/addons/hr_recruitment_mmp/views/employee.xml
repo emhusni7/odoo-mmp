@@ -8,7 +8,6 @@
             <field name="job_id" position="before">
                 <field name="divisi_id" options="{'no_create': True, 'no_edit': True}"/>
             </field>
-
         </field>
     </record>
 

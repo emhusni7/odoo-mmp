@@ -5,7 +5,7 @@
         <field name="name">hr.divisi.mmp.search</field>
         <field name="model">hr.divisi.mmp</field>
         <field name="arch" type="xml">
-            <search string="Divisi">
+            <search string="Division">
                 <field name="code" />
                 <field name="name" />
                 <field name="department_id" />
@@ -32,10 +32,10 @@
             <form>
                 <sheet>
                     <group col="4">
-                        <field name="code" />
-                        <field name="name" />
                         <field name="department_id" options="{'no_create': True, 'no_create_edit':True}"/>
                         <field name="manager" />
+                        <field name="code" />
+                        <field name="name" />
                     </group>
                 </sheet>
             </form>
@@ -43,12 +43,12 @@
     </record>
 
     <record model="ir.actions.act_window" id="action_hr_divisi">
-        <field name="name">Divisi</field>
+        <field name="name">Division</field>
         <field name="res_model">hr.divisi.mmp</field>
         <field name="view_id" ref="hr_divisi_tree_view"/>
         <field name="view_mode">form,tree</field>
     </record>
 
-    <menuitem name="Divisi" parent="hr.menu_human_resources_configuration_employee" id="menu_hr_divisi" action="action_hr_divisi" sequence="2"/>
-    <menuitem name="Divisi" parent="hr_recruitment.menu_hr_recruitment_configuration" id="menu_hr_divisi_req" action="action_hr_divisi" sequence="3"/>
+    <menuitem name="Division" parent="hr.menu_human_resources_configuration_employee" id="menu_hr_divisi" action="action_hr_divisi" sequence="2"/>
+    <menuitem name="Division" parent="hr_recruitment.menu_hr_recruitment_configuration" id="menu_hr_divisi_req" action="action_hr_divisi" sequence="3"/>
 </odoo>

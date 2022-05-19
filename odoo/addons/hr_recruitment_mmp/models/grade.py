@@ -52,7 +52,7 @@ class FasilitasIT(models.Model):
     _name = "fasilitas.it.mmp"
     _rec_name = "complete_name"
     _order = "category,name"
-    _description = "PTK Fasilitas IT"
+    _description = "PTK IT Fas  "
     name = fields.Char("Nama", required=1)
     complete_name = fields.Char("Complete Name", compute='_get_name_func')
     category = fields.Selection([('hard','Hardware'),('soft','Software')],"Category", required=1)

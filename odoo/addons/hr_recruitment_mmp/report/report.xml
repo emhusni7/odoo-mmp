@@ -10,7 +10,7 @@
                         <tr>
                             <td><strong>Department</strong></td>
                             <td><span t-field="o.department_id.name"/></td>
-                            <td><strong>Divisi</strong></td>
+                            <td><strong>Division</strong></td>
                             <td><span t-field="o.divisi_id.name"/></td>
                         </tr>
                         <tr>
