@@ -14,15 +14,25 @@ Keeps account of the attendances of the employees on the basis of the
 actions(Check in/Check out) performed by them.
        """,
     'website': 'https://www.odoo.com/app/employees',
-    'depends': ['hr'],
+    'depends': ['base','hr','hr_attendance'],
     'data': [
         'security/hr_attendance_security.xml',
         'security/ir.model.access.csv',
         'wizard/wizard_import_absen.xml',
+        'wizard/wizard_change_mode.xml',
         'views/hr_attendance.xml',
+        'views/res_users.xml',
     ],
     'installable': True,
     'auto_install': False,
     'application': True,
     'license': 'LGPL-3',
+    'assets': {
+        'web.assets_backend': [
+            'hr_attendance_mmp/static/src/js/kiosk_mode.js',
+        ],
+        'web.assets_qweb': [
+            'hr_attendance_mmp/static/src/xml/**/*',
+        ],
+    }
 }

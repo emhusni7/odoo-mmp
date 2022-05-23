@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="view_wiz_change_mode">
+        <field name="name">Change Mode</field>
+        <field name="model">wiz.change.mode</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                        <field name="pwd" password="True" />
+                        <field name="mode" />
+                </group>
+
+                <footer>
+                    <button type="object" name="change_mode" string="Change Mode" class="btn btn-primary" />
+                    Or
+                    <button special="cancel" string="Cancel" class="btn-secondary" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_change_mode_action" model="ir.actions.act_window">
+        <field name="name">Change Mode</field>
+        <field name="res_model">wiz.change.mode</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_wiz_change_mode"/>
+        <field name="target">new</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Change Mode
+            </p><p>
+                Add a few employees to be able to select an employee here and perform his check in / check out.
+                To create employees go to the Employees menu.
+            </p>
+        </field>
+    </record>
+
+</odoo>
