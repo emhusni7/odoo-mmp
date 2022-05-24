@@ -106,7 +106,8 @@ class HrEmployee(models.Model):
             attendances = self.env['hr.attendance'].search([
                 ('employee_id', '=', employee.id),
                 ('check_in', '<=', now),
-                '|', ('check_out', '>=', start_naive), ('check_out', '=', False),
+                '|', ('check_out', '>=', start_naive),
+                ('check_out', '=', False),
             ])
 
             worked_hours = 0
