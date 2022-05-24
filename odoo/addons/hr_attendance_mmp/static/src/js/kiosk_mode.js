@@ -1,23 +1,23 @@
-odoo.define('hr_attendance_mmp.kiosk_mmp', function (require) {
+odoo.define('hr_attendance_mmp.kiosk_mode', function (require) {
 "use strict";
 
-var AbstractAction = require('web.AbstractAction');
+
 var ajax = require('web.ajax');
 var core = require('web.core');
 var Session = require('web.session');
 
-var KiosK = require('hr_attendance.kiosk_mode')
+var AbstractAction = require('web.AbstractAction');
 var QWeb = core.qweb;
+//var KiosK = require('hr_attendance.kiosk_mode')
 
+var KiosExt = AbstractAction.extend({
 
-var KioskMode = KiosK.include({
     events: {
         "click .o_hr_attendance_button_employees": function() {
             this.do_action('hr_attendance_mmp.hr_change_mode_action', {
             });
         },
     },
-
     start: function () {
         var self = this;
         core.bus.on('barcode_scanned', this, this._onBarcodeScanned);
@@ -60,6 +60,9 @@ var KioskMode = KiosK.include({
                 } else if (result.warning) {
                     self.displayNotification({ title: result.warning, type: 'danger' });
                     core.bus.on('barcode_scanned', self, self._onBarcodeScanned);
+                } else if (result.info) {
+                    self.displayNotification({ title: result.info, type: 'info' });
+                    core.bus.on('barcode_scanned', self, self._onBarcodeScanned);
                 }
             }, function () {
                 core.bus.on('barcode_scanned', self, self._onBarcodeScanned);
@@ -85,9 +88,8 @@ var KioskMode = KiosK.include({
     },
 
 });
-
-KiosK.Component.include(KioskMode);
-
-return KioskMode;
-
+//KiosK.add('hr_attendance.kiosk_mode',KiosExt)
+//core.action_registry.add('hr_attendance_kiosk_mode', KiosK);
+core.action_registry.add('hr_attendance_kiosk_mode_mmp', KiosExt);
+return KiosExt;
 });

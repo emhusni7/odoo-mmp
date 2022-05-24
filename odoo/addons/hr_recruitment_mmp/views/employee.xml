@@ -19,7 +19,7 @@
             <xpath expr="//form" position="attributes">
                 <attribute name="duplicate">0</attribute>
             </xpath>
-            <xpath expr="//header" position="replace"/>
+<!--            <xpath expr="//header" position="replace"/>-->
 
             <field name="work_phone" position="after">
                 <field name="ptk_id" />

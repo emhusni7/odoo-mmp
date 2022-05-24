@@ -14,7 +14,7 @@ Keeps account of the attendances of the employees on the basis of the
 actions(Check in/Check out) performed by them.
        """,
     'website': 'https://www.odoo.com/app/employees',
-    'depends': ['base','hr','hr_attendance'],
+    'depends': ['base','hr_attendance'],
     'data': [
         'security/hr_attendance_security.xml',
         'security/ir.model.access.csv',
@@ -30,6 +30,9 @@ actions(Check in/Check out) performed by them.
     'assets': {
         'web.assets_backend': [
             'hr_attendance_mmp/static/src/js/kiosk_mode.js',
+            'hr_attendance_mmp/static/src/js/greeting_msg.js',
+            'hr_attendance_mmp/static/src/scss/hr_attendance.scss',
+
         ],
         'web.assets_qweb': [
             'hr_attendance_mmp/static/src/xml/**/*',

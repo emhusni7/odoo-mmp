@@ -56,7 +56,6 @@ var GreetingMessage = AbstractAction.extend({
         // extra hours amount displayed in the greeting message template.
         this.total_overtime_float = action.total_overtime; // Used for comparison in template
         this.total_overtime = field_utils.format.float_time(this.total_overtime_float)
-
         if (action.hours_today) {
             var duration = moment.duration(action.hours_today, "hours");
             this.hours_today = duration.hours() + ' hours, ' + duration.minutes() + ' minutes';
