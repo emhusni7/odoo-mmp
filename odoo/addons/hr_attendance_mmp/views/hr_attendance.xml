@@ -58,6 +58,6 @@
         <field name="target">fullscreen</field>
     </record>
 
-    <menuitem id="hr_attendance.menu_hr_attendance_kiosk_no_user_mode" name="Kiosk Mode" parent="hr_attendance.menu_hr_attendance_root" sequence="10" groups="hr_attendance.group_hr_attendance_kiosk" action="hr_attendance_action_kiosk_mode_mmp"/>
-
+    <menuitem id="hr_attendance.menu_hr_attendance_kiosk_no_user_mode" name="Kiosk Mode" parent="hr_attendance.menu_hr_attendance_root" sequence="30" groups="hr_attendance.group_hr_attendance_kiosk" action="hr_attendance_action_kiosk_mode_mmp"/>
+    <delete model="ir.ui.menu" id="hr_attendance.menu_hr_attendance_my_attendances" />
 </odoo>

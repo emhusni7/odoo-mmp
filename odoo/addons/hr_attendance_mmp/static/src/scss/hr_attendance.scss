@@ -1,10 +1,11 @@
 .label {
-  color: white;
+  font-weight: 900;
   padding: 8px;
+
 }
 
-.success {background-color: #04AA6D;} /* Green */
-.info {background-color: #2196F3;} /* Blue */
-.warning {background-color: #ff9800;} /* Orange */
-.danger {background-color: #f44336;} /* Red */
+.success {color: #04AA6D;} /* Green */
+.info {color: #2196F3;} /* Blue */
+.warning {color: #ff9800;} /* Orange */
+.danger {color: #f44336;} /* Red */
 .other {background-color: #e7e7e7; color: black;} /* Gray */
