@@ -9,7 +9,7 @@ class HrAttendance(models.Model):
     ]
 
     code = fields.Char("Code Mesin", required=1)
-    name = fields.Char("RFID", required=1)
+    name = fields.Char("Code Absen", required=1)
     employee_id = fields.Many2one('hr.employee', string="Employee", required=True,
                                   ondelete='cascade', index=True)
     department_id = fields.Many2one('hr.department', string="Department", related="employee_id.department_id",

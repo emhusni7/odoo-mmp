@@ -2,6 +2,10 @@ from odoo import models, api, _, fields, exceptions
 
 class hrEmpoyeeAttd(models.Model):
     _inherit = "hr.employee"
+    _sql_constraints = [
+        ('employee_barcode_uniq', 'unique (barcode)',
+         """RFID is Unique"""),
+    ]
 
     @api.model
     def attendance_scan(self, barcode):

@@ -48,7 +48,8 @@
         </field>
     </record>
 
-    <menuitem id="menu_hr_attendance_mmp_root" name="Attendances MMP" sequence="205" groups="hr_attendance_mmp.group_hr_attendance_user_mmp" web_icon="hr_attendance,static/description/icon.png"/>
+    <menuitem id="hr_attendance.menu_hr_attendance_settings" name="Configuration" parent="hr_attendance.menu_hr_attendance_root" sequence="99" />
+    <menuitem id="menu_hr_attendance_mmp_root" name="MMP" sequence="205" groups="hr_attendance_mmp.group_hr_attendance_user_mmp" parent="hr_attendance.menu_hr_attendance_settings"/>
     <menuitem id="menu_hr_attendance_mmp_view_attendances" name="Attendances" parent="menu_hr_attendance_mmp_root" sequence="10" groups="group_hr_attendance_user_mmp" action="hr_attendance_action_mmp_overview"/>
     <menuitem id="menu_hr_attendance_mmp_import" name="Import Absen (CSV)" parent="menu_hr_attendance_mmp_root" sequence="12" groups="group_hr_attendance_user_mmp" action="act_attendance_import_xls"/>
 
