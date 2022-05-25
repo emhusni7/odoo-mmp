@@ -6,14 +6,15 @@
             <span class="o_hr_attendance_kiosk_backdrop"/>
             <div class="o_hr_attendance_clock text-center"/>
             <div class="o_hr_attendance_kiosk_mode o_barcode_main">
-                <div class="o_hr_attendance_user_badge o_home_menu_background">
+                <div class="o_hr_attendance_user_badge  o_home_menu_background">
                     <h1><t t-esc="widget.company_name"/>
-                    </h1>
+                        </h1>
 
-                    <img class="img rounded-circle" t-attf-src="{{widget.company_image_url}}" alt="Company Logo" />
+
+                        <img class="img rounded-circle" t-attf-src="{{widget.company_image_url}}" alt="Company Logo" />
+
+
                 </div>
-
-
 
 
                 <div class="row o_hr_attendance_kiosk_welcome_row">
