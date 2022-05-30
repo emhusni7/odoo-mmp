@@ -498,12 +498,12 @@ class HolidaysRequest(models.Model):
             else:
                 holiday.employee_ids = self.env.context.get('default_employee_id') or holiday.employee_id or self.env.user.employee_id
 
-    # @api.depends('employee_id')
-    # def _compute_from_employee_id(self):
-    #     for holiday in self:
-    #         holiday.manager_id = holiday.employee_id.parent_id.id
-    #         if holiday.employee_id.user_id != self.env.user and self._origin.employee_id != holiday.employee_id:
-    #             holiday.holiday_status_id = False
+    @api.depends('employee_id')
+    def _compute_from_employee_id(self):
+        for holiday in self:
+            holiday.manager_id = holiday.employee_id.parent_id.id
+            if holiday.employee_id.user_id != self.env.user and self._origin.employee_id != holiday.employee_id:
+                holiday.holiday_status_id = False
 
     @api.depends('employee_id', 'holiday_type')
     def _compute_department_id(self):

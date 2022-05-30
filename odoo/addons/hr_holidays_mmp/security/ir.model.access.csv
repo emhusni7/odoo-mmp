@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_leave_user_mmp,hr.holidays.user.own,hr_holidays.model_hr_leave,hr_holidays_mmp.group_hr_holidays_own,1,1,1,1
+access_hr_leave_allocation_user_mmp,hr.holidays.allocation.user.own,hr_holidays.model_hr_leave_allocation,hr_holidays_mmp.group_hr_holidays_own,1,1,1,1
+access_hr_leave_type_user,hr.holidays.status own,hr_holidays.model_hr_leave_type,hr_holidays_mmp.group_hr_holidays_own,1,0,0,0

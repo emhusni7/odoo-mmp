@@ -23,9 +23,13 @@ A synchronization with an internal agenda (Meetings of the CRM module) is also p
 """,
     'depends': ['hr_holidays'],
     'data': [
-        # 'security/security.xml',
+        'security/security.xml',
+        'security/ir.model.access.csv',
         'views/time_off.xml',
     ],
+    'assets':{
+        'web.assets_backend': ['hr_holidays_mmp/static/src/js/time_off_calendar.js'],
+    },
     'installable': True,
     'application': True,
     'auto_install': False,
