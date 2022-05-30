@@ -70,7 +70,7 @@
         <field name="view_mode">tree,form</field>
         <field name="context">{}</field>
         <field name="search_view_id" ref="hr_holidays.hr_leave_view_search_my"/>
-        <field name="domain">[]</field>
+        <field name="domain">[('parent_id','=',False)]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Keep track of your PTOs.
@@ -159,6 +159,23 @@
         </field>
     </record>
 
+    <record id="view_hr_holidays_tree_inherit" model="ir.ui.view">
+        <field name="name">hr.holidays.view.tree</field>
+        <field name="model">hr.leave</field>
+        <field name="inherit_id" ref="hr_holidays.hr_leave_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='employee_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='employee_id']" position="after">
+                <field name="employee_ids" widget="many2many_tags" />
+            </xpath>
+            <xpath expr="field[@name='department_id']" position="replace">
+                <field name="department_id"/>
+            </xpath>
+        </field>
+    </record>
+
 
     <record id="hr_holidays.hr_leave_allocation_action_my" model="ir.actions.act_window">
         <field name="name">Allocations</field>
@@ -174,7 +191,7 @@
             </p>
         </field>
         <field name="context">{}</field>
-        <field name="domain">[]</field>
+        <field name="domain">[('parent_id','=',False)]</field>
     </record>
 
 
@@ -191,6 +208,12 @@
         <field name="priority" eval="70"></field>
         <field name="inherit_id" ref="hr_holidays.hr_leave_allocation_view_form_manager"></field>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='employee_ids']" position="replace">
+            </xpath>
+            <xpath expr="//field[@name='holiday_status_id']" position="before">
+                <field name="department_id" required="1" />
+                <field name="employee_ids" widget="many2many_tags" required="1" />
+            </xpath>
             <xpath expr="//field[@name='allocation_type']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -201,6 +224,64 @@
         </field>
     </record>
 
+    <record id="view_tree_allocation_mmp" model="ir.ui.view">
+        <field name="name">allocation.mmp.tree</field>
+        <field name="model">hr.leave.allocation</field>
+        <field name="inherit_id" ref="hr_holidays.hr_leave_allocation_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='employee_id']" position="before">
+                <field name="employee_ids" widget="many2many_tags" />
+                <field name="department_id"/>
+            </xpath>
+            <xpath expr="//field[@name='employee_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
 
+    <record id="view_tree_my_allocation_mmp" model="ir.ui.view">
+        <field name="name">allocation.mmp.tree</field>
+        <field name="model">hr.leave.allocation</field>
+        <field name="inherit_id" ref="hr_holidays.hr_leave_allocation_view_tree_my"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='department_id']" position="attributes">
+                <attribute name="invisible">0</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_search_allocation_mmp" model="ir.ui.view">
+        <field name="name">allocation.search.mmp</field>
+        <field name="model">hr.leave.allocation</field>
+        <field name="inherit_id" ref="hr_holidays.view_hr_leave_allocation_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_team']" position="attributes">
+                <attribute name="domain">[('employee_ids.leave_manager_id', '=', uid)]</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Time Off Approval -->
+    <record id="hr_holidays.hr_leave_action_action_approve_department" model="ir.actions.act_window">
+        <field name="name">All Time Off</field>
+        <field name="res_model">hr.leave</field>
+        <field name="view_mode">tree,kanban,form,calendar,activity</field>
+        <field name="search_view_id" ref="hr_holidays.hr_leave_view_search_manager"/>
+        <field name="context">{
+            'search_default_approve': 1,
+            'search_default_my_team': 2,
+            'search_default_active_employee': 3,
+            'search_default_active_time_off': 4,
+            'hide_employee_name': 1}
+        </field>
+        <field name="domain">[('parent_id','=',False)]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Meet the time off dashboard.
+            </p><p>
+                A great way to keep track on employee’s PTOs, sick days, and approval status.
+            </p>
+        </field>
+    </record>
 
 </odoo>
