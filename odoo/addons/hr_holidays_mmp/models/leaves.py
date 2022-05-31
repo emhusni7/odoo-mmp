@@ -1,5 +1,5 @@
 from odoo import fields, models, _, api, SUPERUSER_ID
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 class HrLeaves(models.Model):
     _inherit = "hr.leave"
@@ -167,5 +167,100 @@ class HrLeaves(models.Model):
                 elif not self._context.get('import_file'):
                     holiday_sudo.activity_update()
         return holidays
+
+    def _prepare_employees_holiday_values(self, employees):
+        self.ensure_one()
+        work_days_data = employees._get_work_days_data_batch(self.date_from, self.date_to)
+        return [{
+            'name': self.name,
+            'holiday_type': 'employee',
+            'holiday_status_id': self.holiday_status_id.id,
+            'date_from': self.date_from,
+            'date_to': self.date_to,
+            'request_date_from': self.request_date_from,
+            'request_date_to': self.request_date_to,
+            'notes': self.notes,
+            'department_id': self.department_id.id,
+            'number_of_days': work_days_data[employee.id]['days'],
+            'parent_id': self.id,
+            'employee_id': employee.id,
+            'employee_ids': employee,
+            'state': 'validate',
+        } for employee in employees if work_days_data[employee.id]['days']]
+
+    def action_view_leave_child(self):
+        action = self.env['ir.actions.act_window']._for_xml_id('hr_holidays.hr_leave_action_my')
+        action['view_mode'] = 'tree,form'
+        action['domain'] = [('id', 'in', self.linked_request_ids.ids)]
+        return action
+
+    def action_validate(self):
+        current_employee = self.env.user.employee_id
+        leaves = self._get_leaves_on_public_holiday()
+        if leaves:
+            raise ValidationError(_('The following employees are not supposed to work during that period:\n %s') % ','.join(leaves.mapped('employee_id.name')))
+
+        if any(holiday.state not in ['confirm', 'validate1'] and holiday.validation_type != 'no_validation' for holiday in self):
+            raise UserError(_('Time off request must be confirmed in order to approve it.'))
+
+        self.write({'state': 'validate'})
+
+        leaves_second_approver = self.env['hr.leave']
+        leaves_first_approver = self.env['hr.leave']
+
+        for leave in self:
+            if leave.validation_type == 'both':
+                leaves_second_approver += leave
+            else:
+                leaves_first_approver += leave
+
+            if leave.holiday_type != 'employee' or\
+                (leave.holiday_type == 'employee' and len(leave.employee_ids) > 1):
+                if leave.holiday_type == 'employee':
+                    employees = leave.employee_ids
+                elif leave.holiday_type == 'category':
+                    employees = leave.category_id.employee_ids
+                elif leave.holiday_type == 'company':
+                    employees = self.env['hr.employee'].search([('company_id', '=', leave.mode_company_id.id)])
+                else:
+                    employees = leave.department_id.member_ids
+
+                conflicting_leaves = self.env['hr.leave'].with_context(
+                    tracking_disable=True,
+                    mail_activity_automation_skip=True,
+                    leave_fast_create=True
+                ).search([
+                    ('date_from', '<=', leave.date_to),
+                    ('date_to', '>', leave.date_from),
+                    ('state', 'not in', ['cancel', 'refuse']),
+                    ('holiday_type', '=', 'employee'),
+                    ('employee_id', 'in', employees.ids)])
+
+                if conflicting_leaves:
+                    # YTI: More complex use cases could be managed in master
+                    raise ValidationError(_('You can not have 2 time off that overlaps on the same day.'))
+
+                    # keep track of conflicting leaves states before refusal
+
+                values = leave._prepare_employees_holiday_values(employees)
+                leaves = self.env['hr.leave'].with_context(
+                    tracking_disable=True,
+                    mail_activity_automation_skip=True,
+                    leave_fast_create=True,
+                    no_calendar_sync=True,
+                    leave_skip_state_check=True,
+                ).create(values)
+
+                leaves._validate_leave_request()
+
+        leaves_second_approver.write({'second_approver_id': current_employee.id})
+        leaves_first_approver.write({'first_approver_id': current_employee.id})
+
+        employee_requests = self.filtered(lambda hol: hol.holiday_type == 'employee')
+        employee_requests._validate_leave_request()
+        if not self.env.context.get('leave_fast_create'):
+            employee_requests.filtered(lambda holiday: holiday.validation_type != 'no_validation').activity_update()
+        return True
+
 
 HrLeaves

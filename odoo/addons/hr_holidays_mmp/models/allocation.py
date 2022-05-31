@@ -20,6 +20,31 @@ class Allocation(models.Model):
         default=False)
     active_employee = fields.Boolean('Active Employee', related='employee_ids.active', readonly=True)
 
+    def action_view_allocation(self):
+        action = self.env['ir.actions.act_window']._for_xml_id('hr_holidays.hr_leave_allocation_action_my')
+        action['view_mode'] = 'tree,form'
+        action['domain'] = [('id', 'in', self.linked_request_ids.ids)]
+        return action
+
+    def _prepare_holiday_values(self, employees):
+        self.ensure_one()
+        return [{
+            'name': self.name,
+            'holiday_type': 'employee',
+            'holiday_status_id': self.holiday_status_id.id,
+            'notes': self.notes,
+            'department_id': self.department_id.id,
+            'number_of_days': self.number_of_days,
+            'parent_id': self.id,
+            'employee_id': employee.id,
+            'employee_ids': [(6, 0, [employee.id])],
+            'state': 'confirm',
+            'allocation_type': self.allocation_type,
+            'date_from': self.date_from,
+            'date_to': self.date_to,
+            'accrual_plan_id': self.accrual_plan_id.id,
+        } for employee in employees]
+
     @api.depends('holiday_type')
     def _compute_from_holiday_type(self):
         default_employee_ids = self.env['hr.employee'].browse(
