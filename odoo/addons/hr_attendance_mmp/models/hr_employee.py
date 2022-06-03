@@ -3,8 +3,9 @@ from odoo import models, api, _, fields, exceptions
 class hrEmpoyeeAttd(models.Model):
     _inherit = "hr.employee"
     _sql_constraints = [
-        ('employee_barcode_uniq', 'unique (barcode)',
-         """RFID is Unique"""),
+        ('employee_pin_uniq', 'unique (pin)',
+         """Absen Code is Unique"""),
+
     ]
 
     @api.model
@@ -46,7 +47,6 @@ class hrEmpoyeeAttd(models.Model):
             return attendance
         return {'warning': _("Tipe Kios Belum Di isi")}
 
-
     def _attendance_action(self, next_action):
         """ Changes the attendance of the employee.
             Returns an action to the check in/out message,
@@ -60,19 +60,13 @@ class hrEmpoyeeAttd(models.Model):
         action_message['barcode'] = employee.barcode
         action_message['next_action'] = next_action
         action_message['hours_today'] = employee.hours_today
-
-        if employee.user_id:
-            modified_attendance = employee.with_user(employee.user_id)._attendance_action_change()
-            if not modified_attendance and self.env.user.type_kios == 'out':
-               return {'info': _("Anda Telah Check Out.'")}
-            elif not modified_attendance and self.env.user.type_kios == 'in':
-                return {'info': _("Anda Telah Check In.'")}
-        else:
-            modified_attendance = employee._attendance_action_change()
-            if not modified_attendance and self.env.user.type_kios == 'out':
-               return {'info': _("Anda Telah Check Out/ Belum Check In.'")}
-            elif not modified_attendance and self.env.user.type_kios == 'in':
-                return {'info': _("Anda Telah Check In.'")}
+        modified_attendance = employee._attendance_action_change()
+        if not modified_attendance and self.env.user.type_kios == 'out':
+           return {'info': _("Anda Telah Check Out/ Belum Check In.'")}
+        elif not modified_attendance and self.env.user.type_kios == 'in':
+            return {'info': _("Anda Telah Check In.'")}
+        elif isinstance(modified_attendance, dict) and 'warning' in modified_attendance.keys():
+            return modified_attendance
         action_message['attendance'] = modified_attendance.read()[0]
         action_message['total_overtime'] = employee.total_overtime
         return {'action': action_message}
