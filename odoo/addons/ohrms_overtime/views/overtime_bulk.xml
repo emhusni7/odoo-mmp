@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_overtime_bulk_req" model="ir.sequence">
+            <field name="name">Overtime Bulk Sequence</field>
+            <field name="code">hr.overtime.bulk</field>
+            <field name="prefix">OV/%(y)s/%(month)s/</field>
+            <field name="use_date_range">True</field>
+            <field eval="1" name="number_next"/>
+            <field eval="1" name="number_increment"/>
+            <field name="padding">3</field>
+        </record>
+    </data>
+    <data>
+        <record id="view_form_overtime_bulk" model="ir.ui.view">
+            <field name="name">HrOvertimeBulk</field>
+            <field name="model">hr.overtime.bulk</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                    <button name="action_confirm" type="object" string="To Approve" groups="base.group_user" class="oe_highlight" states="draft" />
+                    <button name="action_approve" type="object" string="Approve" groups="hr.group_hr_user" class="oe_highlight" states="confirm" />
+                    <button name="action_cancel" type="object" string="Cancel" groups="hr.group_hr_user" class="btn btn-danger"   states="approved,confirm" />
+                    <button name="action_reset" type="object" string="Reset" groups="base.group_user" states="confirm" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,cancel,confirm,approved"/>
+                    </header>
+                    <sheet>
+                         <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1" placeholder="Reference ...."/>
+                            </h1>
+                        </div>
+                            <group col="4">
+                                <field name="date_from" attrs="{'readonly':[('state','!=','draft')]}" />
+                                <field name="date_to" attrs="{'readonly':[('state','!=','draft')]}" />
+                                <field name="department_id" options="{'no_create': True, 'no_create_edit':True}" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="ov_type" attrs="{'readonly':[('state','!=','draft')]}" options="{'no_create': True, 'no_create_edit':True}" />
+                                <field name="divisi_id" options="{'no_create': True, 'no_create_edit':True}" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="aplicant" domain="[('department_id','=',department_id)]" attrs="{'readonly':[('state','!=','draft')]}" />
+                                <field name="section_id" options="{'no_create': True, 'no_create_edit':True}" attrs="{'readonly':[('state','!=','draft')]}" />
+                                <field name="manager_id" domain="[('department_id','=',department_id)]" attrs="{'readonly':[('state','!=','draft')]}" />
+                        </group>
+                        <notebook>
+                            <page string="Overtime">
+                                <group>
+                                    <button type="object" groups="hr.group_hr_user" name="calculate_overtime_amount" string="Calculate" class="btn btn-primary" />
+                                </group>
+                                <group>
+                                    <field name="overtime_ids" attrs="{'readonly':[('state','!=','draft')]}" nolabel="1" context="{'date_from': date_from, 'date_to': date_to}">
+                                        <tree>
+                                            <field name="date_from" required="1"/>
+                                            <field name="date_to" required="1"/>
+                                            <field name="name"/>
+                                            <field name="employee_id" options="{'no_create': True, 'no_create_edit':True}" />
+                                            <field name="cash_hrs_amount" readonly="1" force_save="1" groups="hr.group_hr_user" />
+                                            <field name="cash_day_amount" readonly="1" force_save="1" groups="hr.group_hr_user" />
+                                        </tree>
+                                        <form>
+                                            <group cols="4">
+                                                <field name="date_from" />
+                                                <field name="date_to" />
+                                                <field name="employee_id" />
+                                                <field name="name"/>
+                                                <field name="days_no_tmp"/>
+                                                <field name="days_no"/>
+                                                <field name="cash_hrs_amount" readonly="1" force_save="1" groups="hr.group_hr_user" />
+                                                <field name="cash_day_amount" readonly="1" force_save="1" groups="hr.group_hr_user" />
+                                                <field name="overtime_bulk_id" invisible="1" />
+                                            </group>
+                                        </form>
+                                    </field>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <footer>
+                        <div class="oe_chatter">
+                        <field name="message_follower_ids"
+                               widget="mail_followers"
+                               groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_f_request_overtime" model="ir.ui.view">
+            <field name="model">hr.overtime.bulk</field>
+            <field name="name">hr.overtime.bulk</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" />
+                    <field name="ov_type"/>
+                    <field name="department_id"/>
+                    <field name="divisi_id"/>
+                    <field name="date_from" />
+                    <field name="date_to" />
+                    <field name="desc" />
+                    <field name="state" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_hr_overtime_bulk" model="ir.ui.view">
+            <field name="name">hr.overtime.bulk</field>
+            <field name="model">hr.overtime.bulk</field>
+            <field name="arch" type="xml">
+                <search string="Search Overtime">
+                    <field name="name"/>
+                    <field name="department_id" operator="child_of"/>
+                    <field name="ov_type"/>
+                    <filter domain="[('state','=','confirm')]" string="To Approve" name="approve"/>
+                    <filter string="Approved" domain="[('state', '=', 'approved')]" name="validated"/>
+                    <separator/>
+                    <filter string="My Department" name="department" domain="[('department_id.member_ids.user_id', '=', uid)]" help="My Department"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_department" string="Department" context="{'group_by':'department_id'}"/>
+                        <filter name="group_type" string="Overtime Type" context="{'group_by':'ov_type'}"/>
+                        <filter name="group_divisi" string="Division" context="{'group_by':'divisi_id'}"/>
+                        <separator/>
+                        <filter name="group_section_id" string="Section" context="{'group_by':'section_id'}"/>
+                    </group>
+                    <searchpanel>
+                        <field name="state" string="Status"/>
+                        <field name="department_id" string="Department" icon="fa-users"/>
+                    </searchpanel>
+                </search>
+            </field>
+        </record>
+
+         <record id="hr_overtime_action" model="ir.actions.act_window">
+            <field name="name">Overtime Request</field>
+            <field name="res_model">hr.overtime.bulk</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create new Pre Approval Overtime Request.
+                </p>
+            </field>
+        </record>
+
+        <!-- MenuItems -->
+        <menuitem id="overtime_submenu" name="Overtime Request"
+                  groups="base.group_user" web_icon="ohrms_overtime,static/description/overtime_icon.png"/>
+
+        <menuitem id="overtime"
+                  name="Overtime Request"
+                  parent="overtime_submenu"
+                  action="hr_overtime_action"
+                  groups="base.group_user"/>
+
+    </data>
+</odoo>

@@ -10,6 +10,8 @@ class HrLeaves(models.Model):
         'hr.department', compute=False, store=True, string='Department', readonly=False, required=1,
         states={'cancel': [('readonly', True)], 'refuse': [('readonly', True)], 'validate1': [('readonly', True)],
                 'validate': [('readonly', True)]})
+    division_id = fields.Many2one("hr.divisi.mmp", "Division", domain="[('department_id','=',department_id)]")
+    section_id = fields.Many2one("hr.job", "Section", domain="[('divisi_id','=',division_id)]")
     # leave type configuration
     holiday_status_id = fields.Many2one(
         "hr.leave.type",  store=True, string="Time Off Type", required=True,
@@ -21,8 +23,36 @@ class HrLeaves(models.Model):
     employee_company_id = fields.Many2one(related='employee_ids.company_id', readonly=True, store=True)
     active_employee = fields.Boolean(related='employee_ids.active', readonly=True)
 
-
-
+    @api.onchange('section_id', 'department_id', 'division_id')
+    def onchange_section(self):
+        if self.section_id:
+            return {
+                'domain': {
+                    'employee_id': [('active','=',True),('job_id','=',self.section_id.id)],
+                    'employee_ids': [('active', '=', True), ('job_id', '=', self.section_id.id)]
+                }
+        }
+        elif self.division_id:
+            return {
+                'domain': {
+                    'employee_id': [('active', '=', True), ('divisi_id', '=', self.division_id.id)],
+                    'employee_ids': [('active', '=', True), ('divisi_id', '=', self.division_id.id)]
+                }
+            }
+        elif self.department_id:
+            return {
+                'domain': {
+                    'employee_id': [('active', '=', True), ('department_id', '=', self.department_id.id)],
+                    'employee_ids': [('active', '=', True), ('department_id', '=', self.department_id.id)]
+                }
+            }
+        else:
+            return {
+                'domain': {
+                    'employee_id': [('active', '=', True)],
+                    'employee_ids': [('active', '=', True)]
+                }
+            }
 
     @api.depends('employee_id')
     def _compute_from_employee_id(self):
@@ -181,6 +211,8 @@ class HrLeaves(models.Model):
             'request_date_to': self.request_date_to,
             'notes': self.notes,
             'department_id': self.department_id.id,
+            'division_id': self.division_id.id,
+            'section_id': self.section_id.id,
             'number_of_days': work_days_data[employee.id]['days'],
             'parent_id': self.id,
             'employee_id': employee.id,

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+       <record id="view_company_umk_field" model="ir.ui.view">
+           <field name="name">res.company.form</field>
+           <field name="model">res.company</field>
+           <field name="inherit_id" ref="base.view_company_form"></field>
+           <field name="arch" type="xml">
+               <xpath expr="//notebook" position="inside">
+                   <page name="umk" string="UMK">
+                       <group>
+                            <field name="umk"/>
+                       </group>
+                   </page>
+               </xpath>
+           </field>
+       </record>
+    </data>
+</odoo>

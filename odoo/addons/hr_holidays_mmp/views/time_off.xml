@@ -26,11 +26,13 @@
             <field name="employee_id" position="replace"/>
             <label id="label_dates" position="before">
                     <field name="multi_employee" invisible="1" force_save="1"/>
-                    <field name="department_id" />
-                    <field name="employee_id" domain="[('department_id','=',department_id),('active','=',True)]"  attrs="{
+                    <field name="department_id" attrs="{'readonly':[('state','!=','draft')]}" />
+                    <field name="division_id" attrs="{'readonly':[('state','!=','draft')]}" />
+                    <field name="section_id" attrs="{'readonly':[('state','!=','draft')]}" />
+                    <field name="employee_id" attrs="{
                         'invisible': ['|', '|', ('holiday_type', '!=', 'employee'), ('state', '!=', 'validate'), ('employee_id', '=', False)]
                         }" widget="many2one_avatar_employee"/>
-                    <field name="employee_ids" domain="[('department_id','=',department_id),('active','=',True)]" required="1" attrs="{
+                    <field name="employee_ids" required="1" attrs="{
                         'required': [('holiday_type', '=', 'employee'), ('state', 'in', ('draft', 'cancel', 'refuse'))],
                         'invisible': ['|', ('holiday_type', '!=', 'employee'), '&amp;', ('state', '=', 'validate'), ('employee_id', '!=', False)],
                         }" widget="many2many_tags"/>

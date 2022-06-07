@@ -3,9 +3,7 @@ from odoo import models, api, _, fields, exceptions
 class hrEmpoyeeAttd(models.Model):
     _inherit = "hr.employee"
     _sql_constraints = [
-        ('employee_pin_uniq', 'unique (pin)',
-         """Absen Code is Unique"""),
-
+        ('employee_pin_uniq', 'unique (pin)', """Absen Code is Unique"""),
     ]
 
     @api.model
