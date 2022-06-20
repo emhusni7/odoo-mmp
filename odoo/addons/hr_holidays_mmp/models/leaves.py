@@ -30,19 +30,80 @@ class HrLeaves(models.Model):
 
     employee_company_id = fields.Many2one(related='employee_ids.company_id', readonly=True, store=True)
     active_employee = fields.Boolean(related='employee_ids.active', readonly=True)
-    request_unit_hours = fields.Boolean('Custom Hours', compute='_compute_request_unit_hours', store=True,
+    request_unit_hours = fields.Boolean('Custom Hours',store=True, compute="_compute_request_unit_hours",
                                         readonly=False)
+    request_hour_from = fields.Selection([
+        ('0', '00:00'), ('0.5', '00:30'),
+        ('1', '01:00'), ('1.5', '01:30'),
+        ('2', '02:00'), ('2.5', '02:30'),
+        ('3', '03:00'), ('3.5', '03:30'),
+        ('4', '04:00'), ('4.5', '04:30'),
+        ('5', '05:00'), ('5.5', '05:30'),
+        ('6', '06:00'), ('6.5', '06:30'),
+        ('7', '07:00'), ('7.5', '07:30'),
+        ('8', '08:00'), ('8.5', '08:30'),
+        ('9', '09:00'), ('9.5', '09:30'),
+        ('10', '10:00'), ('10.5', '10:30'),
+        ('11', '11:00'), ('11.5', '11:30'),
+        ('12', '12:00'), ('12.5', '12:30'),
+        ('13', '13:00'), ('13.5', '13:30'),
+        ('14', '14:00'), ('14.5', '14:30'),
+        ('15', '15:00'), ('15.5', '15:30'),
+        ('16', '16:00'), ('16.5', '16:30'),
+        ('17', '17:00'), ('17.5', '17:30'),
+        ('18', '18:00'), ('18.5', '18:30'),
+        ('19', '19:00'), ('19.5', '19:30'),
+        ('20', '20:00'), ('20.5', '20:30'),
+        ('21', '21:00'), ('21.5', '21:30'),
+        ('22', '22:00'), ('22.5', '22:30'),
+        ('23', '23:00'), ('23.5', '23:30')], string='Hour from')
+    request_hour_to = fields.Selection([
+        ('0', '00:00'), ('0.5', '00:30'),
+        ('1', '01:00'), ('1.5', '01:30'),
+        ('2', '02:00'), ('2.5', '02:30'),
+        ('3', '03:00'), ('3.5', '03:30'),
+        ('4', '04:00'), ('4.5', '04:30'),
+        ('5', '05:00'), ('5.5', '05:30'),
+        ('6', '06:00'), ('6.5', '06:30'),
+        ('7', '07:00'), ('7.5', '07:30'),
+        ('8', '08:00'), ('8.5', '08:30'),
+        ('9', '09:00'), ('9.5', '09:30'),
+        ('10', '10:00'), ('10.5', '10:30'),
+        ('11', '11:00'), ('11.5', '11:30'),
+        ('12', '12:00'), ('12.5', '12:30'),
+        ('13', '13:00'), ('13.5', '13:30'),
+        ('14', '14:00'), ('14.5', '14:30'),
+        ('15', '15:00'), ('15.5', '15:30'),
+        ('16', '16:00'), ('16.5', '16:30'),
+        ('17', '17:00'), ('17.5', '17:30'),
+        ('18', '18:00'), ('18.5', '18:30'),
+        ('19', '19:00'), ('19.5', '19:30'),
+        ('20', '20:00'), ('20.5', '20:30'),
+        ('21', '21:00'), ('21.5', '21:30'),
+        ('22', '22:00'), ('22.5', '22:30'),
+        ('23', '23:00'), ('23.5', '23:30')], string='Hour to')
 
     @api.depends('holiday_status_id')
     def _compute_request_unit_hours(self):
         for holiday in self:
-            if holiday.holiday_status_id.request_unit == 'hour':
-                holiday.request_unit_hours = True
-            else:
+            if holiday.holiday_status_id.request_unit == 'day':
                 holiday.request_unit_hours = False
+            else:
+                holiday.request_unit_hours = True
 
+    @api.depends('request_date_from_period', 'request_hour_from', 'request_hour_to', 'request_date_from',
+                 'request_date_to',
+                 'request_unit_half', 'request_unit_hours', 'request_unit_custom', 'employee_id')
     def _compute_date_from_to(self):
-        return True
+        for holiday in self:
+            compensated_request_date_from = holiday.request_date_from
+            compensated_request_date_to = holiday.request_date_to
+            hour_from = float_to_time(float(holiday.request_hour_from))
+            hour_to = float_to_time(float(holiday.request_hour_to))
+            holiday.date_from = timezone(holiday.tz).localize(
+                datetime.combine(compensated_request_date_from, hour_from)).astimezone(UTC).replace(tzinfo=None)
+            holiday.date_to = timezone(holiday.tz).localize(
+                datetime.combine(compensated_request_date_to, hour_to)).astimezone(UTC).replace(tzinfo=None)
 
     @api.onchange('section_id', 'department_id', 'division_id')
     def onchange_section(self):

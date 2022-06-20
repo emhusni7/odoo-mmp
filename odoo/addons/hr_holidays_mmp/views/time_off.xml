@@ -24,12 +24,12 @@
             </xpath>
             <field name="holiday_status_id" position="replace"/>
             <field name="employee_id" position="replace"/>
-<!--            <xpath expr="//field[@name='request_unit_half']" position="attributes">-->
-<!--                <attribute name="invisible">1</attribute>-->
-<!--            </xpath>-->
-<!--            <xpath expr="//field[@name='request_unit_hours']" position="attributes">-->
-<!--                <attribute name="invisible">1</attribute>-->
-<!--            </xpath>-->
+            <xpath expr="//field[@name='request_unit_half']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='request_unit_hours']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
 <!--            <xpath expr="//field[@name='date_from']" position="replace">-->
 <!--            </xpath>-->
 <!--            <xpath expr="//field[@name='date_to']" position="replace">-->
@@ -47,10 +47,6 @@
                     'invisible': ['|', ('holiday_type', '!=', 'employee'), '&amp;', ('state', '=', 'validate'), ('employee_id', '!=', False)],
                     }" widget="many2many_tags"/>
                 <field name="holiday_status_id" options="{'no_open': True}" context="{'from_manager_leave_form': True ,'employee_id': employee_id}"/>
-                <label for="date_from" string="Dates" id="fr" />
-                <div class="oe_row">
-                    <field name="date_from" />-<field name="date_to"/>
-                </div>
             </label>
 <!--            <xpath expr="//label[@id='label_dates']" position="attributes">-->
 <!--                <attribute name="invisible">1</attribute>-->

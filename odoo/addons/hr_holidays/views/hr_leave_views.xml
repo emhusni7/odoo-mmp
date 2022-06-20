@@ -275,11 +275,8 @@
                                  }"/>
                                 <field name="request_unit_hours" attrs="{
                                     'readonly': [('state', 'not in', ('draft', 'confirm'))],
-                                    'invisible': [('leave_type_request_unit', '!=', 'hour')]
-                                 }" class="ml-5"/>
-                                <label for="request_unit_hours" attrs="{
-                                    'invisible': [('leave_type_request_unit', '!=', 'hour')]
-                                }"/>
+                                  " class="ml-5"/>
+                                <label for="request_unit_hours" />
 
                                 <field name="request_unit_custom" invisible="1" attrs="{
                                     'readonly': [('state', 'not in', ('draft', 'confirm'))],
