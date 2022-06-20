@@ -1,7 +1,9 @@
-from odoo import fields, models, api
+from odoo import fields, models, api,_
+from odoo.exceptions import UserError
 
 class Allocation(models.Model):
     _inherit = "hr.leave.allocation"
+
     def _domain_holiday_status_id(self):
         return ['|',('requires_allocation', '=', 'yes'),('employee_requests', '=', 'yes')]
 
@@ -25,6 +27,44 @@ class Allocation(models.Model):
         action['view_mode'] = 'tree,form'
         action['domain'] = [('id', 'in', self.linked_request_ids.ids)]
         return action
+
+    def _check_approval_update(self, state):
+        """ Check if target state is achievable. """
+        if self.env.is_superuser():
+            return
+        current_employee = self.env.user.employee_id
+        if not current_employee:
+            return
+        is_officer = self.env.user.has_group('hr_holidays.group_hr_holidays_user')
+        is_manager = self.env.user.has_group('hr_holidays.group_hr_holidays_manager')
+        for holiday in self:
+            val_type = holiday.holiday_status_id.sudo().allocation_validation_type
+            if state == 'confirm':
+                continue
+
+            if state == 'draft':
+                if holiday.employee_id != current_employee and not is_manager:
+                    raise UserError(_('Only a time off Manager can reset other people allocation.'))
+                continue
+
+            if not is_officer and self.env.user != holiday.employee_id.leave_manager_id and not val_type == 'no':
+                raise UserError(_('Only a time off Officer/Responsible or Manager can approve or refuse time off requests.'))
+
+            if is_officer or self.env.user == holiday.employee_id.leave_manager_id:
+                # use ir.rule based first access check: department, members, ... (see security.xml)
+                holiday.check_access_rule('write')
+
+            if holiday.employee_id == current_employee and not is_manager and not val_type == 'no':
+                raise UserError(_('Only a time off Manager can approve its own requests.'))
+
+            if (state == 'validate1' and val_type == 'both') or (state == 'validate' and val_type == 'manager'):
+                if self.env.user == holiday.employee_id.leave_manager_id:
+                    continue
+
+            if state == 'validate' and val_type == 'both':
+                if not is_officer:
+                    raise UserError(_('Only a Time off Approver can apply the second approval on allocation requests.'))
+
 
     def _prepare_holiday_values(self, employees):
         self.ensure_one()

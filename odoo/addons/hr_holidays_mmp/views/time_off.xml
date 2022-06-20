@@ -22,6 +22,10 @@
                     type="object">
                 </button>
             </xpath>
+            <xpath expr="//button[@name='action_validate']" position="attributes">
+                <attribute name="groups">hr_holidays.group_hr_holidays_user</attribute>
+            </xpath>
+
             <field name="holiday_status_id" position="replace"/>
             <field name="employee_id" position="replace"/>
             <xpath expr="//field[@name='request_unit_half']" position="attributes">
@@ -45,7 +49,7 @@
                 <field name="employee_ids" required="1" attrs="{
                     'required': [('holiday_type', '=', 'employee'), ('state', 'in', ('draft', 'cancel', 'refuse'))],
                     'invisible': ['|', ('holiday_type', '!=', 'employee'), '&amp;', ('state', '=', 'validate'), ('employee_id', '!=', False)],
-                    }" widget="many2many_tags"/>
+                    }" options="{'no_crete':True, 'no_edit': True}" widget="many2many_tags"/>
                 <field name="holiday_status_id" options="{'no_open': True}" context="{'from_manager_leave_form': True ,'employee_id': employee_id}"/>
             </label>
 <!--            <xpath expr="//label[@id='label_dates']" position="attributes">-->
@@ -88,16 +92,19 @@
         </field>
     </record>
 
-<!--    <record id="view_search_holiday_app_form" model="ir.ui.view">-->
-<!--        <field name="name">hr.holidays.filter</field>-->
-<!--        <field name="model">hr.leave</field>-->
-<!--        <field name="inherit_id" ref="hr_holidays.view_hr_holidays_filter" />-->
-<!--        <field name="arch" type="xml">-->
-<!--            <xpath expr="//filter[@name='my_team']" position="attributes">-->
-<!--                <attribute name="domain">['|','|', ('employee_ids.leave_manager_id', '=', uid), ('employee_id.leave_manager_id', '=', uid),('employee_id.user_id', '=', uid)]</attribute>-->
-<!--            </xpath>-->
-<!--        </field>-->
-<!--    </record>-->
+    <record id="view_search_holiday_app_form" model="ir.ui.view">
+        <field name="name">hr.holidays.filter</field>
+        <field name="model">hr.leave</field>
+        <field name="inherit_id" ref="hr_holidays.view_hr_holidays_filter" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_team']" position="attributes">
+                <attribute name="domain">['|','|', ('employee_ids.leave_manager_id', '=', uid), ('employee_id.leave_manager_id', '=', uid),('employee_id.user_id', '=', uid)]</attribute>
+            </xpath>
+            <filter name="active_time_off" position="replace">
+                <filter name="active_time_off" domain="[('holiday_status_id.active', '=', True)]" />
+            </filter>
+        </field>
+    </record>
 
 <!--    <record id="hr_leave_view_search_my_mmp" model="ir.ui.view">-->
 <!--        <field name="name">hr.holidays.view.search.my</field>-->

@@ -96,14 +96,15 @@ class HrLeaves(models.Model):
                  'request_unit_half', 'request_unit_hours', 'request_unit_custom', 'employee_id')
     def _compute_date_from_to(self):
         for holiday in self:
-            compensated_request_date_from = holiday.request_date_from
-            compensated_request_date_to = holiday.request_date_to
-            hour_from = float_to_time(float(holiday.request_hour_from))
-            hour_to = float_to_time(float(holiday.request_hour_to))
-            holiday.date_from = timezone(holiday.tz).localize(
-                datetime.combine(compensated_request_date_from, hour_from)).astimezone(UTC).replace(tzinfo=None)
-            holiday.date_to = timezone(holiday.tz).localize(
-                datetime.combine(compensated_request_date_to, hour_to)).astimezone(UTC).replace(tzinfo=None)
+            if holiday.request_date_from and holiday.request_date_to:
+                compensated_request_date_from = holiday.request_date_from
+                compensated_request_date_to = holiday.request_date_to
+                hour_from = float_to_time(float(holiday.request_hour_from or 0))
+                hour_to = float_to_time(float(holiday.request_hour_to or 23.5))
+                holiday.date_from = timezone(holiday.tz).localize(
+                    datetime.combine(compensated_request_date_from, hour_from)).astimezone(UTC).replace(tzinfo=None)
+                holiday.date_to = timezone(holiday.tz).localize(
+                    datetime.combine(compensated_request_date_to, hour_to)).astimezone(UTC).replace(tzinfo=None)
 
     @api.onchange('section_id', 'department_id', 'division_id')
     def onchange_section(self):
@@ -220,7 +221,7 @@ class HrLeaves(models.Model):
                         #husni change change leave_manaager Can approve
                         for lv in holiday.employee_ids:
                             if self.env.user != lv.leave_manager_id:
-                                raise UserError(_('You must be either %s\'s manager or Time off Manager to approve this leave') % (lv.employee_id.name))
+                                raise UserError(_('You must be either %s\'s manager or Time off Manager to approve this leave') % (lv.name))
 
                     if (state == 'validate' and not is_officer and not is_manager):
                         raise UserError(_('You must be %s\'s Manager to approve this leave', holiday.employee_id.name))
