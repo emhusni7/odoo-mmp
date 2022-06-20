@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+    <record id="view_uom_work" model="ir.ui.view">
+        <field name="name">UoM</field>
+        <field name="model">hr.work.uom</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code"/>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_form_uom_work" model="ir.ui.view">
+        <field name="name">UoM</field>
+        <field name="model">hr.work.uom</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group col="4">
+                        <field name="code"/>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="work_uom_action" model="ir.actions.act_window">
+        <field name="name">Work UoM</field>
+        <field name="res_model">hr.work.uom</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_uom_work"/>
+    </record>
+
+    <menuitem id="menu_work_entries_view" parent="hr_payroll_community.menu_hr_payroll_community_root" name="Work Entries"  />
+    <menuitem id="menu_uom_view" parent="menu_work_entries_view" name="UoM" action="work_uom_action" sequence="1" />
+
+    <record id="view_work_type_tree" model="ir.ui.view">
+        <field name="name">Work Type</field>
+        <field name="model">hr.work.type</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="price_unit"/>
+                <field name="uom_id" options="{'no_create': True, 'no_edit':True}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_work_type_form" model="ir.ui.view">
+        <field name="name">Work Type</field>
+        <field name="model">hr.work.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group colspan="4">
+                        <field name="code"/>
+                        <field name="name"/>
+                        <label for="price_unit" name="Price Unit" />
+                        <div class="o_row">
+                            <field name="price_unit" nolabel="1"/>
+                            <field name="uom_id" nolabel="=1"/>
+                        </div>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="work_type_action" model="ir.actions.act_window">
+        <field name="name">Work Type</field>
+        <field name="res_model">hr.work.type</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_work_type_tree"/>
+    </record>
+
+    <menuitem id="menu_work_type_view" parent="menu_work_entries_view" name="Work Type" action="work_type_action" sequence="2" />
+
+    <record id="view_work_entries_tree" model="ir.ui.view">
+        <field name="name">Work Entries</field>
+        <field name="model">hr.work.entry</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="from_date" />
+                <field name="to_date" />
+                <field name="employee_id" />
+                <field name="price_total"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_work_entries_from" model="ir.ui.view">
+        <field name="name">Work Entries</field>
+        <field name="model">hr.work.entry</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h2>
+                            <field name="name" nolabel="1" readonly="1" force_save="1" />
+                        </h2>
+                    </div>
+                    <group col="4">
+                        <field name="from_date" widget="daterange" options="{'related_end_date': 'to_date'}" />
+                        <field name="to_date" widget="daterange" options="{'related_start_date': 'from_date'}" />
+                        <field name="employee_id" options="{'no_create':True, 'no_edit':True}" colspan="4"/>
+                        <field name="work_type" options="{'no_create':True, 'no_edit':True}" />
+                        <label for="qty" string="Qty" />
+                        <div class="o_row">
+                            <field name="qty" nolabel="1" />
+                            <field name="uom_id" options="{'no_create':True, 'no_edit':True}"/>
+                        </div>
+                        <field name="price_unit" readonly="1" />
+                        <field name="price_total" readonly="1" force_save="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_work_entry_search" model="ir.ui.view">
+            <field name="name">hr.work.entry.search</field>
+            <field name="model">hr.work.entry</field>
+            <field name="arch" type="xml">
+                <search string="Work Entry">
+                    <field name="name"/>
+                    <field name="work_type"/>
+                    <field name="employee_id"/>
+                    <field name="from_date"/>
+                    <group string="Group By">
+                        <filter name="groupby_date" string="Date" context="{'group_by': 'from_date'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+    <record id="work_entries_action" model="ir.actions.act_window">
+        <field name="name">Work Entries</field>
+        <field name="res_model">hr.work.entry</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_work_type_tree"/>
+        <field name="search_view_id" ref="view_work_entry_search" />
+    </record>
+
+    <menuitem id="menu_work_entries_act_view" parent="menu_work_entries_view" name="Work Entries" action="work_entries_action" sequence="3" />
+
+    <menuitem parent="hr_payroll_community.menu_hr_payroll_community_root" id="menu_payroll_mmp" name="Payroll" />
+    <menuitem action="hr_payroll_community.action_hr_payslip_run_tree" parent="menu_payroll_mmp" id="hr_payroll_community.menu_hr_payslip_run" sequence="1" />
+
+    <menuitem action="hr_payroll_community.action_view_hr_payslip_form"
+              id="hr_payroll_community.menu_department_tree"
+              parent="menu_payroll_mmp"
+              sequence="2"
+              groups="hr_payroll_community.group_hr_payroll_community_user"/>
+    </data>
+</odoo>

@@ -1,5 +1,12 @@
 from odoo import fields, models, _, api, SUPERUSER_ID
 from odoo.exceptions import UserError, ValidationError
+from datetime import datetime, time
+from pytz import timezone, UTC
+from odoo.addons.resource.models.resource import float_to_time, HOURS_PER_DAY
+HOURS_PER_DAY = 8
+from collections import namedtuple
+
+DummyAttendance = namedtuple('DummyAttendance', 'hour_from, hour_to, dayofweek, day_period, week_type')
 
 class HrLeaves(models.Model):
     _inherit = "hr.leave"
@@ -12,6 +19,7 @@ class HrLeaves(models.Model):
                 'validate': [('readonly', True)]})
     division_id = fields.Many2one("hr.divisi.mmp", "Division", domain="[('department_id','=',department_id)]")
     section_id = fields.Many2one("hr.job", "Section", domain="[('divisi_id','=',division_id)]")
+
     # leave type configuration
     holiday_status_id = fields.Many2one(
         "hr.leave.type",  store=True, string="Time Off Type", required=True,
@@ -22,6 +30,19 @@ class HrLeaves(models.Model):
 
     employee_company_id = fields.Many2one(related='employee_ids.company_id', readonly=True, store=True)
     active_employee = fields.Boolean(related='employee_ids.active', readonly=True)
+    request_unit_hours = fields.Boolean('Custom Hours', compute='_compute_request_unit_hours', store=True,
+                                        readonly=False)
+
+    @api.depends('holiday_status_id')
+    def _compute_request_unit_hours(self):
+        for holiday in self:
+            if holiday.holiday_status_id.request_unit == 'hour':
+                holiday.request_unit_hours = True
+            else:
+                holiday.request_unit_hours = False
+
+    def _compute_date_from_to(self):
+        return True
 
     @api.onchange('section_id', 'department_id', 'division_id')
     def onchange_section(self):
@@ -63,7 +84,6 @@ class HrLeaves(models.Model):
     def _compute_department_id(self):
         for holiday in self:
             holiday.department_id = holiday.employee_id.department_id
-
 
     @api.ondelete(at_uninstall=False)
     def _unlink_if_correct_states(self):
@@ -198,9 +218,17 @@ class HrLeaves(models.Model):
                     holiday_sudo.activity_update()
         return holidays
 
+    def _get_day_batch(self, employess, date_from, date_to):
+        res = {}
+        for x in employess.ids:
+            res[x] = self._get_number_of_days(date_from, date_to, x)
+        return res
+
     def _prepare_employees_holiday_values(self, employees):
         self.ensure_one()
-        work_days_data = employees._get_work_days_data_batch(self.date_from, self.date_to)
+
+        # work_days_data = employees._get_work_days_data_batch(self.date_from, self.date_to)
+        work_days_data = self._get_day_batch(employees, self.date_from, self.date_to)
         return [{
             'name': self.name,
             'holiday_type': 'employee',
@@ -228,7 +256,7 @@ class HrLeaves(models.Model):
 
     def action_validate(self):
         current_employee = self.env.user.employee_id
-        leaves = self._get_leaves_on_public_holiday()
+        leaves = self.sudo()._get_leaves_on_public_holiday()
         if leaves:
             raise ValidationError(_('The following employees are not supposed to work during that period:\n %s') % ','.join(leaves.mapped('employee_id.name')))
 
@@ -293,6 +321,65 @@ class HrLeaves(models.Model):
         if not self.env.context.get('leave_fast_create'):
             employee_requests.filtered(lambda holiday: holiday.validation_type != 'no_validation').activity_update()
         return True
+
+    @api.depends('number_of_days')
+    def _compute_number_of_hours_display(self):
+        for hol in self:
+            holiday = hol.sudo()
+            if holiday.date_from and holiday.date_to:
+                # Take attendances into account, in case the leave validated
+                # Otherwise, this will result into number_of_hours = 0
+                # and number_of_hours_display = 0 or (#day * calendar.hours_per_day),
+                # which could be wrong if the employee doesn't work the same number
+                # hours each day
+                start_dt = holiday.date_from
+                end_dt = holiday.date_to
+                if holiday.state == 'validate':
+                    if not start_dt.tzinfo:
+                        start_dt = start_dt.replace(tzinfo=UTC)
+                    if not end_dt.tzinfo:
+                        end_dt = end_dt.replace(tzinfo=UTC)
+                    if holiday.request_unit_half or holiday.request_unit_hours:
+                        number_of_hours = (end_dt-start_dt).total_seconds()/3600
+                    else:
+                        number_of_hours = holiday.employee_id.contract_id.resource_calendar_id.hours_per_day
+                else:
+                    if holiday.request_unit_half or holiday.request_unit_hours:
+                        number_of_hours = (end_dt-start_dt).total_seconds()/3600
+                    else:
+                        number_of_hours = holiday.employee_id.contract_id.resource_calendar_id.hours_per_day
+
+                holiday.number_of_hours_display = number_of_hours
+            else:
+                holiday.number_of_hours_display = 0
+
+    def _get_number_of_days(self, date_from, date_to, employee_id):
+        """ Returns a float equals to the timedelta between two dates given as string."""
+
+        if employee_id:
+            employee = self.sudo().env['hr.employee'].browse(employee_id)
+            # We force the company in the domain as we are more than likely in a compute_sudo
+            if not employee.contract_id:
+                raise UserError("Employee Contract Not Created")
+            today_hours = employee.contract_id.resource_calendar_id.get_work_hours_count(
+                datetime.combine(date_from.date(), time.min),
+                datetime.combine(date_from.date(), time.max),
+                False)
+
+            hours = employee.contract_id.resource_calendar_id.get_work_hours_count(date_from, date_to)
+            days = hours / (today_hours or HOURS_PER_DAY) if not self.request_unit_half else 0.5
+            if self.request_unit_half and hours > 0:
+                days= 0.5
+            return {'days': days, 'hours': hours}
+
+        today_hours = self.env.company.resource_calendar_id.get_work_hours_count(
+            datetime.combine(date_from.date(), time.min),
+            datetime.combine(date_from.date(), time.max),
+            False)
+
+        hours = self.env.company.resource_calendar_id.get_work_hours_count(date_from, date_to)
+        days = hours / (today_hours or HOURS_PER_DAY) if not self.request_unit_half else 0.5
+        return {'days': days, 'hours': hours}
 
 
 HrLeaves

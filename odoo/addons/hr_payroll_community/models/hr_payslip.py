@@ -23,6 +23,7 @@ class HrPayslip(models.Model):
 
     struct_id = fields.Many2one('hr.payroll.structure', string='Structure',
                                 readonly=True, states={'draft': [('readonly', False)]},
+                                ondelete='cascade',
                                 help='Defines the rules that have to be applied to this payslip, accordingly '
                                      'to the contract chosen. If you let empty the field contract, this field isn\'t '
                                      'mandatory anymore and thus the rules applied will be all the rules set on the '
@@ -210,8 +211,7 @@ class HrPayslip(models.Model):
                     current_leave_struct['number_of_days'] += hours / work_hours
 
             # compute worked days
-            work_data = contract.employee_id.get_work_days_data(day_from, day_to,
-                                                                calendar=contract.resource_calendar_id)
+            work_data = contract.employee_id.get_work_days_data(day_from, day_to, calendar=contract.resource_calendar_id)
             attendances = {
                 'name': _("Normal Working Days paid at 100%"),
                 'sequence': 1,
@@ -224,6 +224,7 @@ class HrPayslip(models.Model):
             res.append(attendances)
             res.extend(leaves.values())
         return res
+
 
     @api.model
     def get_inputs(self, contracts, date_from, date_to):
@@ -649,8 +650,10 @@ class ResourceMixin(models.AbstractModel):
         for start, stop, meta in intervals[resource.id]:
             day_total[start.date()] += (stop - start).total_seconds() / 3600
 
-        # actual hours per day
+        #actual hours per day
         if compute_leaves:
+            # husni add domain ditambahkan hanya global leave aja yang mengurangi normal working
+            domain = [('holiday_id','=',False)]
             intervals = calendar._work_intervals_batch(from_datetime, to_datetime, resource, domain)
         else:
             intervals = calendar._attendance_intervals_batch(from_datetime, to_datetime, resource)

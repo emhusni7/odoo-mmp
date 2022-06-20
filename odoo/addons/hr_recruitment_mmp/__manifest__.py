@@ -13,6 +13,7 @@
         'hr',
         'hr_recruitment',
         'hr_contract_mmp',
+        'hr_payroll_community'
     ],
     'assets': {
         'web.assets_backend':['hr_recruitment_mmp/static/src/css/style.css']

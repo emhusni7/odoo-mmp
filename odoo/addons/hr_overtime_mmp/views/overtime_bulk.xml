@@ -39,6 +39,7 @@
                                 <field name="aplicant" domain="[('department_id','=',department_id)]" attrs="{'readonly':[('state','!=','draft')]}" />
                                 <field name="section_id" options="{'no_create': True, 'no_create_edit':True}" attrs="{'readonly':[('state','!=','draft')]}" />
                                 <field name="manager_id" domain="[('department_id','=',department_id)]" attrs="{'readonly':[('state','!=','draft')]}" />
+                                <field name="rest_hours" widget="float_time" attrs="{'readonly':[('state','!=','draft')]}" />
                         </group>
                         <notebook>
                             <page string="Overtime">
@@ -61,8 +62,8 @@
                                                 <field name="date_to" />
                                                 <field name="employee_id" />
                                                 <field name="name"/>
-                                                <field name="days_no_tmp"/>
-                                                <field name="days_no"/>
+                                                <field name="days_no_tmp" readonly="1" force_save="1"/>
+                                                <field name="days_no" readonly="1" force_save="1"/>
                                                 <field name="cash_hrs_amount" readonly="1" force_save="1" groups="hr.group_hr_user" />
                                                 <field name="cash_day_amount" readonly="1" force_save="1" groups="hr.group_hr_user" />
                                                 <field name="overtime_bulk_id" invisible="1" />
@@ -143,7 +144,7 @@
 
         <!-- MenuItems -->
         <menuitem id="overtime_submenu" name="Overtime Request"
-                  groups="base.group_user" web_icon="ohrms_overtime,static/description/overtime_icon.png"/>
+                  groups="base.group_user" web_icon="hr_overtime_mmp,static/description/overtime_icon.png"/>
 
         <menuitem id="overtime"
                   name="Overtime Request"

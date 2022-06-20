@@ -9,13 +9,19 @@
     'maintainer': 'Mega Marine Pride',
     'summary': 'Manage your employsee payroll records',
     'description': "Odoo 15 Payroll, Payroll, Odoo 15,Odoo Payroll, Odoo Community Payroll",
-    'depends': [
+    'depends':[
         'hr_payroll_community',
         'hr_contract_mmp',
+        'hr_recruitment_mmp',
+        'hr_attendance_mmp',
     ],
     'data': [
+        'security/security.xml',
         'security/ir.model.access.csv',
-        'views/salary_rule_mmp.xml'
+        'views/salary_rule_mmp.xml',
+        'views/salary_structure.xml',
+        'views/payslip.xml',
+        'views/work_type.xml',
     ],
     'license': 'AGPL-3',
     'installable': True,

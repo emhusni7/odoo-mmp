@@ -34,7 +34,7 @@
     'maintainer': 'Cybrosys Techno Solutions',
     'website': "https://www.openhrms.com",
     'depends': [
-        'hr', 'hr_contract', 'hr_attendance', 'hr_holidays', 'hr_payroll_community'
+        'hr', 'hr_contract', 'hr_attendance','hr_attendance_mmp', 'hr_holidays', 'hr_payroll_community'
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -43,7 +43,6 @@
         'views/overtime_bulk.xml',
         'views/overtime_request_view.xml',
         'views/overtime_type.xml',
-        'views/hr_payslip.xml',
 
     ],
     'demo': ['data/hr_overtime_demo.xml'],

@@ -18,6 +18,18 @@
         <field name="model">hr.payroll.structure</field>
         <field name="inherit_id" ref="hr_payroll_community.view_hr_employee_grade_form"/>
         <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="complete_name" />
+                <field name="type"/>
+            </field>
+            <xpath expr="//field[@name='parent_id']" position="before">
+                <field name="resource_calendar_id" />
+            </xpath>
+            <xpath expr="//field[@name='parent_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+
             <field name="rule_ids" position="after">
                 <separator />
                 <button name="action_generate_rule" type="object" string="Generate" class="oe_highlight" />

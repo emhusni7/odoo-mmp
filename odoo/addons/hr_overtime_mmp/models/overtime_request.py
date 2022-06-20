@@ -49,13 +49,13 @@ class HrOverTime(models.Model):
     employee_id = fields.Many2one('hr.employee', string='Employee',required=True)
     date_from = fields.Datetime('Date From', default= lambda self: self._context.get('date_from'), required=1)
     date_to = fields.Datetime('Date to', default=lambda self: self._context.get('date_to'), required=1)
-    days_no_tmp = fields.Float('Hours', compute="_get_days", store=True)
+    days_no_tmp = fields.Float('Hours', store=True)
     days_no = fields.Float('No. of Days', store=True)
-    cash_hrs_amount = fields.Float(string='Overtime Amount (Hours)')
-    cash_day_amount = fields.Float(string='Overtime Amount (Days)')
+    cash_hrs_amount = fields.Float(string='Overtime Amount / Hours')
+    cash_day_amount = fields.Float(string='Overtime Amount / Days')
     overtime_bulk_id = fields.Many2one("hr.overtime.bulk", "Overtime Bulk")
 
-    @api.depends('date_from', 'date_to')
+    @api.onchange('date_from', 'date_to')
     def _get_days(self):
         for recd in self:
             if recd.date_from and recd.date_to:
@@ -77,7 +77,7 @@ class HrOverTime(models.Model):
                 days, seconds = diff.days, diff.seconds
                 hours = days * 24 + seconds / 3600
                 sheet.update({
-                    'days_no_tmp': hours if sheet.overtime_bulk_id.ov_type.duration_type in ['hours','ins_h'] else days_no,
+                    'days_no_tmp': hours - self.overtime_bulk_id.rest_hours,
                     'days_no': days_no
                 })
 
@@ -113,13 +113,13 @@ class HrOverTime(models.Model):
                         self.cash_hrs_amount = cash_amount
         elif ov_type.duration_type == 'days':
             for xy in ov_type.rule_line_ids:
-                if xy.from_hrs <= self.days_no_tmp <= xy.to_hrs:
+                if xy.from_hrs <= self.days_no <= xy.to_hrs:
                     if xy.type == 'python_code':
                         cash_amount = self.get_amount(xy)
-                        self.cash_hrs_amount = cash_amount * self.days_no
+                        self.cash_day_amount = cash_amount * self.days_no_tmp
                     else:
-                        cash_amount = xy.hrs_amount * self.days_no
-                        self.cash_hrs_amount = cash_amount
+                        cash_amount = xy.hrs_amount * self.days_no_tmp
+                        self.cash_day_amount = cash_amount
 
 
 class HrOverTimeType(models.Model):
@@ -129,7 +129,7 @@ class HrOverTimeType(models.Model):
     name = fields.Char('Name')
     type = fields.Selection([('cash', 'Cash'),
                              ('leave', 'Time Off')])
-    duration_type = fields.Selection([('hours', 'Hour'), ('days', 'Days'),('ins_h', 'Insentive (Hours)')], string="Duration Type", default="hours",
+    duration_type = fields.Selection([('hours', 'Hour'), ('days', 'Days'),('ins_h', 'Insentive (Amount)')], string="Duration Type", default="hours",
                                      required=True)
     leave_type = fields.Many2one('hr.leave.type', string='Leave Type', domain="[('id', 'in', leave_compute)]")
     leave_compute = fields.Many2many('hr.leave.type', compute="_get_leave_type")
@@ -137,7 +137,6 @@ class HrOverTimeType(models.Model):
 
     @api.onchange('duration_type')
     def _get_leave_type(self):
-        dur = ''
         ids = []
         if self.duration_type:
             if self.duration_type == 'days':

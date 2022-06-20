@@ -313,11 +313,11 @@
                                     <field name="number_of_days_display" nolabel="1" readonly="1" class="oe_inline"/>
                                     <span>Days</span>
                                 </div>
-                                <div groups="hr_holidays.group_hr_holidays_manager" class="o_row" attrs="{'invisible': ['|', ('request_unit_half', '=', True), ('request_unit_hours', '=', True)]}">
+                                <div groups="hr_holidays.group_hr_holidays_manager">
                                     <field name="number_of_days" nolabel="1" class="oe_inline"/>
                                     <span>Days</span>
                                 </div>
-                                <div attrs="{'invisible': [('leave_type_request_unit', '!=', 'hour')]}" class="o_row">
+                                <div>
                                     <field name="number_of_hours_text" nolabel="1" class="oe_inline"/>
                                 </div>
                             </div>

@@ -14,12 +14,13 @@ class OvertimeBulk(models.Model):
     aplicant = fields.Many2one("hr.employee","Aplicant")
     manager_id = fields.Many2one("hr.employee","Manager")
     desc = fields.Text("Description")
+    rest_hours = fields.Float("Rest Hours", default=1.0)
     date_from = fields.Datetime("Date From", default= fields.Datetime.now(), required=1)
     date_to = fields.Datetime("Date To", default= fields.Datetime.now(), required=1)
     overtime_ids = fields.One2many("hr.overtime", "overtime_bulk_id", "Overtime")
     type = fields.Selection([('cash', 'Cash'), ('leave', 'Time Off')], default="cash", required=True, string="Type")
     leave_id = fields.Many2one('hr.leave.allocation', string="Leave ID")
-    state = fields.Selection([("draft", "New"),("confirm", "To Approve"), ("approved", "Approved"),("cancel","Reject")], string="State", default="draft", track_visibility="onchange")
+    state = fields.Selection([("draft", "New"),("confirm", "To Approve"), ("approved", "Approved"),("cancel","Reject")], string="State", default="draft", tracking=True)
 
 
 

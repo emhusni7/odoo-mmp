@@ -1,3 +1,10 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_hr_salary_rule_mmp,hr.salary.rule.mmp,model_hr_salary_rule_mmp,hr_payroll_community.group_hr_payroll_community_user,1,1,1,1
 access_user_hr_salary_rule_mmp,hr.salary.rule.mmp,model_hr_salary_rule_mmp,hr.group_hr_user,1,1,1,1
+access_work_uom,hr.work.uom,model_hr_work_uom,hr_payroll_community.group_hr_payroll_community_user,1,1,1,0
+access_work_uom_manager,hr.work.uom,model_hr_work_uom,hr_payroll_community.group_hr_payroll_community_manager,1,1,1,1
+access_work_type_user,hr.work.type,model_hr_work_type,hr_payroll_community.group_hr_payroll_community_user,1,1,1,0
+access_work_type_manager,hr.work.type,model_hr_work_type,hr_payroll_community.group_hr_payroll_community_manager,1,1,1,1
+access_work_entry_user,hr.work.entry,model_hr_work_entry,hr_payroll_community.group_hr_payroll_community_user,1,1,1,1
+
+

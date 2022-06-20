@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+     <data>
+        <record id="hr_payslip_inherited_view_overtime" model="ir.ui.view">
+            <field name="name">Overtime.Inherited.View</field>
+            <field name="model">hr.payslip</field>
+            <field name="inherit_id" ref="hr_payroll_community.view_hr_payslip_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page groups="hr_payroll_community.group_hr_payroll_community_user" name="overtime_ids" string="Overtime">
+                        <field name="overtime_ids" nolabel="1">
+                            <tree>
+                                <field name="overtime_bulk_id"/>
+                                <field name="date_from"/>
+                                <field name="date_to"/>
+                                <field name="days_no_tmp"/>
+                                <field name="days_no"/>
+                                <field name="cash_hrs_amount"/>
+                                <field name="cash_day_amount"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

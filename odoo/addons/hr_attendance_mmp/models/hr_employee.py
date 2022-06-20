@@ -68,3 +68,19 @@ class hrEmpoyeeAttd(models.Model):
         action_message['attendance'] = modified_attendance.read()[0]
         action_message['total_overtime'] = employee.total_overtime
         return {'action': action_message}
+
+    #compute presence state
+    #todo: check attendance checkin today jika ada maka present jika tidak
+    @api.depends('user_id.im_status', 'attendance_state')
+    def _compute_presence_state(self):
+        """
+        Override to include checkin/checkout in the presence state
+        Attendance has the second highest priority after login
+        """
+        for employee in self:
+            if not employee.last_attendance_id:
+                employee.hr_presence_state = 'to_define'
+            elif employee.last_attendance_id.check_in.date() == fields.Date.context_today(self):
+                employee.hr_presence_state = 'present'
+            else:
+                employee.hr_presence_state = 'absent'

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_payslip_run_inhr" model="ir.ui.view">
+        <field name="name">Payslip Batch</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="hr_payroll_community.hr_payslip_run_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//label[@for='date_start']" position="before">
+                <field name="structure_id" options="{'no_create': True, 'no_create_edit': True}" />
+                <field name="department_id" options="{'no_create': True, 'no_create_edit': True}" />
+                <field name="divisi_id" options="{'no_create': True, 'no_create_edit': True}" />
+                <field name="section_id" options="{'no_create': True, 'no_create_edit': True}" />
+            </xpath>
+            <xpath expr="//field[@name='credit_note']" position="after">
+                <field name="month" />
+                <field name="type" />
+                <field name="normal_working_days" />
+                <p>Condition Normal Working days is Saturday and Sunday Off with 5 days working days in one week and Sunday is Off with 6 Working Days in on Week. </p>
+
+            </xpath>
+            <xpath expr="//field[@name='slip_ids']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_payroll_batch_run" model="ir.ui.view">
+        <field name="name">Payroll Batch</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="hr_payroll_community.hr_payslip_run_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="type"/>
+                <field name="department_id"/>
+                <field name="structure_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="working_sche_mmp" model="ir.ui.view">
+        <field name="name">Working Schedule MMP</field>
+        <field name="model">resource.calendar</field>
+        <field name="inherit_id" ref="resource.resource_calendar_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='hours_per_day']" position="after">
+                <field name="rest_hours" widget="float_time" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="hr_payroll_community.view_hr_payroll_structure_tree" model="ir.ui.view">
+        <field name="name">Payroll Structure</field>
+        <field name="model">hr.payroll.structure</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="complete_name"/>
+                <field name="code"/>
+                <field name="resource_calendar_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr_payroll_community.view_hr_payroll_structure_list_view" model="ir.ui.view">
+        <field name="name">Payroll Structure</field>
+        <field name="model">hr.payroll.structure</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="complete_name"/>
+                <field name="code"/>
+                <field name="resource_calendar_id"/>
+            </tree>
+        </field>
+    </record>
+</odoo>
