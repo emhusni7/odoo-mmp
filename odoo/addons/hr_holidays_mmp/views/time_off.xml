@@ -24,16 +24,16 @@
             </xpath>
             <field name="holiday_status_id" position="replace"/>
             <field name="employee_id" position="replace"/>
-            <xpath expr="//field[@name='request_unit_half']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='request_unit_hours']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='date_from']" position="replace">
-            </xpath>
-            <xpath expr="//field[@name='date_to']" position="replace">
-            </xpath>
+<!--            <xpath expr="//field[@name='request_unit_half']" position="attributes">-->
+<!--                <attribute name="invisible">1</attribute>-->
+<!--            </xpath>-->
+<!--            <xpath expr="//field[@name='request_unit_hours']" position="attributes">-->
+<!--                <attribute name="invisible">1</attribute>-->
+<!--            </xpath>-->
+<!--            <xpath expr="//field[@name='date_from']" position="replace">-->
+<!--            </xpath>-->
+<!--            <xpath expr="//field[@name='date_to']" position="replace">-->
+<!--            </xpath>-->
             <label id="label_dates" position="before">
                 <field name="multi_employee" invisible="1" force_save="1"/>
                 <field name="department_id" attrs="{'readonly':[('state','not in',['draft','confirm'])]}" />
@@ -52,21 +52,21 @@
                     <field name="date_from" />-<field name="date_to"/>
                 </div>
             </label>
-            <xpath expr="//label[@id='label_dates']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='request_date_from']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='request_date_to']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//span[@class='oe_inline']" position="attributes">
-                <attribute name="replace">1</attribute>
-            </xpath>
-            <xpath expr="//div/span[@class='oe_inline']" position="attributes">
-                <attribute name="replace">1</attribute>
-            </xpath>
+<!--            <xpath expr="//label[@id='label_dates']" position="attributes">-->
+<!--                <attribute name="invisible">1</attribute>-->
+<!--            </xpath>-->
+<!--            <xpath expr="//field[@name='request_date_from']" position="attributes">-->
+<!--                <attribute name="invisible">1</attribute>-->
+<!--            </xpath>-->
+<!--            <xpath expr="//field[@name='request_date_to']" position="attributes">-->
+<!--                <attribute name="invisible">1</attribute>-->
+<!--            </xpath>-->
+<!--            <xpath expr="//span[@class='oe_inline']" position="attributes">-->
+<!--                <attribute name="replace">1</attribute>-->
+<!--            </xpath>-->
+<!--            <xpath expr="//div/span[@class='oe_inline']" position="attributes">-->
+<!--                <attribute name="replace">1</attribute>-->
+<!--            </xpath>-->
 
             <field name="name" position="replace"/>
             <field name="user_id" position="before">
