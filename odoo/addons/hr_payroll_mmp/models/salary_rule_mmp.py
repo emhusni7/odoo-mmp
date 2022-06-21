@@ -61,6 +61,10 @@ class HRContract(models.Model):
                 amount -=trx.amount
         self.wage = amount
 
+        self.bpjs_kes_tran_ids.onchange_bpjs_kes()
+        self.bpjs_ket_tran_ids.onchange_bpjs_ket()
+
+
 
     def action_generate_rule(self):
         data = map(lambda x: (0, 0,{
@@ -86,9 +90,9 @@ class BPJSKesContractMMp(models.Model):
     def onchange_bpjs_kes(self):
         super(BPJSKesContractMMp, self).onchange_bpjs_kes()
         for kes in self:
-            self.grand_total = sum([x.amount for x in kes.contract_id.contract_rule_ids if x.h_insurance])
-            self.amount_company = round(self.rate_company/100 * min(self.grand_total,self.max_wages),2)
-            self.amount_employee = round(self.rate_employee/100 * min(self.grand_total,self.max_wages),2)
+            kes.grand_total = sum([x.amount for x in kes.contract_id.contract_rule_ids if x.h_insurance])
+            kes.amount_company = round(kes.rate_company/100 * min(kes.grand_total,kes.max_wages),2)
+            kes.amount_employee = round(kes.rate_employee/100 * min(kes.grand_total,kes.max_wages),2)
 
 BPJSKesContractMMp
 
@@ -98,11 +102,12 @@ class BPJSKetContractMMp(models.Model):
     @api.onchange('bpjs_ket_id')
     def onchange_bpjs_ket(self):
         super(BPJSKetContractMMp, self).onchange_bpjs_ket()
-        self.grand_total = sum([x.amount for x in self.contract_id.contract_rule_ids if x.w_insurance])
-        self.amount_jht = round(self.rate_jht / 100 * min(self.grand_total, self.max_wages), 2)
-        self.amount_jht_emp = round(self.rate_jht_emp / 100 * min(self.grand_total, self.max_wages), 2)
-        self.amount_jp = round(self.rate_jp / 100 * min(self.grand_total, self.max_wages), 2)
-        self.amount_jp_emp = round(self.rate_jp_emp / 100 * min(self.grand_total, self.max_wages), 2)
-        self.amount_jkk = round(self.rate_jkk / 100 * min(self.grand_total, self.max_wages), 2)
-        self.amount_jkm = round(self.rate_jkm / 100 * min(self.grand_total, self.max_wages), 2)
+        for ket in self:
+            ket.grand_total = sum([x.amount for x in ket.contract_id.contract_rule_ids if x.w_insurance])
+            ket.amount_jht = round(ket.rate_jht / 100 * min(ket.grand_total, ket.max_wages), 2)
+            ket.amount_jht_emp = round(ket.rate_jht_emp / 100 * min(ket.grand_total, ket.max_wages), 2)
+            ket.amount_jp = round(ket.rate_jp / 100 * min(ket.grand_total, ket.max_wages), 2)
+            ket.amount_jp_emp = round(ket.rate_jp_emp / 100 * min(ket.grand_total, ket.max_wages), 2)
+            ket.amount_jkk = round(ket.rate_jkk / 100 * min(ket.grand_total, ket.max_wages), 2)
+            ket.amount_jkm = round(ket.rate_jkm / 100 * min(ket.grand_total, ket.max_wages), 2)
 

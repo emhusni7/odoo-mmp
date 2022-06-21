@@ -59,13 +59,14 @@ class BPJSKetContractMMp(models.Model):
     @api.onchange('bpjs_ket_id')
     def onchange_bpjs_ket(self):
         # self.contract_id = self._context.get('default_contract_id')
-        self.rate_jht = self.bpjs_ket_id.rate_jht
-        self.rate_jht_emp = self.bpjs_ket_id.rate_jht_emp
-        self.rate_jp = self.bpjs_ket_id.rate_jp
-        self.rate_jp_emp = self.bpjs_ket_id.rate_jp_emp
-        self.rate_jkk = self.bpjs_ket_id.rate_jkk
-        self.rate_jkm = self.bpjs_ket_id.rate_jkm
-        self.max_wages = self.bpjs_ket_id.max_tot_tunjangan
+        for ket in self:
+            ket.rate_jht = ket.bpjs_ket_id.rate_jht
+            ket.rate_jht_emp = ket.bpjs_ket_id.rate_jht_emp
+            ket.rate_jp = ket.bpjs_ket_id.rate_jp
+            ket.rate_jp_emp = ket.bpjs_ket_id.rate_jp_emp
+            ket.rate_jkk = ket.bpjs_ket_id.rate_jkk
+            ket.rate_jkm = ket.bpjs_ket_id.rate_jkm
+            ket.max_wages = ket.bpjs_ket_id.max_tot_tunjangan
 
 
     @api.onchange('rate_jht','rate_jht_emp')

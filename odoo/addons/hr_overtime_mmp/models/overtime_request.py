@@ -98,9 +98,9 @@ class HrOverTime(models.Model):
                 if xy.from_hrs <= self.days_no_tmp <= xy.to_hrs:
                     if xy.type == 'python_code':
                         cash_amount = self.get_amount(xy)
-                        self.cash_hrs_amount = cash_amount * self.days_no_tmp
+                        self.cash_hrs_amount = cash_amount
                     else:
-                        cash_amount = xy.hrs_amount * self.days_no_tmp
+                        cash_amount = xy.hrs_amount
                         self.cash_hrs_amount = cash_amount
         elif ov_type.duration_type == 'ins_h':
             for xy in ov_type.rule_line_ids:
@@ -116,9 +116,9 @@ class HrOverTime(models.Model):
                 if xy.from_hrs <= self.days_no <= xy.to_hrs:
                     if xy.type == 'python_code':
                         cash_amount = self.get_amount(xy)
-                        self.cash_day_amount = cash_amount * self.days_no_tmp
+                        self.cash_day_amount = cash_amount
                     else:
-                        cash_amount = xy.hrs_amount * self.days_no_tmp
+                        cash_amount = xy.hrs_amount
                         self.cash_day_amount = cash_amount
 
 

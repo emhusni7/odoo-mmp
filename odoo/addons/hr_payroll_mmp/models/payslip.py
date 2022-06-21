@@ -6,6 +6,13 @@ from odoo.addons.resource.models.resource import Intervals, datetime_to_string, 
 ROUNDING_FACTOR = 16
 from math import floor
 
+class PayslipInput(models.Model):
+    _inherit = "hr.payslip.input"
+
+    overtime_ids = fields.One2many("hr.overtime","input_id","Overtime")
+
+PayslipInput
+
 class HrPayrollStructure(models.Model):
     _inherit = "hr.payroll.structure"
     _rec_name = "complete_name"
@@ -119,6 +126,7 @@ class IntervalMMP(Intervals):
             #check possibility overtime
             if floor(attd_date[at_in.date()]['hours'] - rest_hours) > normal_worked_hours:
                 temp_overtime[at_in.date()] = (attd_date[at_in.date()]['data'])
+
             #check posibility leave hours
             if floor(attd_date[at_in.date()]['hours'] - rest_hours) < normal_worked_hours:
                 leave_hours = normal_worked_hours - (attd_date[at_in.date()]['hours'] - rest_hours)
@@ -129,11 +137,10 @@ class IntervalMMP(Intervals):
         to_remove_attd = []
         for ov_start, ov_stop, ov in overtime._items:
             # Jika Overtime Bulk
-            if ov.overtime_bulk_id.duration_type == 'days':
+            if ov.overtime_bulk_id.ov_type.duration_type == 'days':
                 #Cek tanggal overtime ada di attendance
                 if attd_date.get(ov_start.date()):
                     # del self._items[idx]
-
                     data = attd_date.get(ov_start.date())[0]
                     start = max(data[0], ov_start)
                     end = min(data[1], ov_stop)
@@ -142,10 +149,11 @@ class IntervalMMP(Intervals):
                         'start': start,
                         'end': end,
                         'type': 'days',
-                        'hours': round((end - start).seconds()/3600,2)
+                        'hours': round((end - start).seconds/3600,2),
+                        'amount': ov.cash_day_amount
                     })
                     attd_date.pop(ov_start.date(),None)
-            elif ov.overtime_bulk_id.duration_type == 'hours':
+            elif ov.overtime_bulk_id.ov_type.duration_type == 'hours':
                 #Cek tanggal overtime di attendance
                 if attd_date.get(ov_start.date()) and temp_overtime[ov_start.date()]:
                     data = temp_overtime[ov_start.date()][0]
@@ -156,7 +164,8 @@ class IntervalMMP(Intervals):
                         'start': start,
                         'end': end,
                         'type': 'hours',
-                        'hours': round((end - start).seconds()/3600,2)
+                        'hours': round((end - start).seconds/3600,2),
+                        'amount': ov.cash_hrs_amount
                     })
 
         # Leaves Computed
@@ -199,7 +208,6 @@ class IntervalMMP(Intervals):
                     if toff in attd_date.keys():
                         to_remove_attd.append(toff)
                         attd_date.pop(toff, None)
-
 
         result = {
             'overtime': overtimes,
@@ -257,7 +265,7 @@ class HrPayslip(models.Model):
             struct_id = self.struct_id
         # compute leave days
         calendar = run_id and run_id.structure_id.resource_calendar_id or contracts.resource_calendar_id
-        domain = [('employee_id', '=', self.employee_id.id)]
+        domain = [('employee_id', '=', contract.employee_id.id)]
         day_from = datetime.combine(fields.Date.from_string(date_from), time.min)
         day_to = datetime.combine(fields.Date.from_string(date_to), time.max)
         # compute worked days
@@ -296,7 +304,8 @@ class HrPayslip(models.Model):
             for key in data_late.keys():
                 #Hasil Late Hours dari normal working time - attendance hour
                 lateHours += number_hours - datas[key].get('hours')
-            if lateHours > 0:
+        # Masukkan telat ketika jumlah worked hours Kurang, dan WorkedDays == normal worked data
+            if lateHours > 0 and (work_data['hours'] > workedHours and workedDays == work_data['days']):
                 res.append({
                     'name': _("Late"),
                     'sequence': 9,
@@ -318,39 +327,41 @@ class HrPayslip(models.Model):
             res.append(absent)
             # cek Holiday Jika hours kurang dari normal working time
 
-            leaves = {}
-            leaveHours = 0
-            leaveDays = 0
-            for leave in results['leave']:
-                holiday = leave['rc'].holiday_id
-                current_leave_struct = leaves.setdefault(holiday.holiday_status_id, {
-                    'name': holiday.holiday_status_id.name or _('Global Leaves'),
-                    'sequence': 5,
-                    'code': holiday.holiday_status_id.code or 'GLOBAL',
-                    'number_of_days': leave['days'],
-                    'number_of_hours': leave['hours'],
-                    'contract_id': contract.id,
-                })
-                leaveHours += leave['hours']
-                leaveDays += leave['days']
+        leaves = {}
+        leaveHours = 0
+        leaveDays = 0
+        for leave in results['leave']:
+            holiday = leave['rc'].holiday_id
+            current_leave_struct = leaves.setdefault(holiday.holiday_status_id, {
+                'name': holiday.holiday_status_id.name or _('Global Leaves'),
+                'sequence': 5,
+                'code': holiday.holiday_status_id.code or 'GLOBAL',
+                'number_of_days': leave['days'],
+                'number_of_hours': leave['hours'],
+                'contract_id': contract.id,
+            })
+            leaveHours += leave['hours']
+            leaveDays += leave['days']
+
         alpha_days = work_data['days'] - (workedDays + leaveDays)
-        alpha_hours = work_data['hours'] - (workedHours + leaveHours)
+        alpha_hours = work_data['hours'] - (workedHours + leaveHours + lateHours)
         if alpha_days > 0 or alpha_hours > 0:
             alpha = {
                 'name': 'Alpha',
                 'sequence': 10,
                 'code': 'ALPHA',
-                'number_of_days': work_data['days'] - (workedDays + leaveDays),
-                'number_of_hours': work_data['hours'] - (workedHours + leaveHours + lateHours),
+                'number_of_days': alpha_days,
+                'number_of_hours': alpha_hours,
                 'contract_id': contract.id,
             }
             res.append(alpha)
+
         res.append(attendances)
         res.extend(leaves.values())
-        return res
+        return res, results.get('overtime')
 
     @api.model
-    def get_inputs(self, contracts, date_from, date_to):
+    def get_inputs(self, contracts, date_from, date_to, overtime= {}):
         """
         function used for writing overtime record in payslip
         input tree.
@@ -358,21 +369,19 @@ class HrPayslip(models.Model):
         """
         res = super(HrPayslip, self).get_inputs(contracts, date_to, date_from)
         overtime_type = self.env.ref('hr_overtime_mmp.hr_salary_rule_overtime')
-        overtime_id = self.env['hr.overtime'].search([('employee_id', '=', contracts.employee_id.id),
-                                                      ('overtime_bulk_id.state', '=', 'approved'),
-                                                      ('date_from','>=',date_from),
-                                                      ('date_to','<=',date_to)
-                                                      ])
-        hrs_amount = overtime_id.mapped('cash_hrs_amount')
-        day_amount = overtime_id.mapped('cash_day_amount')
-        cash_amount = sum(hrs_amount) + sum(day_amount)
-        if overtime_id:
+        cash_amount = 0
+        overtime_ids = []
+        for x in overtime:
+            cash_amount += round(x.get('amount') * floor(x.get('hours')),0)
+            overtime_ids.append(x.get('ov').id)
+
+        if cash_amount:
             input_data = {
                 'name': overtime_type.name,
                 'code': overtime_type.code,
                 'amount': cash_amount,
                 'contract_id': contracts.id,
-                'overtime_ids': [(6,0,overtime_id.ids)]
+                'overtime_ids': [(6,0,overtime_ids)]
             }
             res.append(input_data)
         return res
@@ -429,8 +438,8 @@ class HrPayslip(models.Model):
         })
         # computation of the salary input
         contracts = self.env['hr.contract'].browse(contract_ids)
-        worked_days_line_ids = self.get_worked_day_lines(contracts, date_from, date_to)
-        input_line_ids = self.get_inputs(contracts, date_from, date_to)
+        worked_days_line_ids, overtimes = self.get_worked_day_lines(contracts, date_from, date_to)
+        input_line_ids = self.get_inputs(contracts, date_from, date_to, overtime = overtimes)
         res['value'].update({
             'worked_days_line_ids': worked_days_line_ids,
             'input_line_ids': input_line_ids,

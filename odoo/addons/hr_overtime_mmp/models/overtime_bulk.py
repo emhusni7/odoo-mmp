@@ -14,7 +14,7 @@ class OvertimeBulk(models.Model):
     aplicant = fields.Many2one("hr.employee","Aplicant")
     manager_id = fields.Many2one("hr.employee","Manager")
     desc = fields.Text("Description")
-    rest_hours = fields.Float("Rest Hours", default=1.0)
+    rest_hours = fields.Float("Rest Hours", default=0.0)
     date_from = fields.Datetime("Date From", default= fields.Datetime.now(), required=1)
     date_to = fields.Datetime("Date To", default= fields.Datetime.now(), required=1)
     overtime_ids = fields.One2many("hr.overtime", "overtime_bulk_id", "Overtime")
