@@ -6,6 +6,17 @@ class hrEmpoyeeAttd(models.Model):
         ('employee_pin_uniq', 'unique (pin)', """Absen Code is Unique"""),
     ]
 
+    @api.depends('resource_calendar_id', 'hr_presence_state')
+    def _compute_presence_icon(self):
+        """
+        This method compute the state defining the display icon in the kanban view.
+        It can be overriden to add other possibilities, like time off or attendances recordings.
+        """
+        # working_now_list = self.filtered(lambda e: e.hr_presence_state == 'present')._get_employee_working_now()
+        for employee in self:
+            icon = 'presence_present'
+            employee.hr_icon_display = icon
+
     @api.model
     def attendance_scan(self, barcode):
         """ Receive a barcode scanned from the Kiosk Mode and change the attendances of corresponding employee.
