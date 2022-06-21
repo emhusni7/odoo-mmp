@@ -14,7 +14,10 @@ class hrEmpoyeeAttd(models.Model):
         """
         # working_now_list = self.filtered(lambda e: e.hr_presence_state == 'present')._get_employee_working_now()
         for employee in self:
-            icon = 'presence_present'
+            icon = 'presence_absent'
+            if employee.last_attendance_id.check_in:
+                if employee.last_attendance_id.check_in.date() == fields.Date.today():
+                    icon = 'presence_present'
             employee.hr_icon_display = icon
 
     @api.model
