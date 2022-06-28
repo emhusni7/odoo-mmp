@@ -22,14 +22,9 @@
                 <field name="complete_name" />
                 <field name="type"/>
             </field>
-            <xpath expr="//field[@name='parent_id']" position="before">
-                <field name="resource_calendar_id" />
-            </xpath>
             <xpath expr="//field[@name='parent_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-
-
             <field name="rule_ids" position="after">
                 <separator />
                 <button name="action_generate_rule" type="object" string="Generate" class="oe_highlight" />
@@ -80,4 +75,13 @@
              </xpath>
         </field>
     </record>
+
+    <menuitem
+        id="hr_payroll_community.menu_hr_salary_rule_category"
+        action="hr_payroll_community.action_hr_salary_rule_category"
+        parent="hr_payroll_community.menu_hr_payroll_community_configuration"
+        sequence="11"
+        groups="hr_payroll_community.group_hr_payroll_community_manager"
+    />
+
 </odoo>

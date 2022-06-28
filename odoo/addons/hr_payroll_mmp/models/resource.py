@@ -57,7 +57,7 @@ class ResourceCalendar(models.Model):
             The returned intervals are expressed in specified tz or in the resource's timezone.
         """
         self.ensure_one()
-        domain = [
+        domain = domain +[
             ('check_in', '>=', datetime_to_string(start_dt)),
             ('check_in', '<', datetime_to_string(end_dt)),
         ]

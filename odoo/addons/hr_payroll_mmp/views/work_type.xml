@@ -69,7 +69,7 @@
                 <field name="code"/>
                 <field name="name"/>
                 <field name="price_unit"/>
-                <field name="uom_id" options="{'no_create': True, 'no_edit':True}"/>
+                <field name="uom_id"/>
             </tree>
         </field>
     </record>
@@ -81,12 +81,13 @@
             <form>
                 <sheet>
                     <group colspan="4">
-                        <field name="code"/>
+                        <field name="code" readonly="1" force_save="1" />
                         <field name="name"/>
+                        <field name="active"/>
                         <label for="price_unit" name="Price Unit" />
                         <div class="o_row">
                             <field name="price_unit" nolabel="1"/>
-                            <field name="uom_id" nolabel="=1"/>
+                            <field name="uom_id" nolabel="=1" options="{'no_create': True, 'no_edit':True}"/>
                         </div>
                     </group>
                 </sheet>
@@ -110,7 +111,6 @@
             <tree>
                 <field name="name"/>
                 <field name="from_date" />
-                <field name="to_date" />
                 <field name="employee_id" />
                 <field name="price_total"/>
             </tree>
@@ -129,13 +129,12 @@
                         </h2>
                     </div>
                     <group col="4">
-                        <field name="from_date" widget="daterange" options="{'related_end_date': 'to_date'}" />
-                        <field name="to_date" widget="daterange" options="{'related_start_date': 'from_date'}" />
+                        <field name="from_date" />
                         <field name="employee_id" options="{'no_create':True, 'no_edit':True}" colspan="4"/>
                         <field name="work_type" options="{'no_create':True, 'no_edit':True}" />
                         <label for="qty" string="Qty" />
                         <div class="o_row">
-                            <field name="qty" nolabel="1" />
+                            <field name="qty" nolabel="1" required="1" />
                             <field name="uom_id" options="{'no_create':True, 'no_edit':True}"/>
                         </div>
                         <field name="price_unit" readonly="1" />
@@ -166,7 +165,7 @@
         <field name="name">Work Entries</field>
         <field name="res_model">hr.work.entry</field>
         <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="view_work_type_tree"/>
+        <field name="view_id" ref="view_work_entries_tree"/>
         <field name="search_view_id" ref="view_work_entry_search" />
     </record>
 

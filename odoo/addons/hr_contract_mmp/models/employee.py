@@ -44,11 +44,12 @@ class Employee(models.Model):
     fam_ids = fields.One2many("family.mmp","employee_id","Family Data")
     employee_type = fields.Selection(selection=[
         ('employee','Karyawan Tetap'),
-        ('trainee', 'Karyawan Percobaan'),
-        ('student', 'Karyawan Pelayanan'),
+        ('pkwt','PKWT'),
+        ('pkwtt','PKWTT'),
+        ('bor','Borongan')
     ], string='Employee Type', default='employee', required=True,
         help="The employee type. Although the primary purpose may seem to categorize employees, this field has also an impact in the Contract History. Only Employee type is supposed to be under contract and will have a Contract History.")
-    jenis_kerja = fields.Selection(selection=[('contr','Kontrak'),('bln','Bulanan'),('ming','Mingguan'),('bor','Borongan')])
+    jenis_kerja = fields.Selection(selection=[('5','5 Hari Kerja'),('6','6 Hari Kerja')])
     keahlian = fields.Text("Keahlian")
     work_phone = fields.Char('Work Phone', readonly=False)
     marital = fields.Selection([
@@ -73,5 +74,14 @@ class Employee(models.Model):
             self.trans_bpjs_k = self.contract_id.bpjs_ket_tran_ids.ids
         else:
             self.trans_bpjs_k = False
+
+    def action_open_contract_history(self):
+        self.ensure_one()
+        if self.contract_ids:
+            action = self.env["ir.actions.actions"]._for_xml_id('hr_contract.hr_contract_history_view_form_action')
+        else:
+            action = self.env["ir.actions.actions"]._for_xml_id('hr_contract.hr_contract_history_view_form_action')
+        action['res_id'] = self.id
+        return action
 
 Employee

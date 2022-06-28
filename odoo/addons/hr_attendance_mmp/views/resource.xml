@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_resource_calendar_ids" model="ir.ui.view">
+        <field name="name">resource.calendar</field>
+        <field name="model">resource.calendar</field>
+        <field name="inherit_id" ref="resource.resource_calendar_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='switch_calendar_type']" position="replace"/>
+        </field>
+    </record>
+
+    <record id="resource.view_resource_calendar_attendance_tree" model="ir.ui.view">
+        <field name="name">resource.calendar.attendance</field>
+        <field name="model">resource.calendar.attendance</field>
+        <field name="arch" type="xml">
+            <tree string="Working Time" editable="top">
+                <field name="sequence" widget="handle"/>
+                <field name="display_type" invisible="1"/>
+                <field name="name" attrs="{'invisible': [('display_type', '=', 'line_section')]}"/>
+                <field name="dayofweek"/>
+                <field name="work_hours" widget="float_time"/>
+            </tree>
+        </field>
+    </record>
+
+    <menuitem id="resource.menu_resource_calendar"
+        parent="menu_hr_attendance_mmp_root"
+        action="resource.action_resource_calendar_form"
+        sequence="1"/>
+
+</odoo>

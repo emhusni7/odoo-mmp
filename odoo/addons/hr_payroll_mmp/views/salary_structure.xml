@@ -14,9 +14,6 @@
             <xpath expr="//field[@name='credit_note']" position="after">
                 <field name="month" />
                 <field name="type" />
-                <field name="normal_working_days" />
-                <p>Condition Normal Working days is Saturday and Sunday Off with 5 days working days in one week and Sunday is Off with 6 Working Days in on Week. </p>
-
             </xpath>
             <xpath expr="//field[@name='slip_ids']" position="attributes">
                 <attribute name="readonly">1</attribute>
@@ -55,7 +52,6 @@
             <tree>
                 <field name="complete_name"/>
                 <field name="code"/>
-                <field name="resource_calendar_id"/>
             </tree>
         </field>
     </record>
@@ -67,7 +63,6 @@
             <tree>
                 <field name="complete_name"/>
                 <field name="code"/>
-                <field name="resource_calendar_id"/>
             </tree>
         </field>
     </record>

@@ -22,6 +22,7 @@ actions(Check in/Check out) performed by them.
         'wizard/wizard_change_mode.xml',
         'views/hr_attendance.xml',
         'views/res_users.xml',
+        'views/resource.xml',
     ],
     'installable': True,
     'auto_install': False,
