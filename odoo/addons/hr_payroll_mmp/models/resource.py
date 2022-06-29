@@ -60,6 +60,7 @@ class ResourceCalendar(models.Model):
         domain = domain +[
             ('check_in', '>=', datetime_to_string(start_dt)),
             ('check_in', '<', datetime_to_string(end_dt)),
+            ('check_out', '!=', False),
         ]
 
         # retrieve leave intervals in (start_dt, end_dt)
