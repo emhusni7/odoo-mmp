@@ -58,6 +58,9 @@ class HrPayslipRun(models.Model):
     def get_month(self):
         self.month = self.date_start.strftime("%m")
 
+    def print_payslip(self):
+        return True
+
 
     name = fields.Char("Name", default="/", compute='get_payroll_name', store=True)
     department_id = fields.Many2one("hr.department","Department", required=1)
@@ -159,7 +162,7 @@ class IntervalMMP(Intervals):
                     attd_date.pop(ov_start.date(),None)
             elif ov.overtime_bulk_id.ov_type.duration_type == 'hours':
                 #Cek tanggal overtime di attendance
-                if attd_date.get(ov_start.date()) and temp_overtime[ov_start.date()]:
+                if attd_date.get(ov_start.date()) and temp_overtime.get(ov_start.date()):
                     data = temp_overtime[ov_start.date()][0]
                     start = max(data[0], ov_start)
                     end = min(data[1], ov_stop)
