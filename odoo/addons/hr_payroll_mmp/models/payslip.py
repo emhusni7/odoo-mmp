@@ -130,12 +130,12 @@ class IntervalMMP(Intervals):
                 attd_date[at_in.date()]['hours'] += att.worked_hours -rest_hours
 
             #check possibility overtime
-            if floor(attd_date[at_in.date()]['hours']) > (attd[dow] or 0):
+            if floor(attd_date[at_in.date()]['hours']) > (attd.get(dow) or 0):
                 temp_overtime[at_in.date()] = (attd_date[at_in.date()]['data'])
 
             #check posibility leave hours
-            if floor(attd_date[at_in.date()]['hours']) < (attd[dow] or 0):
-                leave_hours = attd[dow] - (attd_date[at_in.date()]['hours'] - rest_hours)
+            if floor(attd_date[at_in.date()]['hours']) < (attd.get(dow) or 0):
+                leave_hours = attd.get(dow,0) - (attd_date[at_in.date()]['hours'] - rest_hours)
                 temp_leave_hours[at_in.date()] = leave_hours
 
         #Cek Overtime Attendance
@@ -477,9 +477,11 @@ class HrPayslip(models.Model):
         datas = results.get('attd')
         for key in datas.keys():
             data = datas[key]
-            minWorkHour = min(data.get('hours'), attd[str(data['data'][0][0].weekday())])
-            workedDays += 1
-            workedHours += minWorkHour
+            whour = attd.get(str(data['data'][0][0].weekday()),0)
+            if whour > 0:
+                minWorkHour = min(data.get('hours'), whour)
+                workedDays += 1
+                workedHours += minWorkHour
 
         data_late = results.get('late')
         lateHours = 0.0
@@ -523,6 +525,7 @@ class HrPayslip(models.Model):
                 'number_of_hours': leave['hours'],
                 'contract_id': contract.id,
             })
+            res.extend(leaves.values())
             leaveHours += leave['hours']
             leaveDays += leave['days']
 
@@ -540,7 +543,6 @@ class HrPayslip(models.Model):
             res.append(alpha)
 
         res.append(attendances)
-        res.extend(leaves.values())
         return res, results.get('overtime')
 
     @api.model
