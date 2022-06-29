@@ -12,6 +12,12 @@ class PayslipInput(models.Model):
 
     overtime_ids = fields.One2many("hr.overtime","input_id","Overtime")
 
+    def write(self, vals):
+        return super(PayslipInput, self).write(vals)
+
+    def create(self, vals_list):
+        return super(PayslipInput, self).create(vals_list)
+
 PayslipInput
 
 class HrPayrollStructure(models.Model):
@@ -650,13 +656,13 @@ class HrPayslip(models.Model):
             contract_ids = self.contract_id.ids
         # computation of the salary input
         contracts = self.env['hr.contract'].browse(contract_ids)
-        worked_days_line_ids = self.get_worked_day_lines(contracts, date_from, date_to)
+        worked_days_line_ids, overtime = self.get_worked_day_lines(contracts, date_from, date_to)
         worked_days_lines = self.worked_days_line_ids.browse([])
         for r in worked_days_line_ids:
             worked_days_lines += worked_days_lines.new(r)
         self.worked_days_line_ids = worked_days_lines
 
-        input_line_ids = self.get_inputs(contracts, date_from, date_to)
+        input_line_ids = self.get_inputs(contracts, date_from, date_to, overtime=overtime)
         input_lines = self.input_line_ids.browse([])
         for r in input_line_ids:
             input_lines += input_lines.new(r)
