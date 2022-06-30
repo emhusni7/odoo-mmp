@@ -6,3 +6,5 @@ access_bpjs_ketenagakerjaan_trx_mmp,bpjs.ket.contract.mmp,model_bpjs_ket_contrac
 access_ptkp,ptkp,model_ptkp,hr.group_hr_user,1,1,1,1
 access_famiy_mmp,family.mpmp,model_family_mmp,hr.group_hr_user,1,1,1,1
 access_edu_mmp,education.mmp,model_education_mmp,hr.group_hr_user,1,1,1,1
+access_schedule_mmp_user,hr.contract.schedule,model_hr_contract_schedule,hr.group_hr_user,1,1,1,0
+access_schedule_mmp_manager,hr.contract.schedule,model_hr_contract_schedule,hr_contract.group_hr_contract_manager,1,1,1,1
