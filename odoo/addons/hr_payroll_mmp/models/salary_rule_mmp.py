@@ -51,6 +51,10 @@ class HRContract(models.Model):
     contract_rule_ids = fields.One2many("hr.salary.rule.mmp","contract_id","Rule")
     wage = fields.Monetary('Total Salary', compute='compute_wage', default=0 ,help="Employee's Net Salary.", readonly=True, store=True)
 
+    def get_contract_schedule(self, contract, date_from, date_to):
+        schedule = contract.schedule_ids.filtered(lambda x: x.date_to >= date_from and x.date_to <= date_to).sorted(lambda x: x.date_from)
+        return schedule
+
     @api.depends('contract_rule_ids')
     def compute_wage(self):
         amount = 0

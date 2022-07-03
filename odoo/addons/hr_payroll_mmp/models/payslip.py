@@ -396,16 +396,16 @@ class HrPayslip(models.Model):
 
         return list(result_dict.values())
 
-    def _get_normal_wd(self, date_from, date_to, contract):
+    def _get_normal_wd(self, date_from, date_to, calendar):
 
-        if not contract.resource_calendar_id.attendance_ids:
+        if not calendar:
             raise UserError("Contract Working Time Not Set")
 
-        attendance = { x.dayofweek: x.work_hours for x in contract.resource_calendar_id.attendance_ids}
+        attendance = { x.dayofweek: x.work_hours for x in calendar.attendance_ids}
 
         start = date_from or self.date_from
         end = date_to or self.date_to
-        date_generated = [start + timedelta(days=x) for x in range(0, (end - start).days)]
+        date_generated = [start + timedelta(days=x) for x in range(0, (end - start).days + 1)]
         res = {
             'work_days': 0,
             'work_hours': 0,
@@ -432,28 +432,25 @@ class HrPayslip(models.Model):
     overtime_ids = fields.One2many("hr.overtime", compute="getOvertimeId")
 
     @api.model
-    def get_worked_day_lines(self, contracts, date_from, date_to):
+    def get_worked_day_lines(self, contract, date_from, date_to, calendar):
         """
         @param contract: Browse record of contracts
         @return: returns a list of dict containing the input that should be applied for the given contract between date_from and date_to
         """
         res = []
         # fill only if the contract as a working schedule linked
-        contract = contracts.filtered(lambda x: x.resource_calendar_id)[0]
-
-        run_id = False
-        if self._context.get('active_model') == 'hr.payslip.run':
-            run_id = self.env[self._context.get('active_model')].browse(self._context.get('active_id'))
-            struct_id = run_id.structure_id
-        else:
-            struct_id = self.struct_id
+        # run_id = False
+        # if self._context.get('active_model') == 'hr.payslip.run':
+        #     run_id = self.env[self._context.get('active_model')].browse(self._context.get('active_id'))
+        #     struct_id = run_id.structure_id
+        # else:
+        #     struct_id = self.struct_id
         # compute leave days
-        calendar =  contracts.resource_calendar_id
         domain = [('employee_id', '=', contract.employee_id.id)]
         day_from = datetime.combine(fields.Date.from_string(date_from), time.min)
         day_to = datetime.combine(fields.Date.from_string(date_to), time.max)
         # compute worked days
-        day_data, attd = self._get_normal_wd(date_from, date_to, contract)
+        day_data, attd = self._get_normal_wd(date_from, date_to, calendar)
         work_data = {
             'days': day_data['work_days'],
             'hours': day_data['work_hours'],
@@ -472,7 +469,7 @@ class HrPayslip(models.Model):
 
         workedHours = 0.0
         workedDays = 0.0
-        rest_hours = contracts.resource_calendar_id.rest_hours
+        rest_hours = calendar.rest_hours
         results = IntervalMMP._check_onAttOverLeaveDays(attdInterval, overInterval, day_leave_intervals, rest_hours, attd)
         datas = results.get('attd')
         for key in datas.keys():
@@ -497,7 +494,7 @@ class HrPayslip(models.Model):
                     'code': 'LATE',
                     'number_of_days': 0,
                     'number_of_hours': lateHours,
-                    'contract_id': contracts.id,
+                    'contract_id': contract.id,
                 })
 
         if workedHours > 0:
@@ -507,7 +504,7 @@ class HrPayslip(models.Model):
                 'code': 'ATTD',
                 'number_of_days': workedDays,
                 'number_of_hours': workedHours,
-                'contract_id': contracts.id,
+                'contract_id': contract.id,
             }
             res.append(absent)
             # cek Holiday Jika hours kurang dari normal working time
@@ -517,17 +514,22 @@ class HrPayslip(models.Model):
         leaveDays = 0
         for leave in results['leave']:
             holiday = leave['rc'].holiday_id
-            current_leave_struct = leaves.setdefault(holiday.holiday_status_id, {
-                'name': holiday.holiday_status_id.name or _('Global Leaves'),
-                'sequence': 5,
-                'code': holiday.holiday_status_id.code or 'GLOBAL',
-                'number_of_days': leave['days'],
-                'number_of_hours': leave['hours'],
-                'contract_id': contract.id,
-            })
-            res.extend(leaves.values())
+            if not holiday.holiday_status_id.id in leaves.keys():
+                leaves.setdefault(holiday.holiday_status_id.id, {
+                    'name': holiday.holiday_status_id.name or _('Global Leaves'),
+                    'sequence': 5,
+                    'code': holiday.holiday_status_id.code or 'GLOBAL',
+                    'number_of_days': leave['days'],
+                    'number_of_hours': leave['hours'],
+                    'contract_id': contract.id,
+                })
+            else:
+                leaves[holiday.holiday_status_id.id]['number_of_days'] += leave['days']
+                leaves[holiday.holiday_status_id.id]['number_of_hours'] += leave['hours']
             leaveHours += leave['hours']
             leaveDays += leave['days']
+        res.extend(leaves.values())
+
 
         alpha_days = work_data['days'] - (workedDays + leaveDays)
         alpha_hours = work_data['hours'] - (workedHours + leaveHours + lateHours)
@@ -622,9 +624,25 @@ class HrPayslip(models.Model):
             'struct_id': struct.id,
         })
         # computation of the salary input
-        contracts = self.env['hr.contract'].browse(contract_ids)
-        worked_days_line_ids, overtimes = self.get_worked_day_lines(contracts, date_from, date_to)
-        input_line_ids = self.get_inputs(contracts, date_from, date_to, overtime = overtimes)
+        schedules = contract.get_contract_schedule(contract, date_from, date_to)
+        if schedules:
+            worked_days_line_ids, overtimes = [], []
+            for sch in schedules:
+                worked_days, overs = self.get_worked_day_lines(contract, max(date_from,sch.date_from), min(date_to,sch.date_to) , calendar=sch.resource_calendar_id)
+                for wdays in worked_days:
+                    idx = next((index for (index, d) in enumerate(worked_days_line_ids) if d["code"] == wdays["code"]), None)
+                    if idx != None:
+                        worked_days_line_ids[idx]['number_of_hours'] += wdays['number_of_hours']
+                        worked_days_line_ids[idx]['number_of_days'] += wdays['number_of_days']
+                    else:
+                        worked_days_line_ids.append(wdays)
+                overtimes += overs
+        else:
+            worked_days_line_ids, overtimes = self.get_worked_day_lines(contract, date_from,
+                                                                        date_to,
+                                                                        calendar=contract.resource_calendar_id)
+
+        input_line_ids = self.get_inputs(contract, date_from, date_to, overtime = overtimes)
         res['value'].update({
             'worked_days_line_ids': worked_days_line_ids,
             'input_line_ids': input_line_ids,
@@ -657,11 +675,16 @@ class HrPayslip(models.Model):
         if not self.contract_id.struct_id:
             return
         self.struct_id = self.contract_id.struct_id
-        if self.contract_id:
-            contract_ids = self.contract_id.ids
         # computation of the salary input
-        contracts = self.env['hr.contract'].browse(contract_ids)
-        worked_days_line_ids, overtime = self.get_worked_day_lines(contracts, date_from, date_to)
+        schedules = self.contract_id.get_contract_schedule(self.contract_id, date_from, date_to)
+        if schedules:
+            worked_days_line_ids, overtimes = [], []
+            for sch in schedules:
+                worked_days, overs = self.get_worked_day_lines(self.contract_id, max(date_from,sch.date_from), min(date_to,sch.date_to) , calendar=sch.resource_calendar_id)
+                worked_days_line_ids += worked_days
+                overtimes += overs
+        else:
+            worked_days_line_ids, overtime = self.get_worked_day_lines(self.contract_id, date_from, date_to, calendar=self.contract_id.resource_calendar_id)
         worked_days_lines = self.worked_days_line_ids.browse([])
         for r in worked_days_line_ids:
             worked_days_lines += worked_days_lines.new(r)
