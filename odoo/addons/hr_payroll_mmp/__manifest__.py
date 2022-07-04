@@ -18,10 +18,12 @@
     'data': [
         'security/security.xml',
         'security/ir.model.access.csv',
+        'wizard/wizard_change_schedule.xml',
         'views/salary_rule_mmp.xml',
         'views/salary_structure.xml',
         'views/payslip.xml',
         'views/work_type.xml',
+        'views/contract_schedule.xml',
     ],
     'license': 'AGPL-3',
     'installable': True,

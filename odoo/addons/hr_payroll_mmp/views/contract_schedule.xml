@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_contract_schedule" model="ir.ui.view">
+        <field name="name">hr.contract.schedule</field>
+        <field name="model">hr.contract.schedule</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="employee_id" />
+                <field name="contract_id" />
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="resource_calendar_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_search_contract_schedule" model="ir.ui.view">
+        <field name="name">contract.schedule.search</field>
+        <field name="model">hr.contract.schedule</field>
+        <field name="arch" type="xml">
+            <search>
+              <field name="employee_id"/>
+              <field name="date_from" />
+              <field name="date_to" />
+              <field name="resource_calendar_id" />
+                <separator />
+                <group expand="0" string="Group By" colspan="4">
+                    <filter name="calendar_id" context="{'group_by':'resource_calendar_id'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_act_contract_schedule" model="ir.actions.act_window">
+        <field name="name">Contract Schedule</field>
+        <field name="res_model">hr.contract.schedule</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_contract_schedule" />
+        <field name="search_view_id" ref="view_search_contract_schedule"/>
+    </record>
+
+    <menuitem id="menu_shift_contract_schedule" parent="hr_attendance_mmp.menu_hr_attendance_mmp_root" name="Shift Schedule" action="view_act_contract_schedule" />
+
+</odoo>

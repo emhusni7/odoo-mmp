@@ -680,17 +680,29 @@ class HrPayslip(models.Model):
         if schedules:
             worked_days_line_ids, overtimes = [], []
             for sch in schedules:
-                worked_days, overs = self.get_worked_day_lines(self.contract_id, max(date_from,sch.date_from), min(date_to,sch.date_to) , calendar=sch.resource_calendar_id)
-                worked_days_line_ids += worked_days
+                worked_days, overs = self.get_worked_day_lines(self.contract_id, max(date_from, sch.date_from),
+                                                               min(date_to, sch.date_to),
+                                                               calendar=sch.resource_calendar_id)
+                for wdays in worked_days:
+                    idx = next((index for (index, d) in enumerate(worked_days_line_ids) if d["code"] == wdays["code"]),
+                               None)
+                    if idx != None:
+                        worked_days_line_ids[idx]['number_of_hours'] += wdays['number_of_hours']
+                        worked_days_line_ids[idx]['number_of_days'] += wdays['number_of_days']
+                    else:
+                        worked_days_line_ids.append(wdays)
                 overtimes += overs
         else:
-            worked_days_line_ids, overtime = self.get_worked_day_lines(self.contract_id, date_from, date_to, calendar=self.contract_id.resource_calendar_id)
+            worked_days_line_ids, overtimes = self.get_worked_day_lines(self.contract_id, date_from,
+                                                                        date_to,
+                                                                        calendar=self.contract_id.resource_calendar_id)
+
         worked_days_lines = self.worked_days_line_ids.browse([])
         for r in worked_days_line_ids:
             worked_days_lines += worked_days_lines.new(r)
         self.worked_days_line_ids = worked_days_lines
 
-        input_line_ids = self.get_inputs(contracts, date_from, date_to, overtime=overtime)
+        input_line_ids = self.get_inputs(self.contract_id, date_from, date_to, overtime=overtimes)
         input_lines = self.input_line_ids.browse([])
         for r in input_line_ids:
             input_lines += input_lines.new(r)
