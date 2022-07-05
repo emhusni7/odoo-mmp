@@ -15,19 +15,25 @@ class ChangeSchedule(models.TransientModel):
             # overlap dari cek apakah date_from antara date_from(sch) dan date_to(sch)
             # overlap dari cek apakah date_t0 antara date_from(sch) dan date_to(sch)
             # overlap dari cek apakah antarta date_from date_t0 ada schedule
-            overlap = objLine.search([('employee_id','in', self.employee_ids.ids)
+            overlap = objLine.search([('contract_id.employee_id','in', self.employee_ids.ids)
                                ,'|','|','&',('date_from','<=', line.date_to),('date_to','>=',line.date_to)
                                ,'&',('date_from','>=', line.date_from),('date_to','<=',line.date_to)
                                , '&', ('date_from', '<=', line.date_from), ('date_to', '>=', line.date_from)
                             ])
             if overlap:
-               warning = list(map(lambda x: "Overlap Employee %s from %s - %s"%(str(x.employee_id.name),x.date_from.strftime("Y-%m-%d"),x.date_to.strftime("Y-%m-%d")),overlap))
+               warning = list(map(lambda x: "Overlap Employee %s from %s - %s"%(str(x.employee_id.name),x.date_from.strftime("%Y-%m-%d"),x.date_to.strftime("%Y-%m-%d")),overlap))
                listToStr = ', \n'.join([str(elem) for elem in warning])
                raise UserError(listToStr)
             else:
                 for emp in self.employee_ids:
-                    emp
-        return
+                    if emp.contract_id:
+                        emp.contract_id.schedule_ids = [(
+                            0, 0, {
+                            'date_from': line.date_from,
+                            'date_to': line.date_to,
+                            'resource_calendar_id': line.resource_calendar_id.id
+                        })]
+        return True
 
     @api.onchange('department_id','section_id')
     def change_schedule(self):
@@ -57,10 +63,11 @@ ChangeSchedule
 class ScheduleLine(models.TransientModel):
     _name = "wizard.change.schedule.line"
 
-    @api.constrains('date_from','date_to')
+    @api.constrains('date_from','date_to'   )
     def _check_date_(self):
-        if self.date_to < self.date_from:
-            raise UserError("Date From Greather than Date To")
+        for x in self:
+            if x.date_to < x.date_from:
+                raise UserError("Date From Greather than Date To")
 
 
     date_from = fields.Date("Date From", required=1)
