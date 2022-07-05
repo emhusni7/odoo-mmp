@@ -6,6 +6,7 @@ from pytz import utc
 from odoo.addons.resource.models.resource import Intervals, datetime_to_string, string_to_datetime
 ROUNDING_FACTOR = 16
 from math import floor
+import pandas as pd
 
 class PayslipInput(models.Model):
     _inherit = "hr.payslip.input"
@@ -405,7 +406,7 @@ class HrPayslip(models.Model):
 
         start = date_from or self.date_from
         end = date_to or self.date_to
-        date_generated = [start + timedelta(days=x) for x in range(0, (end - start).days + 1)]
+        date_generated = pd.date_range(start, end)
         res = {
             'work_days': 0,
             'work_hours': 0,
@@ -626,9 +627,13 @@ class HrPayslip(models.Model):
         # computation of the salary input
         schedules = contract.get_contract_schedule(contract, date_from, date_to)
         if schedules:
+            # date_generate from slip
+            slip_date = [date.date() for date in pd.date_range(date_from, date_to)]
             worked_days_line_ids, overtimes = [], []
             for sch in schedules:
-                worked_days, overs = self.get_worked_day_lines(contract, max(date_from,sch.date_from), min(date_to,sch.date_to) , calendar=sch.resource_calendar_id)
+                f_date, t_date = max(date_from,sch.date_from), min(date_to,sch.date_to)
+                slip_date = list(set(slip_date) - set([date.date() for date in pd.date_range(f_date, t_date)]))
+                worked_days, overs = self.get_worked_day_lines(contract, f_date, t_date, calendar=sch.resource_calendar_id)
                 for wdays in worked_days:
                     idx = next((index for (index, d) in enumerate(worked_days_line_ids) if d["code"] == wdays["code"]), None)
                     if idx != None:
@@ -637,6 +642,8 @@ class HrPayslip(models.Model):
                     else:
                         worked_days_line_ids.append(wdays)
                 overtimes += overs
+            if slip_date:
+                raise UserError("Please Check Employee %s Contract Schedule date %s "%(employee.name, slip_date[0].strftime("%Y-%m-%d")))
         else:
             worked_days_line_ids, overtimes = self.get_worked_day_lines(contract, date_from,
                                                                         date_to,
@@ -678,8 +685,12 @@ class HrPayslip(models.Model):
         # computation of the salary input
         schedules = self.contract_id.get_contract_schedule(self.contract_id, date_from, date_to)
         if schedules:
+            # date_generate from slip
+            slip_date = pd.date_range(date_from, date_to)
             worked_days_line_ids, overtimes = [], []
             for sch in schedules:
+                f_date, t_date = max(date_from, sch.date_from), min(date_to, sch.date_to)
+                slip_date = list(set(slip_date) - set([date.date() for date in pd.date_range(f_date, t_date)]))
                 worked_days, overs = self.get_worked_day_lines(self.contract_id, max(date_from, sch.date_from),
                                                                min(date_to, sch.date_to),
                                                                calendar=sch.resource_calendar_id)
@@ -692,6 +703,8 @@ class HrPayslip(models.Model):
                     else:
                         worked_days_line_ids.append(wdays)
                 overtimes += overs
+            if slip_date:
+                raise UserError("Please Check Employee %s Contract Schedule date %s "%(employee.name, slip_date[0].strftime("%Y-%m-%d")))
         else:
             worked_days_line_ids, overtimes = self.get_worked_day_lines(self.contract_id, date_from,
                                                                         date_to,
