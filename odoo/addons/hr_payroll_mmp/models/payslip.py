@@ -7,9 +7,8 @@ from odoo.addons.resource.models.resource import Intervals, datetime_to_string, 
 ROUNDING_FACTOR = 16
 from math import floor
 import pandas as pd
-import base64
-import requests
-from odoo.http import content_disposition, request
+from datetime import datetime, timezone
+import pytz
 # from platform import python_version
 # from pyreportjasper import JasperPy
 
@@ -72,51 +71,6 @@ class HrPayslipRun(models.Model):
             'url': '/hr_payroll_mmp/report/%s' % (self.id),
             'target': 'new',
         }
-        #path
-        # base_url = self.env['ir.config_parameter'].get_param('web.base.url')
-        # attachment_obj = self.env['ir.attachment']
-        # url = 'http://localhost:8080/jasperserver/rest_v2/reports'
-        # #url = 'http://localhost:8080/jasperserver/rest_v2/resource'
-        # report = '/reports/interactive/MMP/report_payslip_mmp.pdf'
-        # # Authorisation credentials:
-        # auth = ('jasperadmin', 'jasperadmin')
-
-        # set res
-        # response = request.make_response(
-        #     None,
-        #     headers=[
-        #         ('Content-Type', 'application/pdf'),
-        #         ('Content-Disposition', content_disposition('payslip' + '.pdf'))
-        #     ]
-        # )
-        # # file types to download:
-        # file_types = ['jrxml', 'img', 'jar']
-        #
-        # # Init session so we have no need to auth again and again:
-        # s = requests.Session()
-        # r = s.get(url=url + report, auth=auth)
-
-
-        # create attachment
-        # attachment_id = attachment_obj.create(
-        #     {'name': "tes" , 'datas': base64.encodebytes(r.content)})
-        # prepare download url
-        #download_url = '/web/content/' + str(attachment_id.id) + '?download=true'
-        # response
-        # response.stream.write(base64.encodebytes(r.content))
-        # return response
-        # return {
-        #     "type": "ir.actions.act_url",
-        #     "url": str(base_url) + str(download_url),
-        #     "target": "new",
-        # }
-        # input_file = os.path.dirname(os.path.abspath(__file__)) + \
-        #              '/payslip.jrxml'
-        # output = os.path.dirname(os.path.abspath(__file__))
-        # jasper = JasperPy()
-        # test = jasper.process(
-        #     input_file, output_file=output, format_list=["pdf", "rtf"])
-        # print(test)
 
 
 
@@ -504,9 +458,10 @@ class HrPayslip(models.Model):
         # else:
         #     struct_id = self.struct_id
         # compute leave days
+        localtz =   pytz.timezone('Asia/Jakarta')
         domain = [('employee_id', '=', contract.employee_id.id)]
-        day_from = datetime.combine(fields.Date.from_string(date_from), time.min)
-        day_to = datetime.combine(fields.Date.from_string(date_to), time.max)
+        day_from = datetime.combine(fields.Date.from_string(date_from), time.min, tzinfo=localtz).astimezone(timezone.utc)
+        day_to = datetime.combine(fields.Date.from_string(date_to), time.max, tzinfo=localtz).astimezone(timezone.utc)
         # compute worked days
         day_data, attd = self._get_normal_wd(date_from, date_to, calendar)
         work_data = {
@@ -522,7 +477,7 @@ class HrPayslip(models.Model):
             'contract_id': contract.id,
         }
         overInterval = calendar._overtime_intervals_batch(day_from, day_to, domain=domain)
-        day_leave_intervals = calendar._leave_intervals_batch(day_from.replace(tzinfo=utc), day_to.replace(tzinfo=utc), contract.employee_id.resource_id, domain=[])
+        day_leave_intervals = calendar._leave_intervals_batch(day_from, day_to, contract.employee_id.resource_id, domain=[])
         attdInterval = calendar._attendance_intervals_batch(day_from, day_to, domain=domain)
 
         workedHours = 0.0
