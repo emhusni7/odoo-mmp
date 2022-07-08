@@ -12,8 +12,6 @@ class HrEmployee(models.Model):
 
 HrEmployee
 
-
-
 class ResourceCalendar(models.Model):
     _inherit = "resource.calendar"
 
@@ -127,6 +125,5 @@ class ResourceMixins(models.AbstractModel):
             hours = (stop - start).total_seconds() / 3600
             result.append((start.date(), hours, leave))
         return result
-
 
 ResourceMixins

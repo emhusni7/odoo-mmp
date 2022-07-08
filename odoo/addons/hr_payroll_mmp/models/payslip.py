@@ -131,6 +131,7 @@ class IntervalMMP(Intervals):
         leaves, overtimes, temp_overtime, temp_leave_hours = [], [], {}, {}
         attd_date = {}
         for at_in, at_out , att in sorted(self._items, key=lambda x:x[0]):
+            #at_in , at_out
             dow = str(at_in.date().weekday())
             if at_in.date() not in attd_date.keys():
                 attd_date[at_in.date()] = {
@@ -155,7 +156,6 @@ class IntervalMMP(Intervals):
         to_remove_attd = []
         for ov_start, ov_stop, ov in overtime._items:
             # Jika Overtime Bulk
-            dow = str(at_in.date().weekday())
             if ov.overtime_bulk_id.ov_type.duration_type == 'days':
                 #Cek tanggal overtime ada di attendance
                 if attd_date.get(ov_start.date()):
