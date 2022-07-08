@@ -7,6 +7,11 @@ from odoo.addons.resource.models.resource import Intervals, datetime_to_string, 
 ROUNDING_FACTOR = 16
 from math import floor
 import pandas as pd
+import base64
+import requests
+from odoo.http import content_disposition, request
+# from platform import python_version
+# from pyreportjasper import JasperPy
 
 class PayslipInput(models.Model):
     _inherit = "hr.payslip.input"
@@ -43,6 +48,8 @@ class HrPayrollStructure(models.Model):
 
 HrPayrollStructure
 
+
+
 class HrPayslipRun(models.Model):
     _inherit = "hr.payslip.run"
     _sql_constraints = [
@@ -60,7 +67,57 @@ class HrPayslipRun(models.Model):
         self.month = self.date_start.strftime("%m")
 
     def print_payslip(self):
-        return True
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/hr_payroll_mmp/report/%s' % (self.id),
+            'target': 'new',
+        }
+        #path
+        # base_url = self.env['ir.config_parameter'].get_param('web.base.url')
+        # attachment_obj = self.env['ir.attachment']
+        # url = 'http://localhost:8080/jasperserver/rest_v2/reports'
+        # #url = 'http://localhost:8080/jasperserver/rest_v2/resource'
+        # report = '/reports/interactive/MMP/report_payslip_mmp.pdf'
+        # # Authorisation credentials:
+        # auth = ('jasperadmin', 'jasperadmin')
+
+        # set res
+        # response = request.make_response(
+        #     None,
+        #     headers=[
+        #         ('Content-Type', 'application/pdf'),
+        #         ('Content-Disposition', content_disposition('payslip' + '.pdf'))
+        #     ]
+        # )
+        # # file types to download:
+        # file_types = ['jrxml', 'img', 'jar']
+        #
+        # # Init session so we have no need to auth again and again:
+        # s = requests.Session()
+        # r = s.get(url=url + report, auth=auth)
+
+
+        # create attachment
+        # attachment_id = attachment_obj.create(
+        #     {'name': "tes" , 'datas': base64.encodebytes(r.content)})
+        # prepare download url
+        #download_url = '/web/content/' + str(attachment_id.id) + '?download=true'
+        # response
+        # response.stream.write(base64.encodebytes(r.content))
+        # return response
+        # return {
+        #     "type": "ir.actions.act_url",
+        #     "url": str(base_url) + str(download_url),
+        #     "target": "new",
+        # }
+        # input_file = os.path.dirname(os.path.abspath(__file__)) + \
+        #              '/payslip.jrxml'
+        # output = os.path.dirname(os.path.abspath(__file__))
+        # jasper = JasperPy()
+        # test = jasper.process(
+        #     input_file, output_file=output, format_list=["pdf", "rtf"])
+        # print(test)
+
 
 
     name = fields.Char("Name", default="/", compute='get_payroll_name', store=True)
