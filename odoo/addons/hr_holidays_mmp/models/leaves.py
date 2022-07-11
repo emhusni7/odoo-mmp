@@ -5,6 +5,7 @@ from pytz import timezone, UTC
 from odoo.addons.resource.models.resource import float_to_time, HOURS_PER_DAY
 HOURS_PER_DAY = 8
 from collections import namedtuple
+import pytz
 
 DummyAttendance = namedtuple('DummyAttendance', 'hour_from, hour_to, dayofweek, day_period, week_type')
 
@@ -415,26 +416,29 @@ class HrLeaves(models.Model):
 
     def _get_number_of_days(self, date_from, date_to, employee_id):
         """ Returns a float equals to the timedelta between two dates given as string."""
-
+        # convert date_from utc to local datetime
+        localtz = pytz.timezone('Asia/Jakarta')
+        date_from = date_from.astimezone(localtz)
+        date_to = date_to.astimezone(localtz)
         if employee_id:
             employee = self.sudo().env['hr.employee'].browse(employee_id)
             # We force the company in the domain as we are more than likely in a compute_sudo
             if not employee.contract_id:
                 raise UserError("Employee Contract Not Created")
             today_hours = employee.contract_id.resource_calendar_id.get_work_hours_count(
-                datetime.combine(date_from.date(), time.min),
-                datetime.combine(date_from.date(), time.max),
-                False)
+                datetime.combine(date_from.date(), time.min).astimezone(localtz),
+                datetime.combine(date_from.date(), time.max).astimezone(localtz),
+                employee=employee)
 
-            hours = employee.contract_id.resource_calendar_id.get_work_hours_count(date_from, date_to)
+            hours = employee.contract_id.resource_calendar_id.get_work_hours_count(date_from, date_to, employee=employee)
             days = hours / (today_hours or HOURS_PER_DAY) if not self.request_unit_half else 0.5
             if self.request_unit_half and hours > 0:
                 days= 0.5
             return {'days': days, 'hours': hours}
 
         today_hours = self.env.company.resource_calendar_id.get_work_hours_count(
-            datetime.combine(date_from.date(), time.min),
-            datetime.combine(date_from.date(), time.max),
+            datetime.combine(date_from.date(), time.min).astimezone(localtz),
+            datetime.combine(date_from.date(), time.max).astimezone(localtz),
             False)
 
         hours = self.env.company.resource_calendar_id.get_work_hours_count(date_from, date_to)

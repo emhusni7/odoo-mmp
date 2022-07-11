@@ -149,7 +149,7 @@ class IntervalMMP(Intervals):
 
             #check posibility leave hours
             if floor(attd_date[at_in.date()]['hours']) < (attd.get(dow) or 0):
-                leave_hours = attd.get(dow,0) - (attd_date[at_in.date()]['hours'] - rest_hours)
+                leave_hours = attd.get(dow,0) - (attd_date[at_in.date()]['hours'])
                 temp_leave_hours[at_in.date()] = leave_hours
 
         #Cek Overtime Attendance
@@ -598,7 +598,6 @@ class HrPayslip(models.Model):
                             if resloan.get('code') == 'LO':
                                 resloan['amount'] = loan_line.amount
                                 resloan['loan_line_id'] = loan_line.id
-
         return res
 
     def onchange_employee_id(self, date_from, date_to, employee_id=False, contract_id=False):
@@ -645,7 +644,10 @@ class HrPayslip(models.Model):
         res['value'].update({
             'contract_id': contract.id
         })
-        struct = contract.struct_id
+        if self._context.get('active_model') == 'hr.payslip.run':
+            struct = self.env[self._context.get('active_model')].browse(self._context.get('active_id')).structure_id
+        else:
+            struct = contract.struct_id
         if not struct:
             return res
         res['value'].update({

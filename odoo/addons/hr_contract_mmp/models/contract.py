@@ -108,13 +108,13 @@ class Contract(models.Model):
         self.job_id = self.employee_id.job_id.id
 
 
-    def get_contract_schedule(self, contract, date_s):
+    def get_contract_schedule_work_hours(self, contract, date_s):
 
         Cschedule = contract.schedule_ids.filtered(lambda x: x.date_from >= date_s and x.date_to <= date_s)
         schedule = contract.resource_calendar_id
         if Cschedule:
             schedule = Cschedule[0].resource_calendar_id
-        attd = schedule.attendance_ids.filtered(lambda x: x.dayofweek == date_s.weekday())
+        attd = schedule.attendance_ids.filtered(lambda x: eval(x.dayofweek) == date_s.weekday())
         if attd:
             return attd[0].work_hours
         return 0

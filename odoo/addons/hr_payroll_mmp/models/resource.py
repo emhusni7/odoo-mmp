@@ -91,7 +91,7 @@ class ResourceCalendar(models.Model):
         delta = timedelta(hours=24)
         working_hours = 0
         while start_dt <= end_dt:
-            working_hours += employee and employee.contract_id.get_contract_schedule(start_dt) or 0
+            working_hours += employee and employee.contract_id.get_contract_schedule_work_hours(employee.contract_id, start_dt) or 0
             start_dt += delta
         return working_hours
 
