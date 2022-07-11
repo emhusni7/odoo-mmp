@@ -14,6 +14,7 @@
         'hr_contract_mmp',
         'hr_recruitment_mmp',
         'hr_attendance_mmp',
+        'hr_loan',
     ],
     'data': [
         'security/security.xml',

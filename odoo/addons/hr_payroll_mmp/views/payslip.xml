@@ -24,6 +24,9 @@
                 <xpath expr="//field[@name='input_line_ids']/tree/field[@name='name']" position="after">
                     <field name="overtime_ids" invisible="1" />
                 </xpath>
+                <xpath expr="//field[@name='input_line_ids']/tree/field[@name='sequence']" position="after">
+                    <field name="loan_line_id" invisible="1"/>
+                </xpath>
             </field>
         </record>
 

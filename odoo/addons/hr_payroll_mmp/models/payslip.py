@@ -16,6 +16,7 @@ class PayslipInput(models.Model):
     _inherit = "hr.payslip.input"
 
     overtime_ids = fields.One2many("hr.overtime","input_id","Overtime")
+    loan_line_id = fields.Many2one('hr.loan.line', string="Loan Installment", help="Loan installment")
 
     def write(self, vals):
         return super(PayslipInput, self).write(vals)
@@ -131,7 +132,7 @@ class IntervalMMP(Intervals):
         leaves, overtimes, temp_overtime, temp_leave_hours = [], [], {}, {}
         attd_date = {}
         for at_in, at_out , att in sorted(self._items, key=lambda x:x[0]):
-            #at_in , at_out
+            #at_in , at_out add date in +7 localtime
             dow = str(at_in.date().weekday())
             if at_in.date() not in attd_date.keys():
                 attd_date[at_in.date()] = {
@@ -156,6 +157,7 @@ class IntervalMMP(Intervals):
         to_remove_attd = []
         for ov_start, ov_stop, ov in overtime._items:
             # Jika Overtime Bulk
+            # overtime convert utc to localtime
             if ov.overtime_bulk_id.ov_type.duration_type == 'days':
                 #Cek tanggal overtime ada di attendance
                 if attd_date.get(ov_start.date()):
@@ -189,6 +191,7 @@ class IntervalMMP(Intervals):
 
         # Leaves Computed
         for lv_in, lv_out, lv in leave._items:
+            #convert to from utc to localtime python
             date_in, date_out = lv_in.date(), lv_out.date()
             if lv.holiday_id:
                 if lv.holiday_id.holiday_status_id.request_unit == 'day':
@@ -584,6 +587,18 @@ class HrPayslip(models.Model):
                 'overtime_ids': [(6,0,overtime_ids)]
             }
             res.append(input_data)
+        if contracts:
+            loan_struct = self.env.ref('hr_loan.hr_rule_loan')
+            emp_id = contracts[0].employee_id
+            lon_obj = self.env['hr.loan'].search([('employee_id', '=', emp_id.id), ('state', '=', 'approve')])
+            for loan in lon_obj:
+                for loan_line in loan.loan_lines:
+                    if date_from <= loan_line.date <= date_to and not loan_line.paid:
+                        for resloan in res:
+                            if resloan.get('code') == 'LO':
+                                resloan['amount'] = loan_line.amount
+                                resloan['loan_line_id'] = loan_line.id
+
         return res
 
     def onchange_employee_id(self, date_from, date_to, employee_id=False, contract_id=False):
@@ -733,6 +748,13 @@ class HrPayslip(models.Model):
             input_lines += input_lines.new(r)
         self.input_line_ids = input_lines
         return
+
+    def action_payslip_done(self):
+        for line in self.input_line_ids:
+            if line.loan_line_id:
+                line.loan_line_id.paid = True
+                line.loan_line_id.loan_id._compute_loan_amount()
+        return super(HrPayslip, self).action_payslip_done()
 
 HrPayslip
 

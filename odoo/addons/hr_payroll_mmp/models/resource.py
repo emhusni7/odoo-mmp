@@ -2,7 +2,7 @@ from odoo import models, fields, api
 from pytz import utc, timezone
 from datetime import timedelta
 from odoo.addons.resource.models.resource import Intervals, datetime_to_string, string_to_datetime
-from collections import defaultdict
+import pytz
 
 class HrEmployee(models.Model):
     _inherit = "hr.employee"
@@ -29,7 +29,7 @@ class ResourceCalendar(models.Model):
         resources = self.env['resource.resource'] if not resources else resources
         assert start_dt.tzinfo and end_dt.tzinfo
         self.ensure_one()
-
+        localtz = pytz.timezone('Asia/Jakarta')
         # for the computation, express all datetimes in UTC
         resources_list = list(resources) + [self.env['resource.resource']]
         resource_ids = [r.id for r in resources_list]
@@ -43,8 +43,8 @@ class ResourceCalendar(models.Model):
         # retrieve leave intervals in (start_dt, end_dt)
         result = []
         for leave in self.env['resource.calendar.leaves'].search(domain):
-            dt0 = string_to_datetime(leave.date_from).astimezone(tz)
-            dt1 = string_to_datetime(leave.date_to).astimezone(tz)
+            dt0 = string_to_datetime(leave.date_from).astimezone(localtz)
+            dt1 = string_to_datetime(leave.date_to).astimezone(localtz)
             result.append((dt0, dt1, leave))
         return Intervals(result)
 
@@ -54,6 +54,7 @@ class ResourceCalendar(models.Model):
             Return the attendance intervals in the given datetime range.
             The returned intervals are expressed in specified tz or in the resource's timezone.
         """
+        localtz = pytz.timezone('Asia/Jakarta')
         self.ensure_one()
         domain = domain +[
             ('check_in', '>=', datetime_to_string(start_dt)),
@@ -65,8 +66,8 @@ class ResourceCalendar(models.Model):
         result = []
         for attd in self.env['hr.attendance'].search(domain):
             tz = tz if tz else timezone((self).tz)
-            dt0 = string_to_datetime(attd.check_in).astimezone(tz)
-            dt1 = string_to_datetime(attd.check_out).astimezone(tz)
+            dt0 = string_to_datetime(attd.check_in).astimezone(localtz)
+            dt1 = string_to_datetime(attd.check_out).astimezone(localtz)
             result.append((dt0, dt1, attd))
         return Intervals(result)
 
