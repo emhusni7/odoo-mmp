@@ -272,12 +272,41 @@ class HrLeaves(models.Model):
                 if holiday.validation_type == 'no_validation':
                     # Automatic validation should be done in sudo, because user might not have the rights to do it by himself
                     holiday_sudo.action_validate()
-                    holiday_sudo.message_subscribe(partner_ids=[holiday._get_responsible_for_approval().partner_id.id])
-                    holiday_sudo.message_post(body=_("The time off has been automatically approved"),
-                                              subtype_xmlid="mail.mt_comment")  # Message from OdooBot (sudo)
+                    # holiday_sudo.message_subscribe(partner_ids=[holiday._get_responsible_for_approval().partner_id.id])
+                    # holiday_sudo.message_post(body=_("The time off has been automatically approved"),
+                    #                           subtype_xmlid="mail.mt_comment")  # Message from OdooBot (sudo)
                 elif not self._context.get('import_file'):
                     holiday_sudo.activity_update()
         return holidays
+
+    def action_approve(self):
+        # if validation_type == 'both': this method is the first approval approval
+        # if validation_type != 'both': this method calls action_validate() below
+        if any(holiday.state != 'confirm' for holiday in self):
+            raise UserError(_('Time off request must be confirmed ("To Approve") in order to approve it.'))
+
+        current_employee = self.env.user.employee_id
+        self.filtered(lambda hol: hol.validation_type == 'both').write({'state': 'validate1', 'first_approver_id': current_employee.id})
+
+
+        # Post a second message, more verbose than the tracking message
+        #for holiday in self.filtered(lambda holiday: holiday.employee_id.user_id):
+            # holiday.message_post(
+            #     body=_(
+            #         'Your %(leave_type)s planned on %(date)s '
+            #         ''
+            #         ''
+            #         ''
+            #         'has been accepted',
+            #         leave_type=holiday.holiday_status_id.display_name,
+            #         date=holiday.date_from
+            #     ),
+            #     partner_ids=holiday.employee_id.user_id.partner_id.ids)
+
+        self.filtered(lambda hol: not hol.validation_type == 'both').action_validate()
+        if not self.env.context.get('leave_fast_create'):
+            self.activity_update()
+        return True
 
     def _get_day_batch(self, employess, date_from, date_to):
         res = {}
@@ -444,6 +473,31 @@ class HrLeaves(models.Model):
         hours = self.env.company.resource_calendar_id.get_work_hours_count(date_from, date_to)
         days = hours / (today_hours or HOURS_PER_DAY) if not self.request_unit_half else 0.5
         return {'days': days, 'hours': hours}
+
+    def action_refuse(self):
+        current_employee = self.env.user.employee_id
+        if any(holiday.state not in ['draft', 'confirm', 'validate', 'validate1'] for holiday in self):
+            raise UserError(_('Time off request must be confirmed or validated in order to refuse it.'))
+
+        validated_holidays = self.filtered(lambda hol: hol.state == 'validate1')
+        validated_holidays.write({'state': 'refuse', 'first_approver_id': current_employee.id})
+        (self - validated_holidays).write({'state': 'refuse', 'second_approver_id': current_employee.id})
+        # Delete the meeting
+        self.mapped('meeting_id').write({'active': False})
+        # If a category that created several holidays, cancel all related
+        linked_requests = self.mapped('linked_request_ids')
+        if linked_requests:
+            linked_requests.action_refuse()
+
+        # Post a second message, more verbose than the tracking message
+        # for holiday in self:
+        #     if holiday.employee_id.user_id:
+        #         holiday.message_post(
+        #             body=_('Your %(leave_type)s planned on %(date)s has been refused', leave_type=holiday.holiday_status_id.display_name, date=holiday.date_from),
+        #             partner_ids=holiday.employee_id.user_id.partner_id.ids)
+
+        self.activity_update()
+        return True
 
 
 HrLeaves

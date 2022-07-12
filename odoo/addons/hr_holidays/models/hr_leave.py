@@ -520,7 +520,7 @@ class HolidaysRequest(models.Model):
     def _compute_number_of_days(self):
         for holiday in self:
             if holiday.date_from and holiday.date_to:
-                holiday.number_of_days = holiday._get_number_of_days(holiday.date_from, holiday.date_to, holiday.employee_id.id)['days']
+                holiday.number_of_days = holiday._get_number_of_days(holiday.date_from, holiday.date_to, holiday.employee_ids and holiday.employee_ids[0].id or holiday.employee_id.id)['days']
             else:
                 holiday.number_of_days = 0
 
@@ -1093,7 +1093,11 @@ class HolidaysRequest(models.Model):
         for holiday in self.filtered(lambda holiday: holiday.employee_id.user_id):
             holiday.message_post(
                 body=_(
-                    'Your %(leave_type)s planned on %(date)s has been accepted',
+                    'Your %(leave_type)s planned on %(date)s '
+                    ''
+                    ''
+                    ''
+                    'has been accepted',
                     leave_type=holiday.holiday_status_id.display_name,
                     date=holiday.date_from
                 ),

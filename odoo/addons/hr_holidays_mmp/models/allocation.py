@@ -28,6 +28,20 @@ class Allocation(models.Model):
         action['domain'] = [('id', 'in', self.linked_request_ids.ids)]
         return action
 
+    def action_validate(self):
+        current_employee = self.env.user.employee_id
+        if any(holiday.state != 'confirm' for holiday in self):
+            raise UserError(_('Allocation request must be confirmed in order to approve it.'))
+
+        self.write({
+            'state': 'validate',
+            'approver_id': current_employee.id
+        })
+
+        for holiday in self:
+            holiday._action_validate_create_childs()
+        return True
+
     def _check_approval_update(self, state):
         """ Check if target state is achievable. """
         if self.env.is_superuser():
@@ -107,3 +121,15 @@ class Allocation(models.Model):
                 allocation.mode_company_id = False
             else:
                 allocation.employee_ids = default_employee_ids
+
+    def action_refuse(self):
+        current_employee = self.env.user.employee_id
+        if any(holiday.state not in ['confirm', 'validate', 'validate1'] for holiday in self):
+            raise UserError(_('Allocation request must be confirmed or validated in order to refuse it.'))
+
+        self.write({'state': 'refuse', 'approver_id': current_employee.id})
+        # If a category that created several holidays, cancel all related
+        linked_requests = self.mapped('linked_request_ids')
+        if linked_requests:
+            linked_requests.action_refuse()
+        return True

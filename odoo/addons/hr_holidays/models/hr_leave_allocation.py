@@ -26,7 +26,7 @@ class HolidaysAllocation(models.Model):
     _description = "Time Off Allocation"
     _order = "create_date desc"
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _mail_post_access = 'read'
+
 
     def _default_holiday_status_id(self):
         if self.user_has_groups('hr_holidays.group_hr_holidays_user'):
@@ -535,7 +535,7 @@ class HolidaysAllocation(models.Model):
         if values.get('state'):
             self._check_approval_update(values['state'])
         result = super(HolidaysAllocation, self).write(values)
-        self.add_follower(employee_id)
+        # self.add_follower(employee_id)
         return result
 
     @api.ondelete(at_uninstall=False)
@@ -580,14 +580,14 @@ class HolidaysAllocation(models.Model):
         if linked_requests:
             linked_requests.action_draft()
             linked_requests.unlink()
-        self.activity_update()
+        #self.activity_update()
         return True
 
     def action_confirm(self):
         if self.filtered(lambda holiday: holiday.state != 'draft'):
             raise UserError(_('Allocation request must be in Draft state ("To Submit") in order to confirm it.'))
         res = self.write({'state': 'confirm'})
-        self.activity_update()
+        # self.activity_update()
         return res
 
     def action_validate(self):
@@ -742,11 +742,11 @@ class HolidaysAllocation(models.Model):
     # Messaging methods
     ####################################################
 
-    def _track_subtype(self, init_values):
-        if 'state' in init_values and self.state == 'validate':
-            allocation_notif_subtype_id = self.holiday_status_id.allocation_notif_subtype_id
-            return allocation_notif_subtype_id or self.env.ref('hr_holidays.mt_leave_allocation')
-        return super(HolidaysAllocation, self)._track_subtype(init_values)
+    # def _track_subtype(self, init_values):
+    #     if 'state' in init_values and self.state == 'validate':
+    #         allocation_notif_subtype_id = self.holiday_status_id.allocation_notif_subtype_id
+    #         return allocation_notif_subtype_id or self.env.ref('hr_holidays.mt_leave_allocation')
+    #     return super(HolidaysAllocation, self)._track_subtype(init_values)
 
     def _notify_get_groups(self, msg_vals=None):
         """ Handle HR users and officers recipients that can validate or refuse holidays

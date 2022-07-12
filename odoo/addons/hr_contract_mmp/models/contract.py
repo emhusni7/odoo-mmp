@@ -110,7 +110,7 @@ class Contract(models.Model):
 
     def get_contract_schedule_work_hours(self, contract, date_s):
 
-        Cschedule = contract.schedule_ids.filtered(lambda x: x.date_from >= date_s and x.date_to <= date_s)
+        Cschedule = contract.schedule_ids.filtered(lambda x: x.date_from >= date_s.date() and x.date_to <= date_s)
         schedule = contract.resource_calendar_id
         if Cschedule:
             schedule = Cschedule[0].resource_calendar_id
