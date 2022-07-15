@@ -8,3 +8,6 @@ access_work_type_manager,hr.work.type,model_hr_work_type,hr_payroll_community.gr
 access_work_entry_user,hr.work.entry,model_hr_work_entry,hr_payroll_community.group_hr_payroll_community_user,1,1,1,1
 access_wiz_change_schedule,wizard.change.schedule,model_wizard_change_schedule,hr.group_hr_user,1,1,1,1
 access_wiz_change_schedule_line,wizard.change.schedule.line,model_wizard_change_schedule_line,hr.group_hr_user,1,1,1,1
+access_bonus_user,hr.bonus,model_hr_bonus,hr_payroll_community.group_hr_payroll_community_user,1,1,1,1
+access_bonus_line_user,hr.bonus.line,model_hr_bonus_line,hr_payroll_community.group_hr_payroll_community_user,1,1,1,1
+access_payroll_report_user,wiz.payroll.report,model_wiz_payroll_report,hr_payroll_community.group_hr_payroll_community_user,1,1,1,1

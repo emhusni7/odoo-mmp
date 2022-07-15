@@ -188,6 +188,21 @@ class IntervalMMP(Intervals):
                         'hours': round((end - start).seconds/3600,2),
                         'amount': ov.cash_hrs_amount
                     })
+            elif ov.overtime_bulk_id.ov_type.duration_type == 'ins_h':
+                # Cek tanggal overtime di attendance
+                if attd_date.get(ov_start.date()) and temp_overtime.get(ov_start.date()):
+                    data = temp_overtime[ov_start.date()][0]
+                    start = max(data[0], ov_start)
+                    end = min(data[1], ov_stop)
+                    if ov.days_no_tmp <= round((end - start).seconds/3600,2):
+                        overtimes.append({
+                            'ov': ov,
+                            'start': start,
+                            'end': end,
+                            'type': 'ins_h',
+                            'hours': 1,
+                            'amount': ov.cash_hrs_amount
+                        })
 
         # Leaves Computed
         for lv_in, lv_out, lv in leave._items:
@@ -327,6 +342,20 @@ class HrPayslip(models.Model):
                 res = self.env.cr.fetchone()
                 return res and res[0] or 0.0
 
+        class HRBonus(BrowsableObject):
+            def sum(self, from_date, to_date):
+                self.env.cr.execute("""
+                           select 
+                                sum(hbl.total_bonus) 
+                                from hr_bonus hb 
+                                inner join hr_bonus_line hbl on hbl.bonus_id = hb.id 
+                                where hb.state = 'confirm' 
+                                    and hbl.employee_id = %s 
+                                    and hb.date between %s and %s
+                       """, (self.employee_id, from_date, to_date))
+                res = self.env.cr.fetchone()
+                return res and res[0] or 0.0
+
         # we keep a dict with the result because a value can be overwritten by another rule with the same code
         result_dict = {}
         rules_dict = {}
@@ -345,9 +374,10 @@ class HrPayslip(models.Model):
         payslips = Payslips(payslip.employee_id.id, payslip, self.env)
         rules = BrowsableObject(payslip.employee_id.id, rules_dict, self.env)
         work_entries = WorkEntry(payslip.employee_id.id, {}, self.env)
+        bonus = HRBonus(payslip.employee_id.id, {}, self.env)
 
         baselocaldict = {'categories': categories, 'rules': rules, 'payslip': payslips, 'worked_days': worked_days,
-                         'inputs': inputs, 'entries': work_entries}
+                         'inputs': inputs, 'entries': work_entries, 'bonus': bonus}
         # get the ids of the structures on the contracts and their parent id as well
         contracts = self.env['hr.contract'].browse(contract_ids)
         if len(contracts) == 1 and payslip.struct_id:

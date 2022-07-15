@@ -2,8 +2,11 @@ from odoo import fields, models, api
 
 class HRSalaryRule(models.Model):
     _inherit = "hr.salary.rule"
+
+    type = fields.Selection([('monthly', 'Monthly'),('ob', 'Output Base')], "Type")
     h_insurance = fields.Boolean("Healt Insurance", default=False)
     w_insurance = fields.Boolean("Work Insurance", default=False)
+
 HRSalaryRule
 
 class SalaryRuleMMP(models.Model):

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_generate_attd" model="ir.ui.view">
+        <field name="name">Generate Attendance MMP</field>
+        <field name="model">wiz.generate.attd</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="date_from" />
+                        <field name="date_to" />
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Generate Attd" name="generate_attd" type="object" class="btn-primary" />
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="act_mmp_generate" model="ir.actions.act_window">
+        <field name="name">Generate Attendance</field>
+        <field name="res_model">wiz.generate.attd</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+</odoo>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_payroll_structure" model="ir.ui.view">
+        <field name="name">Payroll Structure</field>
+        <field name="model">wiz.payroll.report</field>
+        <field name="arch" type="xml">
+            <form create="false" edit="false">
+                <sheet>
+                    <group col="4">
+                        <field name="year"/>
+                        <field name="month"/>
+                        <field name="struct_id" options="{'no_create': True, 'no_open': True, 'no_edit': True}"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="print_report" class="oe_highlight" type="object" string="Print"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+     <record id="act_payroll_report" model="ir.actions.act_window">
+            <field name="name">Print Report</field>
+            <field name="res_model">wiz.payroll.report</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_payroll_report_parent" parent="hr_payroll_community.menu_hr_payroll_community_root" name="Report" sequence="100" />
+    <menuitem id="menu_report_payroll_print" action="act_payroll_report" parent="menu_payroll_report_parent" name="Payroll Report" sequence="1" />
+</odoo>

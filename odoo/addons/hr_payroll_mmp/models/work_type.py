@@ -40,7 +40,7 @@ class WorkEntriesTransaction(models.Model):
     def _getEmployeeDomain(self):
         if self.from_date:
             self.sudo().env.cr.execute('''
-                Select 
+                Select
                     ha.employee_id
                 from hr_attendance ha
                 where (ha.check_in + interval '7 hours')::Date between %s and %s
@@ -48,11 +48,18 @@ class WorkEntriesTransaction(models.Model):
             ''',(self.from_date, self.from_date))
             ids = self.sudo().env.cr.fetchall()
             return {
-            'domain': {
-                'employee_id': [('id','in',[x[0] for x in ids])]
+                'value': {
+                  'employee_id': False
+                },
+                'domain': {
+                    'employee_id': [('id','in',[x[0] for x in ids])]
+                }
             }
-        }
+
         return {
+            'value': {
+                'employee_id': False
+            },
             'domain': {
                 'employee_id': [('id','=',0)]
             }
@@ -64,10 +71,10 @@ class WorkEntriesTransaction(models.Model):
             vals['name'] = self.env['ir.sequence'].next_by_code('hr.work.entry')
         return super(WorkEntriesTransaction, self).create(vals)
 
-    name = fields.Char("Name", required=1, default="/")
+    name = fields.Char("Name", required=1, default="/", copy=False)
     from_date = fields.Date("From Date", required=1)
     work_type = fields.Many2one("hr.work.type","Work Type", required=1)
-    employee_id = fields.Many2one("hr.employee","Employee", domain=_getEmployeeDomain, required=1)
+    employee_id = fields.Many2one("hr.employee","Employee",required=1)
     qty = fields.Float("Qty", digits=(16,2))
     uom_id = fields.Many2one("hr.work.uom", related="work_type.uom_id", string="UoM")
     price_unit = fields.Float("Price Unit",related="work_type.price_unit", store=True, digits=(16,2))

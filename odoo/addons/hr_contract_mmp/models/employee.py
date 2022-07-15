@@ -35,9 +35,49 @@ Education
 class Employee(models.Model):
     _inherit = "hr.employee"
 
+    @api.model
+    def name_search(self, name='', args=None, operator='ilike', limit=100):
+        """ name_search(name='', args=None, operator='ilike', limit=100) -> records
+
+        Search for records that have a display name matching the given
+        ``name`` pattern when compared with the given ``operator``, while also
+        matching the optional search domain (``args``).
+
+        This is used for example to provide suggestions based on a partial
+        value for a relational field. Sometimes be seen as the inverse
+        function of :meth:`~.name_get`, but it is not guaranteed to be.
+
+        This method is equivalent to calling :meth:`~.search` with a search
+        domain based on ``display_name`` and then :meth:`~.name_get` on the
+        result of the search.
+
+        :param str name: the name pattern to match
+        :param list args: optional search domain (see :meth:`~.search` for
+                          syntax), specifying further restrictions
+        :param str operator: domain operator for matching ``name``, such as
+                             ``'like'`` or ``'='``.
+        :param int limit: optional max number of records to return
+        :rtype: list
+        :return: list of pairs ``(id, text_repr)`` for all matching records.
+        """
+        if args == None:
+            args = []
+        args += ['|',('name','ilike', name),('pin','ilike', name)]
+        ids = self._search(args, limit=limit)
+        return self.browse(ids).sudo().name_get()
+
+    @api.depends('name', 'pin')
+    def name_get(self):
+        res = []
+        for record in self:
+            name = "[%s] %s"%(record.pin or "", record.name)
+            res.append((record.id, name))
+        return res
+
     bpjs = fields.Char("No. BPJS")
     npwp = fields.Char("No. NPWP")
     address = fields.Text("Address")
+    complete_name = fields.Char("Complete Name", compute="_get_name")
     private_email = fields.Char(string="Private Email", groups="hr.group_hr_user", store=True, readonly=False)
     phone = fields.Char("Private Phone",readonly=False,groups="hr.group_hr_user")
     ptkp_id = fields.Many2one("ptkp", "PTKP", required=0)
@@ -51,6 +91,8 @@ class Employee(models.Model):
         help="The employee type. Although the primary purpose may seem to categorize employees, this field has also an impact in the Contract History. Only Employee type is supposed to be under contract and will have a Contract History.")
     jenis_kerja = fields.Selection(selection=[('5','5 Hari Kerja'),('6','6 Hari Kerja')])
     keahlian = fields.Text("Keahlian")
+    pin = fields.Char(string="ID", copy=False, groups=False,
+                help="PIN used to Check In/Out in the Kiosk Mode of the Attendance application (if enabled in Configuration) and to change the cashier in the Point of Sale application.")
     work_phone = fields.Char('Work Phone', readonly=False)
     marital = fields.Selection([
         ('single', 'Single'),

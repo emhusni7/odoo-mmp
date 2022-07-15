@@ -16,5 +16,6 @@ class HrAttendance(models.Model):
                                     readonly=True)
     type = fields.Selection([('1','In'),('0','Out')],'Check In/Out', required=1)
     dtime = fields.Datetime("Date Time", required=1)
+    has_attd = fields.Many2one("hr.attendance", "Attd")
 
 HrAttendance

@@ -20,6 +20,7 @@ actions(Check in/Check out) performed by them.
         'security/ir.model.access.csv',
         'wizard/wizard_import_absen.xml',
         'wizard/wizard_change_mode.xml',
+        'wizard/wizard_generate_attd.xml',
         'views/hr_attendance.xml',
         'views/res_users.xml',
         'views/resource.xml',

@@ -2,6 +2,7 @@ from odoo import models, fields, _
 from odoo.exceptions import UserError
 import base64, io, csv
 from datetime import datetime, timedelta
+import re
 
 class WizAbsen(models.Model):
     _name = "wiz.import.absen"
@@ -27,9 +28,9 @@ class WizAbsen(models.Model):
             if not emp:
                 raise UserError(_('Employee with Code %s Not Found')%rfid)
             try:
-                dtime = datetime.strptime("%s %s"%(row[3],row[4]),"%Y/%m/%d %H:%M:%S") - timedelta(hours=7)
+                dtime = datetime.strptime("%s %s"%(row[3],row[4]),"%d/%m/%Y %H:%M:%S") - timedelta(hours=7)
             except:
-                raise UserError("Wrong Format Date and time use (YYYY/MM/DD HH:MM:SS)")
+                raise UserError("Wrong Format Date and time use (DD/MM/YYYY HH:MM:SS)")
 
             vals = {
                 'code': row[0],

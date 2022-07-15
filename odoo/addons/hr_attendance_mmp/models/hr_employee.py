@@ -1,4 +1,6 @@
-from odoo import models, api, _, fields, exceptions
+
+from odoo import models, api, _, fields
+
 
 class hrEmpoyeeAttd(models.Model):
     _inherit = "hr.employee"

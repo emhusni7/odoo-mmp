@@ -6,7 +6,7 @@ class OvertimeBulk(models.Model):
     _inherit = ['mail.thread']
     _order = "date_from desc"
 
-    name = fields.Char("Ref", default="/")
+    name = fields.Char("Ref", default="/", copy=False)
     department_id = fields.Many2one("hr.department", "Department", required=1)
     divisi_id = fields.Many2one("hr.divisi.mmp", "Division", domain="[('department_id','=',department_id)]")
     section_id = fields.Many2one("hr.job", "Section", domain="[('divisi_id','=', divisi_id)]")
