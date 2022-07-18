@@ -1,15 +1,15 @@
-from odoo import models, fields
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 
 class HrAttendance(models.Model):
     _name = "hr.attendance.mmp"
     _description = "Attendance MMP"
     _order = "dtime, employee_id desc"
-    _sql_constraints = [
-        ('employee_absen_uniq', 'unique (code,name,employee_id,type,dtime)', """Only one value can be defined for each given usage!"""),
-    ]
+
+    _sql_constraints = [('code_name_type_dtime_mmp', 'unique(code,name,type,dtime)', 'Attendance Data must be unique')]
 
     code = fields.Char("Code Mesin", required=1)
-    name = fields.Char("Code Absen", required=1)
+    name = fields.Char("No.ID", required=1)
     employee_id = fields.Many2one('hr.employee', string="Employee", required=True,
                                   ondelete='cascade', index=True)
     department_id = fields.Many2one('hr.department', string="Department", related="employee_id.department_id",
