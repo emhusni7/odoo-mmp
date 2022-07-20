@@ -7,7 +7,7 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="file_xls" filename="file_name"/>
+                        <field name="file_xls" widget="many2many_binary"/>
                         <field name="file_name" invisible="1" />
                     </group>
                 </sheet>

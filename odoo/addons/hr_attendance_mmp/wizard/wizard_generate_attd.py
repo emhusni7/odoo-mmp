@@ -10,12 +10,13 @@ class Attd(models.TransientModel):
                 ham.id,
                 ham.code,
                 ham.type,
-                ham.employee_id,
+                he.id employee_id,
                 ham.dtime
             from hr_attendance_mmp ham
+                inner join hr_employee he ON ham."name"  = he.pin 
                 where ham.has_attd is null and (ham.dtime + interval '7 hours')::Date between %s::Date and %s::Date 
             order by 
-                ham.employee_id,
+                he.id,
                 ham.dtime
         '''
         self.env.cr.execute(sql,(self.date_from, self.date_to))

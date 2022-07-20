@@ -4,11 +4,9 @@
         <field name="name">hr.attendance.mmp.tree</field>
         <field name="model">hr.attendance.mmp</field>
         <field name="arch" type="xml">
-            <tree string="Employee attendances" editable="bottom">
+            <tree string="Attendances" editable="bottom">
                 <field name="code" />
                 <field name="name" />
-                <field name="employee_id"/>
-                <field name="department_id"/>
                 <field name="type"/>
                 <field name="dtime" />
                 <field name="has_attd" />
@@ -22,13 +20,11 @@
         <field name="arch" type="xml">
             <search string="Hr Attendance MMP Search">
                 <field name="name" />
-                <field name="employee_id" />
-                <field name="department_id" />
                 <field name="dtime" />
                 <separator/>
                 <filter string="Date" name="dtime_filter" date="dtime" default_period="last_month"/>
                 <group expand="0" string="Group By">
-                    <filter string="Time" name="employee" context="{'group_by': 'dtime'}"/>
+                    <filter string="Time" name="time" context="{'group_by': 'dtime'}"/>
                 </group>
             </search>
         </field>
@@ -51,7 +47,7 @@
 
     <menuitem id="hr_attendance.menu_hr_attendance_settings" name="Configuration" parent="hr_attendance.menu_hr_attendance_root" sequence="99" />
     <menuitem id="menu_hr_attendance_mmp_root" name="MMP" sequence="205" groups="hr_attendance_mmp.group_hr_attendance_user_mmp" parent="hr_attendance.menu_hr_attendance_settings"/>
-    <menuitem id="menu_hr_attendance_mmp_view_attendances" name="Attendances" parent="menu_hr_attendance_mmp_root" sequence="10" groups="group_hr_attendance_user_mmp" action="hr_attendance_action_mmp_overview"/>
+    <menuitem id="menu_hr_attendance_mmp_view_attendances" name="Log" parent="menu_hr_attendance_mmp_root" sequence="10" groups="group_hr_attendance_user_mmp" action="hr_attendance_action_mmp_overview"/>
     <menuitem id="menu_hr_attendance_mmp_import" name="Import Absen (CSV)" parent="menu_hr_attendance_mmp_root" sequence="12" groups="group_hr_attendance_user_mmp" action="act_attendance_import_xls"/>
     <menuitem id="menu_hr_attendance_mmp_generate" name="Generate Attedance" parent="menu_hr_attendance_mmp_root" sequence="14" groups="group_hr_attendance_user_mmp" action="act_mmp_generate"/>
 
