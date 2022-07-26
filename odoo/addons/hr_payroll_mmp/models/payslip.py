@@ -58,13 +58,14 @@ class HrPayslipRun(models.Model):
 
     @api.depends('department_id', 'month', 'structure_id')
     def get_payroll_name(self):
-        self.name = "Payroll %s %s (%s)"%(self.department_id.name or "",
+        self.name = "Payroll %s %s (%s %s)"%(self.department_id.name or "",
                                              dict(self._fields['month'].selection).get(self.month),
+                                             self.date_start.strftime("%Y"),
                                              dict(self.structure_id._fields['type'].selection).get(self.structure_id.type) or ""
                                              )
     @api.onchange('date_start')
     def get_month(self):
-        self.month = self.date_start.strftime("%m")
+        self.month = self.date_start.strftime("%m") 
 
     def print_payslip(self):
         return {
