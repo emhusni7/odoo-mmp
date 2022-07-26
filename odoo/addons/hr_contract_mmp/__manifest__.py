@@ -11,6 +11,7 @@
     'depends': ['hr_contract'],
     'data': [
         'security/ir.model.access.csv',
+        'security/security.xml',
         'views/bpjs.xml',
         'views/contract.xml',
         'views/ptkp.xml',

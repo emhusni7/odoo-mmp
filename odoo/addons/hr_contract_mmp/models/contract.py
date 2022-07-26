@@ -93,11 +93,18 @@ BPJSKetContractMMp
 class Contract(models.Model):
     _inherit = "hr.contract"
 
+    name = fields.Char("Name",required=1, default="/")
     bpjs_kes_tran_ids = fields.One2many("bpjs.kes.contract.mmp","contract_id", "BPJS Kesehatan")
     bpjs_ket_tran_ids = fields.One2many("bpjs.ket.contract.mmp", "contract_id", "BPJS Ketenagakerjaan")
     department_id = fields.Many2one("hr.department", compute='get_department', readonly=1)
     job_id = fields.Many2one("hr.job", compute='get_job', readonly=1)
     schedule_ids = fields.One2many("hr.contract.schedule","contract_id", "Schedule")
+
+    @api.model
+    def create(self, vals):
+        if vals.get('name') == "/":
+            vals['name'] = self.env['ir.sequence'].next_by_code('hr.contract')
+        return super(Contract, self).create(vals)
 
     @api.depends('employee_id.department_id')
     def get_department(self):
